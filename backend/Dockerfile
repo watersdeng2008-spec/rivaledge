@@ -1,6 +1,5 @@
 # RivalEdge Backend — Railway-ready Dockerfile
-FROM python:3.11-slim
-
+FROM FROM mcr.microsoft.com/playwright:v1.49.0-focal
 # Install system dependencies for Playwright
 RUN apt-get update && apt-get install -y \
     wget \
