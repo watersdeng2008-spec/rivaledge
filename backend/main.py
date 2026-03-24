@@ -8,11 +8,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers import competitors, users, webhooks
+from routers import jobs
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / shutdown lifecycle."""
+    import logging
+    logger = logging.getLogger(__name__)
+
     # On startup: verify required env vars are set
     required = [
         "SUPABASE_URL",
@@ -23,6 +27,14 @@ async def lifespan(app: FastAPI):
     missing = [v for v in required if not os.getenv(v)]
     if missing:
         raise RuntimeError(f"Missing required env vars: {missing}")
+
+    # Warn (but don't block) if BRAVE_SEARCH_API_KEY is missing
+    if not os.getenv("BRAVE_SEARCH_API_KEY"):
+        logger.warning(
+            "BRAVE_SEARCH_API_KEY is not set — Brave Search fallback will be disabled. "
+            "Set this env var to enable scraper fallback."
+        )
+
     yield
     # Shutdown: nothing to clean up yet
 
@@ -46,6 +58,7 @@ app.add_middleware(
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(competitors.router, prefix="/api/competitors", tags=["competitors"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
+app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
 
 
 @app.get("/health")
