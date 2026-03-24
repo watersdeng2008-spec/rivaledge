@@ -60,8 +60,8 @@ def add_competitor(
     user = db.get_user(user_id)
     plan = user.get("plan", "solo") if user else "solo"
     
-    limits = {"solo": 5, "team": 25, "agency": 100}
-    limit = limits.get(plan, 5)
+    limits = {"solo": 3, "pro": 10}
+    limit = limits.get(plan, 3)
     
     if len(existing) >= limit:
         raise HTTPException(

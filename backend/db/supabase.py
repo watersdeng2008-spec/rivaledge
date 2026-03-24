@@ -154,3 +154,34 @@ def mark_digest_sent(digest_id: str) -> dict:
         .execute()
     )
     return result.data[0]
+
+
+# ── Stripe / Billing helpers ───────────────────────────────────────────────────
+
+def update_user_plan(user_id: str, plan: str) -> bool:
+    """Update a user's plan (e.g., after Stripe checkout or subscription change)."""
+    client = get_client()
+    client.table("users").update({"plan": plan}).eq("id", user_id).execute()
+    return True
+
+
+def get_user_stripe_customer_id(user_id: str) -> Optional[str]:
+    """Get the Stripe customer ID for a user, or None if not set."""
+    client = get_client()
+    result = (
+        client.table("users")
+        .select("stripe_customer_id")
+        .eq("id", user_id)
+        .single()
+        .execute()
+    )
+    if result.data:
+        return result.data.get("stripe_customer_id")
+    return None
+
+
+def update_user_stripe_customer_id(user_id: str, customer_id: str) -> bool:
+    """Persist a Stripe customer ID against a user record."""
+    client = get_client()
+    client.table("users").update({"stripe_customer_id": customer_id}).eq("id", user_id).execute()
+    return True

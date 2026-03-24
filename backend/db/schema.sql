@@ -5,7 +5,8 @@
 create table if not exists users (
   id text primary key,            -- Clerk user ID
   email text not null,
-  plan text default 'solo',       -- 'solo' | 'team' | 'agency'
+  plan text default 'solo',       -- 'solo' | 'pro'
+  stripe_customer_id text,        -- Stripe customer ID (set on first checkout)
   created_at timestamptz default now()
 );
 

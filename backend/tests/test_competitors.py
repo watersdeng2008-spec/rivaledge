@@ -115,8 +115,8 @@ class TestAddCompetitor:
         assert resp.status_code == 422  # Pydantic validation error
 
     def test_enforces_solo_plan_limit(self):
-        """POST /api/competitors/ returns 402 when solo plan limit (5) is reached."""
-        existing = [MOCK_COMPETITOR] * 5  # Already at limit
+        """POST /api/competitors/ returns 402 when solo plan limit (3) is reached."""
+        existing = [MOCK_COMPETITOR] * 3  # Already at limit
         with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
              patch("db.supabase.get_competitors", return_value=existing), \
              patch("db.supabase.get_user", return_value=MOCK_USER_DB):
@@ -129,13 +129,13 @@ class TestAddCompetitor:
             )
         assert resp.status_code == 402
 
-    def test_team_plan_allows_more_competitors(self):
-        """POST /api/competitors/ allows up to 25 competitors on team plan."""
-        team_user = {**MOCK_USER_DB, "plan": "team"}
-        existing = [MOCK_COMPETITOR] * 5  # Under team limit
+    def test_pro_plan_allows_more_competitors(self):
+        """POST /api/competitors/ allows up to 10 competitors on pro plan."""
+        pro_user = {**MOCK_USER_DB, "plan": "pro"}
+        existing = [MOCK_COMPETITOR] * 5  # Under pro limit (10)
         with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
              patch("db.supabase.get_competitors", return_value=existing), \
-             patch("db.supabase.get_user", return_value=team_user), \
+             patch("db.supabase.get_user", return_value=pro_user), \
              patch("db.supabase.create_competitor", return_value=MOCK_COMPETITOR):
             from main import app
             client = TestClient(app, raise_server_exceptions=False)
