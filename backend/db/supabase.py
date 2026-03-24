@@ -97,6 +97,41 @@ def get_latest_snapshot(competitor_id: str) -> Optional[dict]:
     return result.data[0] if result.data else None
 
 
+def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
+    """Get the second-most-recent snapshot for a competitor (for diff comparison)."""
+    client = get_client()
+    result = (
+        client.table("snapshots")
+        .select("*")
+        .eq("competitor_id", competitor_id)
+        .order("created_at", desc=True)
+        .limit(2)
+        .execute()
+    )
+    return result.data[1] if result.data and len(result.data) > 1 else None
+
+
+def get_all_active_users() -> list[dict]:
+    """Get all users (for cron job processing)."""
+    client = get_client()
+    result = client.table("users").select("*").execute()
+    return result.data
+
+
+def get_digest(digest_id: str, user_id: str) -> Optional[dict]:
+    """Get a digest by ID, scoped to user for safety."""
+    client = get_client()
+    result = (
+        client.table("digests")
+        .select("*")
+        .eq("id", digest_id)
+        .eq("user_id", user_id)
+        .single()
+        .execute()
+    )
+    return result.data
+
+
 def create_digest(user_id: str, content: str) -> dict:
     """Store a new digest record."""
     client = get_client()

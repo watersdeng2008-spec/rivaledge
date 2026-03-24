@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import competitors, users, webhooks
 from routers import jobs
+from routers import digest
 
 
 @asynccontextmanager
@@ -23,6 +24,8 @@ async def lifespan(app: FastAPI):
         "SUPABASE_SERVICE_ROLE_KEY",
         "CLERK_JWT_ISSUER",
         "CLERK_PEM_PUBLIC_KEY",
+        "ANTHROPIC_API_KEY",
+        "RESEND_API_KEY",
     ]
     missing = [v for v in required if not os.getenv(v)]
     if missing:
@@ -59,6 +62,7 @@ app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(competitors.router, prefix="/api/competitors", tags=["competitors"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
 app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
+app.include_router(digest.router, prefix="/api/digest", tags=["digest"])
 
 
 @app.get("/health")

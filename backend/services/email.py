@@ -1,104 +1,177 @@
 """
-Email service — sends digests via Resend.
+Email service — sends digests and transactional emails via Resend API.
 
-Day 3 feature — interface defined, stub for Day 1.
+Day 3: Full implementation of send_digest and send_welcome_email.
+Uses synchronous httpx (not async) so it works in both sync and async contexts.
 """
 import os
+import logging
+import re
 from typing import Optional
 
+import httpx
 
-DIGEST_EMAIL_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>RivalEdge Digest</title>
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a1a;">
-  <div style="border-bottom: 2px solid #6366f1; padding-bottom: 16px; margin-bottom: 24px;">
-    <h1 style="margin: 0; color: #6366f1;">⚡ RivalEdge</h1>
-    <p style="margin: 4px 0 0; color: #666;">Your competitor intelligence digest</p>
-  </div>
-  
-  <div style="line-height: 1.6;">
-    {digest_html}
-  </div>
-  
-  <div style="border-top: 1px solid #e5e7eb; margin-top: 32px; padding-top: 16px; color: #9ca3af; font-size: 12px;">
-    <p>You're receiving this because you track competitors on RivalEdge.</p>
-    <p><a href="https://rivaledge.ai/settings" style="color: #6366f1;">Manage preferences</a> · <a href="https://rivaledge.ai/unsubscribe" style="color: #6366f1;">Unsubscribe</a></p>
-  </div>
-</body>
-</html>
-"""
+logger = logging.getLogger(__name__)
+
+RESEND_BASE_URL = "https://api.resend.com"
+FROM_DIGEST = "RivalEdge <digests@rivaledge.ai>"
+FROM_WELCOME = "RivalEdge <hello@rivaledge.ai>"
 
 
-async def send_digest(to_email: str, digest_markdown: str) -> dict:
+def _get_api_key() -> str:
+    key = os.environ.get("RESEND_API_KEY", "")
+    if not key:
+        raise RuntimeError("RESEND_API_KEY not set")
+    return key
+
+
+def _extract_subject_from_html(html_content: str) -> Optional[str]:
+    """Extract subject from <!-- SUBJECT: ... --> comment in HTML."""
+    match = re.search(r'<!--\s*SUBJECT:\s*(.+?)\s*-->', html_content)
+    if match:
+        return match.group(1).strip()
+    return None
+
+
+# ── send_digest ────────────────────────────────────────────────────────────────
+
+def send_digest(to_email: str, html_content: str, subject: str) -> bool:
     """
-    Send a digest email via Resend.
+    Send a digest email via Resend API.
     
     Args:
         to_email: Recipient email address
-        digest_markdown: Markdown-formatted digest content
+        html_content: Full HTML email body
+        subject: Email subject line
     
     Returns:
-        Resend API response dict
+        True on success, False on failure (logs error, doesn't raise).
     """
-    api_key = os.environ.get("RESEND_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("RESEND_API_KEY not set")
-    
-    from_email = os.environ.get("RESEND_FROM_EMAIL", "digest@rivaledge.ai")
-    
-    import httpx
-    import markdown
-    
-    digest_html = markdown.markdown(digest_markdown)
-    html_body = DIGEST_EMAIL_TEMPLATE.format(digest_html=digest_html)
-    
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            "https://api.resend.com/emails",
+    try:
+        api_key = _get_api_key()
+        
+        response = httpx.post(
+            f"{RESEND_BASE_URL}/emails",
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json={
-                "from": from_email,
+                "from": FROM_DIGEST,
                 "to": [to_email],
-                "subject": "⚡ RivalEdge: Your Daily Competitor Digest",
+                "subject": subject,
+                "html": html_content,
+                "headers": {
+                    "X-Unsubscribe": "{{unsubscribe_url}}",
+                },
+            },
+            timeout=15.0,
+        )
+        response.raise_for_status()
+        data = response.json()
+        logger.info(f"Digest sent to {to_email}, Resend ID: {data.get('id')}")
+        return True
+    
+    except Exception as e:
+        logger.error(f"Failed to send digest to {to_email}: {e}")
+        return False
+
+
+# ── send_welcome_email ─────────────────────────────────────────────────────────
+
+def send_welcome_email(to_email: str, first_competitor: str) -> bool:
+    """
+    Send a welcome/onboarding email when a user adds their first competitor.
+    
+    Args:
+        to_email: Recipient email address
+        first_competitor: Name or URL of the first competitor they added
+    
+    Returns:
+        True on success, False on failure.
+    """
+    try:
+        api_key = _get_api_key()
+        
+        html_body = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to RivalEdge</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f9fafb;">
+  <div style="max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px 40px;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">⚡ RivalEdge</h1>
+      <p style="margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 16px;">Your AI competitor intelligence platform</p>
+    </div>
+    
+    <!-- Body -->
+    <div style="padding: 40px;">
+      <h2 style="margin: 0 0 16px; color: #111827; font-size: 22px;">You're all set! 🎉</h2>
+      
+      <p style="color: #374151; line-height: 1.6; font-size: 15px;">
+        We're now monitoring <strong>{first_competitor}</strong> for you. Every week, you'll receive a curated briefing with:
+      </p>
+      
+      <ul style="color: #374151; line-height: 1.8; font-size: 15px; padding-left: 20px;">
+        <li>🔍 Pricing changes and new tiers</li>
+        <li>✨ New features and product updates</li>
+        <li>💬 Messaging and positioning shifts</li>
+        <li>🎯 AI-powered "what this means" analysis</li>
+      </ul>
+      
+      <p style="color: #374151; line-height: 1.6; font-size: 15px;">
+        Your first digest will arrive next Monday at 7am CT. You can also generate one on-demand from your dashboard.
+      </p>
+      
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="https://rivaledge.ai/dashboard" 
+           style="display: inline-block; background: #6366f1; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600;">
+          Go to Dashboard →
+        </a>
+      </div>
+      
+      <p style="color: #6b7280; font-size: 14px; line-height: 1.5;">
+        Questions? Reply to this email or visit our <a href="https://rivaledge.ai/docs" style="color: #6366f1;">documentation</a>.
+      </p>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 24px 40px; text-align: center;">
+      <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+        RivalEdge · AI Competitor Intelligence<br>
+        <a href="{{{{unsubscribe_url}}}}" style="color: #6366f1;">Unsubscribe</a> · 
+        <a href="https://rivaledge.ai/settings" style="color: #6366f1;">Manage preferences</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>"""
+        
+        response = httpx.post(
+            f"{RESEND_BASE_URL}/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": FROM_WELCOME,
+                "to": [to_email],
+                "subject": "Welcome to RivalEdge ⚡ — We're watching your competitors",
                 "html": html_body,
             },
-            timeout=10.0,
+            timeout=15.0,
         )
-        resp.raise_for_status()
-        return resp.json()
-
-
-async def send_welcome_email(to_email: str) -> dict:
-    """Send a welcome email to new users."""
-    api_key = os.environ.get("RESEND_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("RESEND_API_KEY not set")
+        response.raise_for_status()
+        data = response.json()
+        logger.info(f"Welcome email sent to {to_email}, Resend ID: {data.get('id')}")
+        return True
     
-    from_email = os.environ.get("RESEND_FROM_EMAIL", "hello@rivaledge.ai")
-    
-    import httpx
-    
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "from": from_email,
-                "to": [to_email],
-                "subject": "Welcome to RivalEdge ⚡",
-                "html": "<h1>Welcome to RivalEdge!</h1><p>Start tracking your competitors at <a href='https://rivaledge.ai'>rivaledge.ai</a></p>",
-            },
-            timeout=10.0,
-        )
-        resp.raise_for_status()
-        return resp.json()
+    except Exception as e:
+        logger.error(f"Failed to send welcome email to {to_email}: {e}")
+        return False
