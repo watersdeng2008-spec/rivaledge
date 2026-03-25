@@ -22,24 +22,20 @@ async def lifespan(app: FastAPI):
     import logging
     logger = logging.getLogger(__name__)
 
-    # On startup: verify required env vars are set
-    required = [
+    # Warn (but don't crash) if env vars are missing — app boots, features degrade gracefully
+    warn_if_missing = [
         "SUPABASE_URL",
         "SUPABASE_SERVICE_ROLE_KEY",
         "CLERK_JWT_ISSUER",
         "CLERK_PEM_PUBLIC_KEY",
         "ANTHROPIC_API_KEY",
         "RESEND_API_KEY",
+        "BRAVE_SEARCH_API_KEY",
     ]
-    missing = [v for v in required if not os.getenv(v)]
+    missing = [v for v in warn_if_missing if not os.getenv(v)]
     if missing:
-        raise RuntimeError(f"Missing required env vars: {missing}")
-
-    # Warn (but don't block) if BRAVE_SEARCH_API_KEY is missing
-    if not os.getenv("BRAVE_SEARCH_API_KEY"):
         logger.warning(
-            "BRAVE_SEARCH_API_KEY is not set — Brave Search fallback will be disabled. "
-            "Set this env var to enable scraper fallback."
+            f"Missing env vars (some features will be degraded): {missing}"
         )
 
     yield
