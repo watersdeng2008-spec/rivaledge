@@ -8,9 +8,10 @@ import asyncio
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from auth import get_current_user
+from rate_limit import limiter
 import db.supabase as db
 from services.scraper import scrape_url
 from services.differ import diff_snapshots
@@ -120,7 +121,9 @@ async def scrape_competitor(
 # ── Scrape all competitors ─────────────────────────────────────────────────────
 
 @router.post("/scrape-all")
+@limiter.limit("10/hour")
 async def scrape_all_competitors(
+    request: Request,
     current_user: dict = Depends(get_current_user),
 ):
     """

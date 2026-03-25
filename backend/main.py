@@ -6,7 +6,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
+from rate_limit import limiter
 from routers import competitors, users, webhooks
 from routers import jobs
 from routers import digest
@@ -46,13 +49,22 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RivalEdge API",
     description="AI-powered competitor monitoring",
-    version="0.1.0",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
+# Attach limiter to app state (required by slowapi)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# ── CORS — production-ready ────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_origins=[
+        "http://localhost:3000",       # local dev
+        "https://rivaledge.ai",        # production
+        "https://*.vercel.app",        # Vercel previews
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,6 +80,10 @@ app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 
 
 @app.get("/health")
-def health():
+async def health():
     """Health check endpoint for Railway."""
-    return {"status": "ok", "service": "rivaledge-api"}
+    return {
+        "status": "ok",
+        "version": "1.0.0",
+        "service": "rivaledge-api",
+    }

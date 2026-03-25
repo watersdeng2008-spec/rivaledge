@@ -5,10 +5,11 @@ import logging
 import os
 
 import stripe
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
 from auth import get_current_user
+from rate_limit import limiter
 import db.supabase as db
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,9 @@ class BillingStatusResponse(BaseModel):
 # ── Endpoints ──────────────────────────────────────────────────────────────────
 
 @router.post("/checkout", response_model=CheckoutResponse)
+@limiter.limit("5/hour")
 def create_checkout(
+    request: Request,
     body: CheckoutRequest,
     current_user: dict = Depends(get_current_user),
 ):

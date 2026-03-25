@@ -7,9 +7,10 @@ import logging
 import re
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from auth import get_current_user
+from rate_limit import limiter
 import db.supabase as db
 import services.ai as ai_service
 import services.email as email_service
@@ -33,7 +34,8 @@ def _extract_subject(html_content: str) -> str:
 # ── Endpoints ──────────────────────────────────────────────────────────────────
 
 @router.post("/generate")
-def generate_digest_endpoint(current_user: dict = Depends(get_current_user)):
+@limiter.limit("5/hour")
+def generate_digest_endpoint(request: Request, current_user: dict = Depends(get_current_user)):
     """
     Generate a weekly digest for the authenticated user.
     

@@ -264,9 +264,29 @@ function DashboardContent() {
                 <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
               </div>
             ) : competitors.length === 0 ? (
-              <div className="text-center py-12 bg-slate-900 border border-slate-800 rounded-xl">
-                <p className="text-slate-500 text-sm mb-2">No competitors tracked yet</p>
-                <p className="text-slate-600 text-xs">Add a competitor URL above to get started</p>
+              /* ── Onboarding: no competitors yet ── */
+              <div className="bg-gradient-to-br from-blue-950/40 to-slate-900 border border-blue-800/50 rounded-2xl px-8 py-12 text-center space-y-5">
+                <div className="text-5xl">🎯</div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    Welcome to RivalEdge, {user?.firstName || 'there'}!
+                  </h3>
+                  <p className="text-slate-400 text-sm max-w-sm mx-auto">
+                    Track your competitors&apos; websites automatically. Get an AI-powered digest of
+                    every pricing change, new feature, or messaging shift — delivered weekly.
+                  </p>
+                </div>
+                <div className="bg-slate-800/60 border border-slate-700 rounded-xl px-5 py-4 text-left max-w-sm mx-auto space-y-3">
+                  <p className="text-slate-300 text-sm font-medium">Get started in 30 seconds:</p>
+                  <ol className="text-slate-400 text-sm space-y-2 list-decimal list-inside">
+                    <li>Paste a competitor URL in the field above</li>
+                    <li>Hit <strong className="text-white">Add</strong> — we&apos;ll scrape it immediately</li>
+                    <li>Click <strong className="text-white">Generate digest</strong> for your first AI brief</li>
+                  </ol>
+                </div>
+                <p className="text-slate-600 text-xs">
+                  Try adding: stripe.com, linear.app, or any direct competitor
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
