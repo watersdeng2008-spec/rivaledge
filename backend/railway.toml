@@ -1,12 +1,12 @@
 [build]
-builder = "dockerfile"
+rootDirectory = "backend"
 
 [deploy]
-startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
-healthcheckPath = "/health"
-healthcheckTimeout = 300
+command = "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
 
-[[cron]]
-name = "weekly-digest"
-schedule = "0 12 * * 1"
-command = "python -m cron.weekly_digest"
+[env]
+STRIPE_SOLO_PRICE_ID = "price_1TEYfGLTMdu9rJFPT4iwohw9"
+STRIPE_PRO_PRICE_ID = "price_1TEa3lLTMdu9rJFPgvechLBX"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_cmF0aW9uYWwtcmVkYmlyZC04NC5jbGVyay5hY2NvdW50cy5kZXYk"
+CLERK_SECRET_KEY = "sk_test_9Ucyuk3qD5sjjQC12FNWKzUowxJDMkkCHsFRE7Q8lt"
+RESEND_FROM_EMAIL = "digests@rivaledge.ai"
