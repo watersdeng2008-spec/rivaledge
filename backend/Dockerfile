@@ -1,41 +1,30 @@
 # RivalEdge Backend — Railway-ready Dockerfile
 FROM mcr.microsoft.com/playwright:v1.49.0-jammy
-# Install system dependencies for Playwright
+
+# Install Python and pip
 RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    libnss3 \
-    libnspr4 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libdrm2 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libasound2 \
+    python3 \
+    python3-pip \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-# Install Python dependencies
+# Copy requirements first for better caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Install Playwright browsers (already included in the base image, but ensure)
+RUN playwright install chromium --with-deps
+
+# Copy the rest of the application code
 COPY . .
 
-# Expose port (Railway sets PORT env var)
+# Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -qO- http://localhost:${PORT:-8000}/health || exit 1
-
-# Start server
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Run the app with uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
