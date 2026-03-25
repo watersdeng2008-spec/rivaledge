@@ -77,6 +77,44 @@ def add_competitor(
     return CompetitorResponse(**competitor)
 
 
+@router.get("/{competitor_id}/snapshots")
+def get_competitor_snapshots(
+    competitor_id: UUID,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get the last 12 snapshots for a competitor (newest first).
+    Returns each snapshot with id, created_at, diff (if exists), and content summary.
+    """
+    user_id = current_user["sub"]
+
+    # Verify this competitor belongs to the user
+    competitors = db.get_competitors(user_id)
+    comp_ids = [c["id"] for c in competitors]
+    if str(competitor_id) not in comp_ids:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Competitor not found",
+        )
+
+    snapshots = db.get_competitor_snapshots(str(competitor_id), limit=12)
+
+    result = []
+    for snap in snapshots:
+        content = snap.get("content") or {}
+        summary = content.get("title") or content.get("description") or ""
+        if isinstance(summary, str) and len(summary) > 200:
+            summary = summary[:200] + "..."
+        result.append({
+            "id": snap["id"],
+            "created_at": snap["created_at"],
+            "diff": snap.get("diff"),
+            "content_summary": summary,
+        })
+
+    return {"snapshots": result, "total": len(result)}
+
+
 @router.delete("/{competitor_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_competitor(
     competitor_id: UUID,

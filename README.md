@@ -1,75 +1,51 @@
 # RivalEdge
 
-**AI-powered competitor monitoring SaaS** — built by DengAI / Aether Holding LLC.
+AI-powered competitor monitoring for teams of 1–10.
 
-Track competitor websites, get daily AI-generated digests, and stay ahead of the market.
+## What it does
+- Add competitor URLs → auto-profiled
+- Weekly AI digest of what changed (pricing, features, messaging)
+- Email delivery every Monday morning
+- Battle cards: how to beat each competitor
+- $49/mo Solo (3 competitors) | $99/mo Pro (10 competitors)
 
-## Stack
+## Tech Stack
+- Backend: FastAPI (Python 3.11) → Railway
+- Frontend: Next.js 14 + Tailwind → Vercel
+- Database: Supabase (Postgres)
+- Auth: Clerk
+- AI: Anthropic Claude Sonnet
+- Email: Resend
+- Payments: Stripe
+- Scraping: Playwright + Brave Search API
 
-- **Backend:** FastAPI (Python 3.11)
-- **Database:** Supabase (Postgres)
-- **Auth:** Clerk (JWT validation)
-- **Hosting:** Railway
-- **Frontend:** Next.js 14 + Tailwind (Day 5)
-- **AI:** Anthropic Claude Sonnet
-- **Scraping:** Playwright + Brave Search API fallback
-- **Email:** Resend
-- **Payments:** Stripe
+## Local Development
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.11+
-- Supabase project
-- Clerk application
-- Railway account
-
-### Local Dev
-
+### Backend
 ```bash
 cd backend
-cp .env.example .env
-# Fill in your env vars
 pip install -r requirements.txt
+playwright install chromium
+cp .env.example .env  # fill in your keys
 uvicorn main:app --reload
 ```
 
-### Run Tests
-
+### Frontend
 ```bash
-cd backend
-pytest tests/ -v
-```
-
-### Deploy to Railway
-
-```bash
-railway up
+cd frontend
+npm install
+cp .env.local.example .env.local  # fill in your keys
+npm run dev
 ```
 
 ## Environment Variables
 
-See `backend/.env.example` for required variables.
+### Backend (Railway)
+See `backend/.env.example` for full list.
 
-## Schema
+### Frontend (Vercel)
+See `frontend/.env.local.example` for full list.
 
-See `backend/db/schema.sql` for Supabase schema.
-
-## Day 1 Status: ✅ Scaffolded
-
-- [x] FastAPI backend structure
-- [x] Supabase schema (SQL)
-- [x] Clerk JWT validation middleware
-- [x] Railway Dockerfile + railway.toml
-- [x] TDD test suite
-- [ ] GitHub repo (needs manual setup — see below)
-
-## Manual Setup Required
-
-1. **GitHub:** Create repo `rivaledge` under `watersdeng2008-spec` and push
-2. **Supabase:** Create project, run `backend/db/schema.sql`
-3. **Clerk:** Create application, get publishable key + secret key
-4. **Railway:** Link repo, set env vars
-5. **Resend:** Get API key for email delivery
-6. **Stripe:** Get API keys for payments
+## Deployment
+- Backend: Railway (auto-deploys from main branch, root: backend/)
+- Frontend: Vercel (auto-deploys from main branch, root: frontend/)

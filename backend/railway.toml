@@ -1,24 +1,12 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+builder = "dockerfile"
 
 [deploy]
 startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
-healthcheckTimeout = 30
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
+healthcheckTimeout = 300
 
-[deploy.envVars]
-# Required — set these in Railway dashboard:
-# SUPABASE_URL
-# SUPABASE_SERVICE_ROLE_KEY
-# CLERK_JWT_ISSUER
-# CLERK_PEM_PUBLIC_KEY
-# CLERK_WEBHOOK_SECRET
-# ANTHROPIC_API_KEY
-# BRAVE_SEARCH_API_KEY
-# RESEND_API_KEY
-# RESEND_FROM_EMAIL
-# STRIPE_SECRET_KEY
-# STRIPE_WEBHOOK_SECRET
+[[cron]]
+name = "weekly-digest"
+schedule = "0 12 * * 1"
+command = "python -m cron.weekly_digest"

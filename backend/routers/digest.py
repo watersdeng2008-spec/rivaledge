@@ -155,6 +155,52 @@ def send_digest_endpoint(
         return {"sent": False, "message": "Failed to send digest. Check logs for details."}
 
 
+@router.post("/battle-card")
+def battle_card_endpoint(
+    body: dict,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Generate a battle card for a specific competitor.
+
+    Body: {"competitor_id": str}
+    Returns: {"battle_card": str (markdown)}
+    """
+    user_id = current_user["sub"]
+    competitor_id = body.get("competitor_id")
+
+    if not competitor_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="competitor_id is required",
+        )
+
+    # Verify competitor belongs to user
+    competitors = db.get_competitors(user_id)
+    competitor = next((c for c in competitors if c["id"] == competitor_id), None)
+    if not competitor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Competitor not found",
+        )
+
+    # Build competitor profile string
+    profile = competitor.get("profile") or {}
+    if isinstance(profile, dict):
+        profile_str = str(profile)
+    else:
+        profile_str = str(profile)
+
+    competitor_data = {
+        "name": competitor.get("name") or competitor.get("url"),
+        "url": competitor.get("url"),
+        "profile": profile_str,
+    }
+
+    battle_card = ai_service.generate_battle_card(competitor_data)
+    return {"battle_card": battle_card}
+
+
 @router.post("/send-welcome")
 def send_welcome_endpoint(current_user: dict = Depends(get_current_user)):
     """

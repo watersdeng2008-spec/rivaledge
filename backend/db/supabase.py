@@ -97,6 +97,20 @@ def get_latest_snapshot(competitor_id: str) -> Optional[dict]:
     return result.data[0] if result.data else None
 
 
+def get_competitor_snapshots(competitor_id: str, limit: int = 12) -> list[dict]:
+    """Get the last N snapshots for a competitor, newest first."""
+    client = get_client()
+    result = (
+        client.table("snapshots")
+        .select("*")
+        .eq("competitor_id", competitor_id)
+        .order("created_at", desc=True)
+        .limit(limit)
+        .execute()
+    )
+    return result.data
+
+
 def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
     """Get the second-most-recent snapshot for a competitor (for diff comparison)."""
     client = get_client()
