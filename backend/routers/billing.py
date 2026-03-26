@@ -83,6 +83,7 @@ def create_checkout(
             mode="subscription",
             payment_method_types=["card"],
             line_items=[{"price": price_id, "quantity": 1}],
+            subscription_data={"trial_period_days": 14},
             success_url="https://rivaledge.ai/dashboard?checkout=success",
             cancel_url="https://rivaledge.ai/pricing",
             customer_email=user_email or None,

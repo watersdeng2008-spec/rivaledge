@@ -52,7 +52,8 @@ export default function PricingPage() {
 
       <section className="max-w-6xl mx-auto px-6 py-20">
         <h1 className="text-4xl font-bold text-center mb-4">Simple, honest pricing</h1>
-        <p className="text-slate-400 text-center mb-16">No hidden fees. No enterprise quotes. Cancel anytime.</p>
+        <p className="text-slate-400 text-center mb-2">No hidden fees. No enterprise quotes. Cancel anytime.</p>
+        <p className="text-blue-400 text-center font-medium mb-16">✨ 14-day free trial — no credit card required</p>
 
         {error && (
           <div className="max-w-lg mx-auto mb-8 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm text-center">
@@ -91,7 +92,7 @@ export default function PricingPage() {
               disabled={loading === 'solo'}
               className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'solo' ? 'Redirecting...' : 'Get started'}
+              {loading === 'solo' ? 'Redirecting...' : 'Start 14-day free trial'}
             </button>
           </div>
 
@@ -128,7 +129,7 @@ export default function PricingPage() {
               disabled={loading === 'pro'}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'pro' ? 'Redirecting...' : 'Get started'}
+              {loading === 'pro' ? 'Redirecting...' : 'Start 14-day free trial'}
             </button>
           </div>
         </div>
