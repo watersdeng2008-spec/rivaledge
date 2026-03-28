@@ -40,3 +40,4 @@ slowapi==0.1.9
 
 # Dev
 python-dotenv==1.0.1
+
