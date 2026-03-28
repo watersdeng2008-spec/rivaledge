@@ -230,3 +230,70 @@ def send_welcome_endpoint(current_user: dict = Depends(get_current_user)):
     )
     
     return {"sent": sent}
+
+
+# ── Cold Outreach Email (added to digest router for reliability) ────────────
+
+import httpx as _httpx
+import os as _os
+from pydantic import BaseModel as _BaseModel
+
+
+# Alias to use locally
+BaseModel = _BaseModel
+
+AUTHORIZED_OUTREACH_SENDERS = {"ben.d@rivaledge.ai"}
+
+
+class OutreachEmailRequest(BaseModel):
+    to: str
+    subject: str
+    body: str
+    from_name: str = "Ben D"
+
+
+class OutreachEmailResponse(BaseModel):
+    sent: bool
+    email_id: Optional[str] = None
+    message: str
+
+
+@router.post("/outreach/send", response_model=OutreachEmailResponse)
+async def send_outreach_email(
+    body: OutreachEmailRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Send cold outreach email via Resend (proxied through Railway IP)."""
+    user_email = current_user.get("email", "")
+    if user_email not in AUTHORIZED_OUTREACH_SENDERS:
+        raise HTTPException(status_code=403, detail="Not authorized to send outreach emails.")
+
+    resend_key = _os.environ.get("RESEND_API_KEY", "")
+    resend_from = _os.environ.get("RESEND_FROM_EMAIL", "ben.d@rivaledge.ai")
+
+    if not resend_key:
+        raise HTTPException(status_code=503, detail="Email service not configured.")
+
+    if not body.to or "@" not in body.to:
+        raise HTTPException(status_code=400, detail="Invalid recipient email.")
+
+    payload = {
+        "from": f"{body.from_name} <{resend_from}>",
+        "to": [body.to],
+        "subject": body.subject,
+        "text": body.body,
+    }
+
+    async with _httpx.AsyncClient(timeout=15) as client:
+        resp = await client.post(
+            "https://api.resend.com/emails",
+            json=payload,
+            headers={"Authorization": f"Bearer {resend_key}"},
+        )
+
+    if resp.status_code == 200:
+        data = resp.json()
+        logger.info("Outreach sent to %s | id: %s", body.to, data.get("id"))
+        return OutreachEmailResponse(sent=True, email_id=data.get("id"), message=f"Sent to {body.to}")
+
+    raise HTTPException(status_code=502, detail=f"Resend error: {resp.text[:100]}")
