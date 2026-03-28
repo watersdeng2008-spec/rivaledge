@@ -1,3 +1,4 @@
+from typing import Optional
 """
 Webhooks router — Clerk user sync + Stripe billing events.
 
@@ -162,7 +163,7 @@ async def stripe_webhook(
     return {"status": "ok", "event": event_type}
 
 
-def _get_user_id_from_customer(customer_id: str, metadata: dict) -> str | None:
+def _get_user_id_from_customer(customer_id: str, metadata: dict) -> Optional[str]:
     """
     Resolve a Clerk user_id from event metadata or Stripe customer lookup.
     Metadata is preferred (set during checkout); customer lookup is a fallback.
