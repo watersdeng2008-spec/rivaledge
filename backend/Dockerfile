@@ -1,4 +1,4 @@
-# RivalEdge Backend — Railway-ready Dockerfile
+# RivalEdge Backend — Railway-ready Dockerfile — build v2
 FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 
 # Install Python and pip
