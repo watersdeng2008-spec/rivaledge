@@ -75,6 +75,7 @@ app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
 app.include_router(digest.router, prefix="/api/digest", tags=["digest"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(outreach.router, prefix="/api/outreach", tags=["outreach"])
+# outreach v1.0 — cold email proxy via Railway/Resend
 
 
 @app.get("/health")
