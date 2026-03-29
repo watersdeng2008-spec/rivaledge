@@ -83,6 +83,6 @@ async def health():
     """Health check endpoint for Railway."""
     return {
         "status": "ok",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "service": "rivaledge-api",
     }
