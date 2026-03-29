@@ -57,6 +57,9 @@ export default function HomePage() {
           </Link>
         </div>
         <p className="text-slate-500 text-sm mt-4">No credit card required. 14-day free trial.</p>
+        <div className="mt-12 flex justify-center">
+          <img src="/hero.jpg" alt="RivalEdge in action" className="rounded-2xl shadow-2xl max-w-2xl w-full" />
+        </div>
       </section>
 
       {/* Features */}
