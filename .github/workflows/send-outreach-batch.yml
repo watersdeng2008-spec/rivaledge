@@ -1,0 +1,73 @@
+name: Send Outreach Batch
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (true = print only, false = actually send)'
+        required: false
+        default: 'true'
+
+jobs:
+  send-batch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send approved outreach emails
+        run: |
+          RESEND_KEY="${{ secrets.RESEND_API_KEY }}"
+          DRY_RUN="${{ github.event.inputs.dry_run }}"
+          
+          send_email() {
+            TO="$1"
+            SUBJECT="$2"
+            BODY="$3"
+            
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "🔍 [DRY RUN] Would send to: $TO"
+              echo "   Subject: $SUBJECT"
+              return 0
+            fi
+            
+            RESPONSE=$(curl -s -o /tmp/resend_resp.json -w "%{http_code}" \
+              -X POST https://api.resend.com/emails \
+              -H "Authorization: Bearer $RESEND_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"from\": \"Ben D <ben.d@rivaledge.ai>\",
+                \"to\": [\"$TO\"],
+                \"subject\": \"$SUBJECT\",
+                \"text\": \"$BODY\"
+              }")
+            
+            if [ "$RESPONSE" = "200" ]; then
+              EMAIL_ID=$(cat /tmp/resend_resp.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))")
+              echo "✅ Sent to $TO | ID: $EMAIL_ID"
+            else
+              echo "❌ Failed for $TO | HTTP: $RESPONSE"
+              cat /tmp/resend_resp.json
+            fi
+            
+            sleep 2  # Rate limit protection
+          }
+          
+          echo "=== RivalEdge Cold Outreach Batch ==="
+          echo "Dry run: $DRY_RUN"
+          echo ""
+          
+          # Lead 1: Nat Eliason at Masinov.co
+          send_email \
+            "nat@masinov.co" \
+            "RivalEdge — competitor monitoring for AI-native teams" \
+            "Hey Nat,
+
+I run RivalEdge, an AI competitor monitoring tool for lean teams. Add competitors by URL and get weekly AI briefings on what changed — pricing, features, messaging. \$49/mo.
+
+Figured you'd appreciate a tool that does the work autonomously. 14-day free trial at rivaledge.ai, no credit card.
+
+What does your current competitive research workflow look like?
+
+— Ben
+rivaledge.ai"
+          
+          echo ""
+          echo "=== Batch complete ==="

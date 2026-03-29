@@ -1,0 +1,47 @@
+name: Send Cold Outreach Emails
+
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: 'Recipient email address'
+        required: true
+      subject:
+        description: 'Email subject'
+        required: true
+      body:
+        description: 'Email body (plain text)'
+        required: true
+      from_name:
+        description: 'Sender name'
+        required: false
+        default: 'Ben D'
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send via Resend API
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "from": "${{ github.event.inputs.from_name }} <ben.d@rivaledge.ai>",
+              "to": ["${{ github.event.inputs.to }}"],
+              "subject": "${{ github.event.inputs.subject }}",
+              "text": "${{ github.event.inputs.body }}"
+            }')
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Email sent successfully to ${{ github.event.inputs.to }}"
+          else
+            echo "❌ Failed to send email"
+            exit 1
+          fi
