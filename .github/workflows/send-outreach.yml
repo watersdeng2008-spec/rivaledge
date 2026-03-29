@@ -21,27 +21,36 @@ jobs:
   send-email:
     runs-on: ubuntu-latest
     steps:
-      - name: Send via Resend API
+      - name: Send via Resend API (Python)
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TO: ${{ github.event.inputs.to }}
+          SUBJECT: ${{ github.event.inputs.subject }}
+          BODY: ${{ github.event.inputs.body }}
+          FROM_NAME: ${{ github.event.inputs.from_name }}
         run: |
-          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.resend.com/emails \
-            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "from": "${{ github.event.inputs.from_name }} <ben.d@rivaledge.ai>",
-              "to": ["${{ github.event.inputs.to }}"],
-              "subject": "${{ github.event.inputs.subject }}",
-              "text": "${{ github.event.inputs.body }}"
-            }')
-          
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | head -1)
-          
-          echo "HTTP Status: $HTTP_CODE"
-          echo "Response: $BODY"
-          
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Email sent successfully to ${{ github.event.inputs.to }}"
-          else
-            echo "❌ Failed to send email"
-            exit 1
-          fi
+          python3 - << 'PYEOF'
+          import os, json, urllib.request, urllib.error
+
+          key = os.environ["RESEND_API_KEY"]
+          payload = json.dumps({
+              "from": f"{os.environ['FROM_NAME']} <ben.d@rivaledge.ai>",
+              "to": [os.environ["TO"]],
+              "subject": os.environ["SUBJECT"],
+              "text": os.environ["BODY"],
+          }).encode()
+
+          req = urllib.request.Request(
+              "https://api.resend.com/emails",
+              data=payload,
+              headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=15) as r:
+                  resp = json.loads(r.read())
+                  print(f"✅ Email sent! ID: {resp.get('id')}")
+                  print(f"   To: {os.environ['TO']}")
+          except urllib.error.HTTPError as e:
+              print(f"❌ Failed: {e.code} {e.read().decode()[:200]}")
+              exit(1)
+          PYEOF
