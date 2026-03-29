@@ -158,6 +158,7 @@ function DashboardContent() {
       <header className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm" />
             <span className="text-xl font-bold text-blue-400">RivalEdge</span>
             <span className="text-slate-600">/</span>
             <span className="text-slate-400 text-sm">Dashboard</span>

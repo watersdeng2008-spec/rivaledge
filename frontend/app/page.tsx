@@ -7,6 +7,7 @@ export default function HomePage() {
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm mr-2 inline-block" />
           <span className="text-xl font-bold text-blue-400">RivalEdge</span>
           <div className="flex items-center gap-4">
             <Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">

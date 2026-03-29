@@ -8,6 +8,13 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'RivalEdge — AI Competitor Monitoring',
   description: 'Track your rivals. Get weekly AI briefings. $49/month.',
+  icons: {
+    icon: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
+  openGraph: {
+    images: ['/logo.jpg'],
+  },
 };
 
 export default function RootLayout({

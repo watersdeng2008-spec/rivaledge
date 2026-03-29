@@ -40,7 +40,10 @@ export default function PricingPage() {
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-blue-400">RivalEdge</Link>
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold text-blue-400">
+            <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm" />
+            RivalEdge
+          </Link>
           <div className="flex items-center gap-4">
             <Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign in</Link>
             <Link href="/sign-up" className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
