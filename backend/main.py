@@ -57,13 +57,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ── CORS — production-ready ────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",       # local dev
-        "https://rivaledge.ai",        # production (no www)
-        "https://www.rivaledge.ai",    # production (www)
-        "https://rivaledge-3.vercel.app",  # Vercel deployment
-        "https://rivaledge-3-*.vercel.app",  # Vercel previews
-    ],
+    allow_origins=["*"],  # open for now — tighten after first users onboarded
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
