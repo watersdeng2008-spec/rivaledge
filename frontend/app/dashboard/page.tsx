@@ -23,7 +23,7 @@ interface BillingStatus {
 }
 
 function DashboardContent() {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
   const searchParams = useSearchParams();
   const isCheckoutSuccess = searchParams.get('checkout') === 'success';
@@ -67,9 +67,10 @@ function DashboardContent() {
   }, [getToken]);
 
   useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
     fetchCompetitors();
     fetchBilling();
-  }, [fetchCompetitors, fetchBilling]);
+  }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
     e.preventDefault();
