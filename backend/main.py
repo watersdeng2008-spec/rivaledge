@@ -59,8 +59,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",       # local dev
-        "https://rivaledge.ai",        # production
-        "https://*.vercel.app",        # Vercel previews
+        "https://rivaledge.ai",        # production (no www)
+        "https://www.rivaledge.ai",    # production (www)
+        "https://rivaledge-3.vercel.app",  # Vercel deployment
+        "https://rivaledge-3-*.vercel.app",  # Vercel previews
     ],
     allow_credentials=True,
     allow_methods=["*"],
