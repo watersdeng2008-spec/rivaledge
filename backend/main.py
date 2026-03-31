@@ -46,8 +46,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RivalEdge API",
     description="AI-powered competitor monitoring",
-    version="1.0.0",
+    version="1.0.2",
     lifespan=lifespan,
+    redirect_slashes=False,  # Prevent http:// redirects on trailing slash mismatch
 )
 
 # Attach limiter to app state (required by slowapi)
