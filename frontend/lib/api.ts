@@ -23,7 +23,9 @@ export async function apiRequest<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}${path}`, {
+  // Ensure trailing slash to avoid Railway's http:// redirect on 307
+  const normalizedPath = path.endsWith('/') || path.includes('?') ? path : `${path}/`;
+  const response = await fetch(`${API_BASE}${normalizedPath}`, {
     ...fetchOptions,
     headers,
   });

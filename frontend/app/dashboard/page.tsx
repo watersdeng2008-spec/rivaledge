@@ -47,7 +47,7 @@ function DashboardContent() {
       const token = await getToken();
       console.log('[RivalEdge] Token:', token ? `${token.substring(0,20)}...` : 'NULL');
       console.log('[RivalEdge] API_BASE will be: https://rivaledge-production.up.railway.app');
-      const data = await apiRequest<Competitor[]>('/api/competitors', { token: token || undefined });
+      const data = await apiRequest<Competitor[]>('/api/competitors/', { token: token || undefined });
       setCompetitors(data);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load competitors';
@@ -83,7 +83,7 @@ function DashboardContent() {
     setError(null);
     try {
       const token = await getToken();
-      const competitor = await apiRequest<Competitor>('/api/competitors', {
+      const competitor = await apiRequest<Competitor>('/api/competitors/', {
         method: 'POST',
         body: JSON.stringify({ url: newUrl.trim() }),
         token: token || undefined,
