@@ -46,16 +46,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RivalEdge API",
     description="AI-powered competitor monitoring",
-    version="1.0.2",
+    version="1.0.3",
     lifespan=lifespan,
     redirect_slashes=False,  # Prevent http:// redirects on trailing slash mismatch
 )
 
-# Attach limiter to app state (required by slowapi)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-# ── CORS — production-ready ────────────────────────────────────────────────────
+# ── CORS — must be added FIRST so it runs on ALL responses including errors ────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # open for now — tighten after first users onboarded
@@ -63,6 +59,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Attach limiter to app state (required by slowapi)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Routers
 app.include_router(users.router, prefix="/api/users", tags=["users"])
