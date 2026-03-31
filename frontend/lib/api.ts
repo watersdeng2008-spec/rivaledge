@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://rivaledge-production.up.railway.app';
+// Production API URL - hardcoded to ensure https:// is always used
+const API_BASE = 'https://rivaledge-production.up.railway.app';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
