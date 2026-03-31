@@ -1,69 +1,60 @@
 """
 Clerk JWT validation middleware.
 
-Uses JWKS URL for automatic key rotation — more reliable than
-hardcoded PEM keys which can drift between dev/prod instances.
+Validates Clerk JWTs using the PEM public key (CLERK_PEM_PUBLIC_KEY env var)
+with JWKS URL as fallback for automatic key rotation.
 """
 import os
-import time
+import logging
 from typing import Optional
 
 import jwt
-from jwt import PyJWKClient
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+logger = logging.getLogger(__name__)
 security = HTTPBearer()
-
-# Cache the JWKS client to avoid fetching on every request
-_jwks_client: Optional[PyJWKClient] = None
-_jwks_client_created: float = 0
-_JWKS_CACHE_TTL = 3600  # 1 hour
-
-
-def _get_jwks_client() -> PyJWKClient:
-    global _jwks_client, _jwks_client_created
-    now = time.time()
-    if _jwks_client is None or (now - _jwks_client_created) > _JWKS_CACHE_TTL:
-        issuer = os.environ.get("CLERK_JWT_ISSUER", "")
-        if not issuer:
-            raise RuntimeError("CLERK_JWT_ISSUER env var not set")
-        jwks_url = f"{issuer}/.well-known/jwks.json"
-        _jwks_client = PyJWKClient(jwks_url)
-        _jwks_client_created = now
-    return _jwks_client
 
 
 def verify_clerk_token(token: str) -> dict:
     """
-    Verify a Clerk JWT using JWKS URL for automatic key management.
+    Verify a Clerk JWT. Tries PEM key first, then JWKS URL as fallback.
     """
     issuer = os.environ.get("CLERK_JWT_ISSUER", "")
-    
-    try:
-        jwks_client = _get_jwks_client()
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-        payload = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["RS256"],
-            issuer=issuer if issuer else None,
-            options={"verify_aud": False},
-        )
-        return payload
-    except Exception:
-        # Fall back to PEM key if JWKS fails
-        pem_key = os.environ.get("CLERK_PEM_PUBLIC_KEY", "").replace("\\n", "\n")
-        if not pem_key:
-            raise
-        payload = jwt.decode(
-            token,
-            pem_key,
-            algorithms=["RS256"],
-            issuer=issuer if issuer else None,
-            options={"verify_aud": False},
-        )
-        return payload
+
+    # Method 1: PEM public key (fast, no network)
+    pem_key = os.environ.get("CLERK_PEM_PUBLIC_KEY", "").replace("\\n", "\n")
+    if pem_key:
+        try:
+            return jwt.decode(
+                token,
+                pem_key,
+                algorithms=["RS256"],
+                issuer=issuer or None,
+                options={"verify_aud": False},
+            )
+        except jwt.InvalidTokenError as e:
+            logger.debug("PEM verification failed: %s, trying JWKS", e)
+
+    # Method 2: JWKS URL (network call, more reliable for key rotation)
+    if issuer:
+        try:
+            from jwt import PyJWKClient
+            jwks_url = f"{issuer}/.well-known/jwks.json"
+            client = PyJWKClient(jwks_url, cache_keys=True, max_cached_keys=10)
+            signing_key = client.get_signing_key_from_jwt(token)
+            return jwt.decode(
+                token,
+                signing_key.key,
+                algorithms=["RS256"],
+                issuer=issuer,
+                options={"verify_aud": False},
+            )
+        except Exception as e:
+            logger.debug("JWKS verification failed: %s", e)
+            raise jwt.InvalidTokenError(f"Token verification failed: {e}")
+
+    raise jwt.InvalidTokenError("No valid verification method available")
 
 
 def get_current_user(
@@ -71,7 +62,7 @@ def get_current_user(
 ) -> dict:
     token = credentials.credentials
     try:
-        payload = verify_clerk_token(token)
+        return verify_clerk_token(token)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -90,7 +81,6 @@ def get_current_user(
             detail=f"Auth error: {e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return payload
 
 
 def get_optional_user(
