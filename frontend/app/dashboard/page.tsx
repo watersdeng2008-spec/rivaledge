@@ -153,6 +153,15 @@ function DashboardContent() {
     }
   };
 
+  // Wait for Clerk to fully load before rendering anything
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="text-slate-400">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Header */}
