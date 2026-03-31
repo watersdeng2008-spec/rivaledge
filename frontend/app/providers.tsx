@@ -9,7 +9,9 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
     posthog.init('phc_z6Ac8mrQU72kWKdxkqHqykHWWCbrUbJJywFD42kKmdwV', {
       api_host: 'https://us.i.posthog.com',
       person_profiles: 'identified_only',
-      capture_pageview: false, // handled by PostHogPageView
+      capture_pageview: false,
+      disable_session_recording: true, // Prevent rrweb conflicts with Next.js
+      autocapture: false, // Prevent DOM injection issues
     })
   }, [])
 
