@@ -28,12 +28,12 @@ def get_user(user_id: str) -> Optional[dict]:
     return result.data
 
 
-def upsert_user(user_id: str, email: str, plan: str = "solo") -> dict:
+def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
     """Create or update a user record."""
     client = get_client()
     result = (
         client.table("users")
-        .upsert({"id": user_id, "email": email, "plan": plan})
+        .upsert({"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan})
         .execute()
     )
     return result.data[0]
