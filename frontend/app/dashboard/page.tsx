@@ -47,8 +47,8 @@ function DashboardContent() {
       const token = await getToken();
       console.log('[RivalEdge] Token:', token ? `${token.substring(0,20)}...` : 'NULL');
       console.log('[RivalEdge] API_BASE will be: https://rivaledge-production.up.railway.app');
-      const data = await apiRequest<Competitor[]>('/api/competitors/', { token: token || undefined });
-      setCompetitors(data);
+      const data = await apiRequest<{competitors: Competitor[]} | Competitor[]>('/api/competitors/', { token: token || undefined });
+      setCompetitors(Array.isArray(data) ? data : (data as {competitors: Competitor[]}).competitors || []);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load competitors';
       console.error('[RivalEdge] fetchCompetitors error:', msg);
