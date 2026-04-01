@@ -54,10 +54,15 @@ def add_competitor(
 ):
     """Add a new competitor URL to track."""
     user_id = current_user["sub"]
-    
-    # Plan limits: solo = 5 competitors
-    existing = db.get_competitors(user_id)
+    user_email = current_user.get("email", "")
+
+    # Auto-create user in DB if they don't exist yet (Clerk webhook may not have fired)
     user = db.get_user(user_id)
+    if not user:
+        db.upsert_user(user_id, user_email)
+    
+    # Plan limits: solo = 3 competitors, pro = 10
+    existing = db.get_competitors(user_id)
     plan = user.get("plan", "solo") if user else "solo"
     
     limits = {"solo": 3, "pro": 10}

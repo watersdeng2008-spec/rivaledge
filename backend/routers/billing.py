@@ -133,13 +133,11 @@ def get_billing_status(current_user: dict = Depends(get_current_user)):
     user_id = current_user["sub"]
     user = db.get_user(user_id)
 
+    # If user not in DB yet (Clerk webhook not fired), default to solo plan
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-
-    plan = user.get("plan", "solo")
+        plan = "solo"
+    else:
+        plan = user.get("plan", "solo")
     # A user record exists → they're active (free tier counts as active)
     sub_status = "active"
     competitor_limit = PLAN_LIMITS.get(plan, 3)
