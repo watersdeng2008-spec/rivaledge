@@ -31,12 +31,15 @@ def get_user(user_id: str) -> Optional[dict]:
 def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
     """Create or update a user record."""
     client = get_client()
+    data = {"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan}
     result = (
         client.table("users")
-        .upsert({"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan})
+        .upsert(data)
         .execute()
     )
-    return result.data[0]
+    if result.data and len(result.data) > 0:
+        return result.data[0]
+    return data
 
 
 def get_competitors(user_id: str) -> list[dict]:
@@ -55,12 +58,28 @@ def get_competitors(user_id: str) -> list[dict]:
 def create_competitor(user_id: str, url: str, name: Optional[str] = None) -> dict:
     """Add a new competitor to track."""
     client = get_client()
+    data = {"user_id": user_id, "url": url, "name": name}
     result = (
         client.table("competitors")
-        .insert({"user_id": user_id, "url": url, "name": name})
+        .insert(data)
         .execute()
     )
-    return result.data[0]
+    # Handle both supabase response formats (data as list or empty)
+    if result.data and len(result.data) > 0:
+        return result.data[0]
+    # Fallback: fetch the just-inserted row
+    fetch = (
+        client.table("competitors")
+        .select("*")
+        .eq("user_id", user_id)
+        .eq("url", url)
+        .order("created_at", desc=True)
+        .limit(1)
+        .execute()
+    )
+    if fetch.data:
+        return fetch.data[0]
+    return data
 
 
 def delete_competitor(competitor_id: str, user_id: str) -> bool:
