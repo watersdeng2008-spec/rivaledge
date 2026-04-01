@@ -74,11 +74,20 @@ def add_competitor(
             detail=f"Plan limit reached ({limit} competitors). Upgrade to add more.",
         )
     
-    competitor = db.create_competitor(
-        user_id=user_id,
-        url=str(body.url),
-        name=body.name,
-    )
+    try:
+        competitor = db.create_competitor(
+            user_id=user_id,
+            url=str(body.url),
+            name=body.name,
+        )
+    except (IndexError, KeyError, TypeError):
+        # Supabase v2 may return empty data after insert — fetch the created row instead
+        existing = db.get_competitors(user_id)
+        matching = [c for c in existing if c.get("url") == str(body.url)]
+        if matching:
+            competitor = matching[-1]
+        else:
+            competitor = {"id": "unknown", "user_id": user_id, "url": str(body.url), "name": body.name, "profile": None, "created_at": ""}
     return CompetitorResponse(**competitor)
 
 
