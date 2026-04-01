@@ -52,14 +52,14 @@ export default function RootLayout({
         <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
           {children}
 
-          {/* Google Analytics — loads only when GA_ID is set */}
+          {/* Google Analytics — use lazyOnload to avoid appendChild crash */}
           {GA_ID && (
             <>
               <Script
                 src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-                strategy="afterInteractive"
+                strategy="lazyOnload"
               />
-              <Script id="google-analytics" strategy="afterInteractive">
+              <Script id="google-analytics" strategy="lazyOnload">
                 {`
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
