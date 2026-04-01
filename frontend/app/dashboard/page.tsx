@@ -227,7 +227,7 @@ function DashboardContent() {
               </div>
             </div>
           ) : (
-            <span className="text-slate-500 text-sm">Plan info unavailable</span>
+            <span className="text-slate-500 text-sm">Solo plan · 3 competitors</span>
           )}
           {billing?.plan !== 'pro' && (
             <button
