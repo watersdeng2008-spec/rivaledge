@@ -160,7 +160,12 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-slate-800 px-6 py-8 mt-16">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-slate-500 text-sm">© 2025 RivalEdge. All rights reserved.</span>
+          <span className="text-slate-500 text-sm">© 2026 RivalEdge · Aether Holding LLC</span>
+          <div className="flex gap-4 mt-2">
+            <a href="/privacy" className="text-slate-500 text-sm hover:text-slate-300">Privacy Policy</a>
+            <a href="/terms" className="text-slate-500 text-sm hover:text-slate-300">Terms of Service</a>
+            <a href="mailto:support@rivaledge.ai" className="text-slate-500 text-sm hover:text-slate-300">Support</a>
+          </div>
           <div className="flex gap-6 text-slate-500 text-sm">
             <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/sign-in" className="hover:text-white transition-colors">Sign in</Link>
