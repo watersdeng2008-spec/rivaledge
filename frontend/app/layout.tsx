@@ -52,22 +52,24 @@ export default function RootLayout({
         <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
           {children}
 
-          {/* Google Analytics — use lazyOnload to avoid appendChild crash */}
+          {/* Google Analytics — loaded via src only, no inline script to avoid appendChild crash */}
           {GA_ID && (
-            <>
-              <Script
-                src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-                strategy="lazyOnload"
-              />
-              <Script id="google-analytics" strategy="lazyOnload">
-                {`
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${GA_ID}');
-                `}
-              </Script>
-            </>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="lazyOnload"
+              onLoad={() => {
+                // @ts-ignore
+                window.dataLayer = window.dataLayer || [];
+                // @ts-ignore
+                function gtag(...args: any[]) { window.dataLayer.push(args); }
+                // @ts-ignore
+                window.gtag = gtag;
+                // @ts-ignore
+                gtag('js', new Date());
+                // @ts-ignore
+                gtag('config', GA_ID);
+              }}
+            />
           )}
         </body>
       </html>
