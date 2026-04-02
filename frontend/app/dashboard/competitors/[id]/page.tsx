@@ -229,10 +229,10 @@ export default function CompetitorDetailPage() {
                     <p className="text-slate-300 text-sm">{snap.diff_summary}</p>
                   ) : snap.diff ? (
                     <pre className="text-slate-400 text-xs bg-slate-950 rounded-lg p-4 overflow-x-auto">
-                      {snap.diff}
+                      {typeof snap.diff === 'string' ? snap.diff : JSON.stringify(snap.diff, null, 2)}
                     </pre>
                   ) : (
-                    <p className="text-slate-500 text-sm">Snapshot captured — no changes detected.</p>
+                    <p className="text-slate-500 text-sm">Snapshot captured — no changes detected yet.</p>
                   )}
                 </div>
               ))}
