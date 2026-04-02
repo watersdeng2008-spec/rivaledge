@@ -6,6 +6,7 @@ import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { Plus, Zap, RefreshCw, Crown, Loader2, X } from 'lucide-react';
 import { apiRequest, ApiError } from '@/lib/api';
+import { FeedbackButton } from './feedback-button';
 
 interface Competitor {
   id: string;
@@ -401,6 +402,7 @@ function DashboardContent() {
           </div>
         )}
       </main>
+      <FeedbackButton />
     </div>
   );
 }

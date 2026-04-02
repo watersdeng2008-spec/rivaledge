@@ -16,6 +16,7 @@ from routers import jobs
 from routers import digest
 from routers import billing
 from routers import outreach
+from routers import feedback
 
 
 @asynccontextmanager
@@ -84,6 +85,7 @@ app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
 app.include_router(digest.router, prefix="/api/digest", tags=["digest"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(outreach.router, prefix="/api/outreach", tags=["outreach"])
+app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
