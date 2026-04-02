@@ -91,6 +91,20 @@ def add_competitor(
     return CompetitorResponse(**competitor)
 
 
+@router.get("/{competitor_id}", response_model=CompetitorResponse)
+def get_competitor(
+    competitor_id: UUID,
+    current_user: dict = Depends(get_current_user),
+):
+    """Get a single competitor by ID."""
+    user_id = current_user["sub"]
+    competitors = db.get_competitors(user_id)
+    for c in competitors:
+        if str(c.get("id")) == str(competitor_id):
+            return CompetitorResponse(**c)
+    raise HTTPException(status_code=404, detail="Competitor not found.")
+
+
 @router.get("/{competitor_id}/snapshots")
 def get_competitor_snapshots(
     competitor_id: UUID,
