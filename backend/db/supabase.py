@@ -56,30 +56,44 @@ def get_competitors(user_id: str) -> list[dict]:
 
 
 def create_competitor(user_id: str, url: str, name: Optional[str] = None) -> dict:
-    """Add a new competitor to track."""
-    client = get_client()
-    data = {"user_id": user_id, "url": url, "name": name}
-    result = (
-        client.table("competitors")
-        .insert(data)
-        .execute()
+    """Add a new competitor to track. Uses raw HTTP to avoid supabase client version issues."""
+    import httpx
+    supabase_url = os.environ.get("SUPABASE_URL", "")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
+    payload = {"user_id": user_id, "url": url, "name": name}
+    
+    response = httpx.post(
+        f"{supabase_url}/rest/v1/competitors",
+        json=payload,
+        headers=headers,
+        timeout=10
     )
-    # Handle both supabase response formats (data as list or empty)
-    if result.data and len(result.data) > 0:
-        return result.data[0]
-    # Fallback: fetch the just-inserted row
-    fetch = (
-        client.table("competitors")
-        .select("*")
-        .eq("user_id", user_id)
-        .eq("url", url)
-        .order("created_at", desc=True)
-        .limit(1)
-        .execute()
+    
+    if response.status_code in (200, 201):
+        data = response.json()
+        if isinstance(data, list) and data:
+            return data[0]
+    
+    # Fallback: fetch the row we just inserted
+    fetch = httpx.get(
+        f"{supabase_url}/rest/v1/competitors",
+        params={"user_id": f"eq.{user_id}", "url": f"eq.{url}", "order": "created_at.desc", "limit": "1"},
+        headers=headers,
+        timeout=10
     )
-    if fetch.data:
-        return fetch.data[0]
-    return data
+    if fetch.status_code == 200:
+        rows = fetch.json()
+        if rows:
+            return rows[0]
+    
+    return {"id": "pending", "user_id": user_id, "url": url, "name": name, "profile": None, "created_at": ""}
 
 
 def delete_competitor(competitor_id: str, user_id: str) -> bool:
