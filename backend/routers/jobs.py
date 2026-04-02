@@ -24,16 +24,11 @@ router = APIRouter()
 
 def get_competitor_for_user(competitor_id: str, user_id: str) -> Optional[dict]:
     """Fetch a competitor by ID, scoped to the authenticated user."""
-    client = db.get_client()
-    result = (
-        client.table("competitors")
-        .select("*")
-        .eq("id", competitor_id)
-        .eq("user_id", user_id)
-        .single()
-        .execute()
-    )
-    return result.data
+    competitors = db.get_competitors(user_id)
+    for c in competitors:
+        if str(c.get("id")) == str(competitor_id):
+            return c
+    return None
 
 
 def get_user_competitors(user_id: str) -> list[dict]:
