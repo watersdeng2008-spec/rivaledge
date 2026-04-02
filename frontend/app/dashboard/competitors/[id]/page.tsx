@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw, FileText, Loader2, X, Clock } from 'lucide-react';
+import { ArrowLeft, RefreshCw, FileText, Loader2, X, Clock, Trash2 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 
 interface Competitor {
@@ -57,6 +57,20 @@ export default function CompetitorDetailPage() {
     if (!isLoaded || !isSignedIn) return;
     fetchData();
   }, [fetchData, isLoaded, isSignedIn]);
+
+  const handleDelete = async () => {
+    if (!confirm('Remove this competitor from your tracking list?')) return;
+    try {
+      const token = await getToken();
+      await apiRequest(`/api/competitors/${id}`, {
+        method: 'DELETE',
+        token: token || undefined,
+      });
+      window.location.href = '/dashboard';
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to remove competitor');
+    }
+  };
 
   const handleScrapeNow = async () => {
     setScrapingNow(true);
@@ -123,10 +137,19 @@ export default function CompetitorDetailPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8 space-y-8">
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Back to dashboard
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Back to dashboard
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="inline-flex items-center gap-2 text-red-400 hover:text-red-300 text-sm transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            Remove competitor
+          </button>
+        </div>
 
         {successMsg && (
           <div className="bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg flex items-center justify-between">
