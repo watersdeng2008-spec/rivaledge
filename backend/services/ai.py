@@ -89,20 +89,22 @@ def generate_competitor_profile(scraped_data: dict) -> str:
 
 # ── Weekly Digest ──────────────────────────────────────────────────────────────
 
-DIGEST_SYSTEM = """You are a competitive intelligence analyst for RivalEdge. Generate a mobile-friendly HTML email digest summarizing competitor changes for the week.
+DIGEST_SYSTEM = """You are a competitive intelligence analyst for RivalEdge. Generate a mobile-friendly HTML email digest.
 
 Requirements:
 1. First line must be: <!-- SUBJECT: [subject line] -->
-2. Use inline CSS, max-width 600px, mobile-responsive
+2. Use inline CSS, max-width 600px, dark background (#0f172a), white text, mobile-responsive
 3. Header: "Your RivalEdge Weekly Brief"
-4. For competitors WITH changes (has_changes=True):
-   - Show competitor name + URL as a section header
-   - Bullet list of what changed (pricing, features, etc.)
-   - "What this means" — 1-2 sentence strategic interpretation
-   - Emphasize HIGH significance changes prominently
-5. For competitors with NO changes: group them in a brief "No changes detected" section
-6. Footer with: {{unsubscribe_url}} placeholder for unsubscribe link
-7. Keep tone professional but concise"""
+4. ALWAYS include a "Competitor Snapshot" section for ALL competitors with:
+   - Competitor name + URL as a section header
+   - Current pricing (if known)
+   - Top 3 features or value propositions
+   - Their main positioning/tagline
+5. For competitors WITH changes (has_changes=True): also show what changed this week
+6. For competitors with NO changes: show the snapshot with a note "No changes detected this week"
+7. Footer with: {{unsubscribe_url}} placeholder
+8. Keep tone sharp and actionable — like a briefing from a sharp analyst
+9. End with a "What to watch" section: 1-2 strategic observations about the competitive landscape"""
 
 
 def generate_weekly_digest(user_email: str, competitors_with_diffs: list[dict]) -> str:
