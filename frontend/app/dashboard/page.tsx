@@ -35,6 +35,8 @@ function DashboardContent() {
   const [newUrl, setNewUrl] = useState('');
   const [addingCompetitor, setAddingCompetitor] = useState(false);
   const [generatingDigest, setGeneratingDigest] = useState(false);
+  const [latestDigest, setLatestDigest] = useState<{id: string; content: string} | null>(null);
+  const [showDigest, setShowDigest] = useState(false);
   const [scrapingAll, setScrapingAll] = useState(false);
   const [upgradingPlan, setUpgradingPlan] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -103,11 +105,20 @@ function DashboardContent() {
     setError(null);
     try {
       const token = await getToken();
-      await apiRequest('/api/digest/generate', {
+      const result = await apiRequest<{digest_id: string; preview: string}>('/api/digest/generate', {
         method: 'POST',
         token: token || undefined,
       });
-      setSuccessMsg('Digest generation started! Check your email shortly.');
+      if (result && result.digest_id) {
+        // Fetch the full digest to display
+        const digest = await apiRequest<{id: string; content: string}>(`/api/digest/send/${result.digest_id}`, {
+          method: 'GET',
+          token: token || undefined,
+        }).catch(() => null);
+        setLatestDigest({ id: result.digest_id, content: result.preview || '' });
+        setShowDigest(true);
+      }
+      setSuccessMsg('✅ Digest generated! View it below.');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to generate digest');
     } finally {
@@ -368,6 +379,27 @@ function DashboardContent() {
             </button>
           </div>
         </div>
+
+        {/* Digest Viewer */}
+        {showDigest && latestDigest && (
+          <div className="max-w-6xl mx-auto px-6 pb-16">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">📬 Latest Digest</h2>
+                <button
+                  onClick={() => setShowDigest(false)}
+                  className="text-slate-500 hover:text-white text-sm"
+                >
+                  Hide ✕
+                </button>
+              </div>
+              <div
+                className="prose prose-invert max-w-none text-sm text-slate-300"
+                dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--.*?-->/gs, '') }}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
