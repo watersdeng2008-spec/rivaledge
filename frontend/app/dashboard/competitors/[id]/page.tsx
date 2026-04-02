@@ -26,7 +26,7 @@ interface Snapshot {
 export default function CompetitorDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { getToken } = useAuth();
+  const { getToken, isLoaded, isSignedIn } = useAuth();
 
   const [competitor, setCompetitor] = useState<Competitor | null>(null);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
@@ -54,8 +54,9 @@ export default function CompetitorDetailPage() {
   }, [getToken, id]);
 
   useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, isLoaded, isSignedIn]);
 
   const handleScrapeNow = async () => {
     setScrapingNow(true);
