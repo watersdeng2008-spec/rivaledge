@@ -110,13 +110,8 @@ function DashboardContent() {
         method: 'POST',
         token: token || undefined,
       });
-      if (result && result.digest_id) {
-        // Fetch the full digest to display
-        const digest = await apiRequest<{id: string; content: string}>(`/api/digest/send/${result.digest_id}`, {
-          method: 'GET',
-          token: token || undefined,
-        }).catch(() => null);
-        setLatestDigest({ id: result.digest_id, content: result.preview || '' });
+      if (result && result.preview) {
+        setLatestDigest({ id: result.digest_id || '', content: result.preview });
         setShowDigest(true);
       }
       setSuccessMsg('✅ Digest generated! View it below.');

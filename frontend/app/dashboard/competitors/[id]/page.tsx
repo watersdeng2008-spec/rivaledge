@@ -42,10 +42,10 @@ export default function CompetitorDetailPage() {
       const token = await getToken();
       const [comp, snaps] = await Promise.all([
         apiRequest<Competitor>(`/api/competitors/${id}`, { token: token || undefined }),
-        apiRequest<Snapshot[]>(`/api/competitors/${id}/snapshots`, { token: token || undefined }).catch(() => []),
+        apiRequest<{snapshots: Snapshot[]} | Snapshot[]>(`/api/competitors/${id}/snapshots`, { token: token || undefined }).catch(() => []),
       ]);
       setCompetitor(comp);
-      setSnapshots(snaps);
+      setSnapshots(Array.isArray(snaps) ? snaps : (snaps as {snapshots: Snapshot[]}).snapshots || []);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to load competitor');
     } finally {
