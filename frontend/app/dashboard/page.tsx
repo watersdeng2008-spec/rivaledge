@@ -395,7 +395,7 @@ function DashboardContent() {
               </div>
               <div
                 className="prose prose-invert max-w-none text-sm text-slate-300"
-                dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--.*?-->/gs, '') }}
+                dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--[\s\S]*?-->/g, '') }}
               />
             </div>
           </div>
