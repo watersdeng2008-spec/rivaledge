@@ -110,11 +110,12 @@ function DashboardContent() {
         method: 'POST',
         token: token || undefined,
       });
-      if (result && result.preview) {
-        setLatestDigest({ id: result.digest_id || '', content: result.preview });
+      if (result && result.digest_id) {
+        // Use full digest_id to display — store it and show the viewer
+        setLatestDigest({ id: result.digest_id, content: result.preview || '' });
         setShowDigest(true);
       }
-      setSuccessMsg('✅ Digest generated! View it below.');
+      setSuccessMsg('✅ Digest generated! See below.');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to generate digest');
     } finally {
@@ -389,10 +390,14 @@ function DashboardContent() {
                   Hide ✕
                 </button>
               </div>
-              <div
-                className="prose prose-invert max-w-none text-sm text-slate-300"
-                dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--[\s\S]*?-->/g, '') }}
-              />
+              {latestDigest.content ? (
+                <div
+                  className="text-sm text-slate-300"
+                  dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--[\s\S]*?-->/g, '').replace(/<style[\s\S]*?<\/style>/g, '') }}
+                />
+              ) : (
+                <p className="text-slate-400 text-sm">Digest generated successfully. Check your email for the full version, or click "Send Digest" to receive it now.</p>
+              )}
             </div>
           </div>
         )}

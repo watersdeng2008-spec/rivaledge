@@ -100,7 +100,7 @@ def generate_digest_endpoint(request: Request, current_user: dict = Depends(get_
     digest_record = db.create_digest(user_id=user_id, content=html_content)
     
     # 5. Return preview
-    preview = html_content[:500]
+    preview = html_content
     
     return {
         "digest_id": digest_record["id"],
