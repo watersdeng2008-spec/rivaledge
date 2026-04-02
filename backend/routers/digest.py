@@ -199,7 +199,16 @@ def battle_card_endpoint(
         "profile": profile_str,
     }
 
-    battle_card = ai_service.generate_battle_card(competitor_data)
+    our_product = {
+        "name": "RivalEdge",
+        "pricing": "$49/mo Solo, $99/mo Pro",
+        "features": ["AI weekly digests", "Competitor monitoring", "Battle cards", "Pricing alerts"]
+    }
+    battle_card = ai_service.generate_battle_card(
+        competitor_name=competitor_data["name"],
+        competitor_profile={"url": competitor_data["url"], "profile": competitor_data["profile"]},
+        our_product=our_product,
+    )
     return {"battle_card": battle_card}
 
 
