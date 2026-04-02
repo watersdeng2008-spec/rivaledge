@@ -5,3 +5,8 @@ builder = "dockerfile"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 startCommand = "sh -c 'uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}'"
+
+[[cron]]
+name = "onboarding-email"
+schedule = "*/30 * * * *"
+command = "python -m cron.onboarding_email"
