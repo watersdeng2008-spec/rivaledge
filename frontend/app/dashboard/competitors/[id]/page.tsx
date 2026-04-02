@@ -161,7 +161,7 @@ export default function CompetitorDetailPage() {
                 {competitor.last_scraped && (
                   <div className="flex items-center gap-1.5 text-slate-500 text-xs mt-3">
                     <Clock className="w-3.5 h-3.5" />
-                    Last scraped: {new Date(competitor.last_scraped).toLocaleString()}
+                    Last scraped: {competitor.last_scraped ? new Date(competitor.last_scraped).toLocaleString() : "Not yet scraped"}
                   </div>
                 )}
               </div>
@@ -217,7 +217,7 @@ export default function CompetitorDetailPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2 text-sm text-slate-400">
                       <Clock className="w-4 h-4" />
-                      {new Date(snap.scraped_at).toLocaleString()}
+                      {snap.scraped_at ? new Date(snap.scraped_at).toLocaleString() : "Date unknown"}
                     </div>
                     {idx === 0 && (
                       <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-0.5 rounded-full">
