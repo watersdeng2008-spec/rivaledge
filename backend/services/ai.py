@@ -12,7 +12,7 @@ import anthropic
 
 logger = logging.getLogger(__name__)
 
-CLAUDE_MODEL = "claude-3-5-sonnet-20241022"
+CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 
 
 def _get_client() -> anthropic.Anthropic:
