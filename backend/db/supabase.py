@@ -1,234 +1,135 @@
 """
-Supabase client — singleton pattern.
-All DB operations go through this module.
+Supabase database operations using raw HTTP — no client library.
+Avoids supabase-py version incompatibilities across environments.
 """
 import os
+import httpx
 from typing import Optional
-from supabase import create_client, Client
-
-_client: Optional[Client] = None
 
 
-def get_client() -> Client:
-    """Return (or lazily create) the Supabase client."""
-    global _client
-    if _client is None:
-        url = os.environ["SUPABASE_URL"]
-        key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-        _client = create_client(url, key)
-    return _client
+def _headers() -> dict:
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    return {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
+    }
 
 
-# ── Convenience helpers ────────────────────────────────────────────────────────
+def _url(path: str) -> str:
+    base = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    return f"{base}/rest/v1/{path}"
+
 
 def get_user(user_id: str) -> Optional[dict]:
-    """Fetch a user record by Clerk user ID."""
-    client = get_client()
-    result = client.table("users").select("*").eq("id", user_id).single().execute()
-    return result.data
+    r = httpx.get(_url(f"users?id=eq.{user_id}&limit=1"), headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
 
 
 def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
-    """Create or update a user record."""
-    client = get_client()
-    data = {"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan}
-    result = (
-        client.table("users")
-        .upsert(data)
-        .execute()
-    )
-    if result.data and len(result.data) > 0:
-        return result.data[0]
-    return data
+    payload = {"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan}
+    headers = {**_headers(), "Prefer": "resolution=merge-duplicates,return=representation"}
+    r = httpx.post(_url("users"), json=payload, headers=headers, timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else payload
 
 
-def get_competitors(user_id: str) -> list[dict]:
-    """List all competitors for a user."""
-    client = get_client()
-    result = (
-        client.table("competitors")
-        .select("*")
-        .eq("user_id", user_id)
-        .order("created_at", desc=True)
-        .execute()
+def get_competitors(user_id: str) -> list:
+    r = httpx.get(
+        _url(f"competitors?user_id=eq.{user_id}&order=created_at.desc"),
+        headers=_headers(), timeout=10
     )
-    return result.data
+    data = r.json()
+    return data if isinstance(data, list) else []
 
 
 def create_competitor(user_id: str, url: str, name: Optional[str] = None) -> dict:
-    """Add a new competitor to track. Uses raw HTTP to avoid supabase client version issues."""
-    import httpx
-    supabase_url = os.environ.get("SUPABASE_URL", "")
-    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-    
-    headers = {
-        "apikey": supabase_key,
-        "Authorization": f"Bearer {supabase_key}",
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
-    }
     payload = {"user_id": user_id, "url": url, "name": name}
-    
-    response = httpx.post(
-        f"{supabase_url}/rest/v1/competitors",
-        json=payload,
-        headers=headers,
-        timeout=10
-    )
-    
-    if response.status_code in (200, 201):
-        data = response.json()
-        if isinstance(data, list) and data:
-            return data[0]
-    
-    # Fallback: fetch the row we just inserted
+    r = httpx.post(_url("competitors"), json=payload, headers=_headers(), timeout=10)
+    data = r.json()
+    if isinstance(data, list) and data:
+        return data[0]
+    # Fetch back if insert didn't return data
     fetch = httpx.get(
-        f"{supabase_url}/rest/v1/competitors",
-        params={"user_id": f"eq.{user_id}", "url": f"eq.{url}", "order": "created_at.desc", "limit": "1"},
-        headers=headers,
-        timeout=10
+        _url(f"competitors?user_id=eq.{user_id}&url=eq.{url}&order=created_at.desc&limit=1"),
+        headers=_headers(), timeout=10
     )
-    if fetch.status_code == 200:
-        rows = fetch.json()
-        if rows:
-            return rows[0]
-    
-    return {"id": "pending", "user_id": user_id, "url": url, "name": name, "profile": None, "created_at": ""}
+    rows = fetch.json()
+    return rows[0] if isinstance(rows, list) and rows else {**payload, "id": "pending", "profile": None, "created_at": ""}
 
 
 def delete_competitor(competitor_id: str, user_id: str) -> bool:
-    """Delete a competitor (user-scoped for safety)."""
-    client = get_client()
-    client.table("competitors").delete().eq("id", competitor_id).eq(
-        "user_id", user_id
-    ).execute()
+    httpx.delete(
+        _url(f"competitors?id=eq.{competitor_id}&user_id=eq.{user_id}"),
+        headers=_headers(), timeout=10
+    )
     return True
 
 
+def get_competitor_snapshots(competitor_id: str, limit: int = 12) -> list:
+    r = httpx.get(
+        _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit={limit}"),
+        headers=_headers(), timeout=10
+    )
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
 def create_snapshot(competitor_id: str, content: dict, diff: Optional[dict] = None) -> dict:
-    """Store a new snapshot for a competitor."""
-    client = get_client()
-    result = (
-        client.table("snapshots")
-        .insert({"competitor_id": competitor_id, "content": content, "diff": diff})
-        .execute()
-    )
-    return result.data[0]
-
-
-def get_latest_snapshot(competitor_id: str) -> Optional[dict]:
-    """Get the most recent snapshot for a competitor."""
-    client = get_client()
-    result = (
-        client.table("snapshots")
-        .select("*")
-        .eq("competitor_id", competitor_id)
-        .order("created_at", desc=True)
-        .limit(1)
-        .execute()
-    )
-    return result.data[0] if result.data else None
-
-
-def get_competitor_snapshots(competitor_id: str, limit: int = 12) -> list[dict]:
-    """Get the last N snapshots for a competitor, newest first."""
-    client = get_client()
-    result = (
-        client.table("snapshots")
-        .select("*")
-        .eq("competitor_id", competitor_id)
-        .order("created_at", desc=True)
-        .limit(limit)
-        .execute()
-    )
-    return result.data
+    import json
+    payload = {"competitor_id": competitor_id, "content": content, "diff": diff}
+    r = httpx.post(_url("snapshots"), json=payload, headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else payload
 
 
 def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
-    """Get the second-most-recent snapshot for a competitor (for diff comparison)."""
-    client = get_client()
-    result = (
-        client.table("snapshots")
-        .select("*")
-        .eq("competitor_id", competitor_id)
-        .order("created_at", desc=True)
-        .limit(2)
-        .execute()
+    r = httpx.get(
+        _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit=2"),
+        headers=_headers(), timeout=10
     )
-    return result.data[1] if result.data and len(result.data) > 1 else None
-
-
-def get_all_active_users() -> list[dict]:
-    """Get all users (for cron job processing)."""
-    client = get_client()
-    result = client.table("users").select("*").execute()
-    return result.data
-
-
-def get_digest(digest_id: str, user_id: str) -> Optional[dict]:
-    """Get a digest by ID, scoped to user for safety."""
-    client = get_client()
-    result = (
-        client.table("digests")
-        .select("*")
-        .eq("id", digest_id)
-        .eq("user_id", user_id)
-        .single()
-        .execute()
-    )
-    return result.data
+    data = r.json()
+    return data[1] if isinstance(data, list) and len(data) > 1 else None
 
 
 def create_digest(user_id: str, content: str) -> dict:
-    """Store a new digest record."""
-    client = get_client()
-    result = (
-        client.table("digests")
-        .insert({"user_id": user_id, "content": content})
-        .execute()
-    )
-    return result.data[0]
+    payload = {"user_id": user_id, "content": content}
+    r = httpx.post(_url("digests"), json=payload, headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else payload
 
 
-def mark_digest_sent(digest_id: str) -> dict:
-    """Mark a digest as sent (sets sent_at to now)."""
+def get_digest(digest_id: str) -> Optional[dict]:
+    r = httpx.get(_url(f"digests?id=eq.{digest_id}&limit=1"), headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
+
+
+def update_digest_sent(digest_id: str) -> bool:
     from datetime import datetime, timezone
-    client = get_client()
-    result = (
-        client.table("digests")
-        .update({"sent_at": datetime.now(timezone.utc).isoformat()})
-        .eq("id", digest_id)
-        .execute()
-    )
-    return result.data[0]
+    payload = {"sent_at": datetime.now(timezone.utc).isoformat()}
+    httpx.patch(_url(f"digests?id=eq.{digest_id}"), json=payload, headers=_headers(), timeout=10)
+    return True
 
 
-# ── Stripe / Billing helpers ───────────────────────────────────────────────────
+def get_all_active_users() -> list:
+    r = httpx.get(_url("users?select=*"), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
 
 def update_user_plan(user_id: str, plan: str) -> bool:
-    """Update a user's plan (e.g., after Stripe checkout or subscription change)."""
-    client = get_client()
-    client.table("users").update({"plan": plan}).eq("id", user_id).execute()
+    httpx.patch(_url(f"users?id=eq.{user_id}"), json={"plan": plan}, headers=_headers(), timeout=10)
     return True
 
 
 def get_user_stripe_customer_id(user_id: str) -> Optional[str]:
-    """Get the Stripe customer ID for a user, or None if not set."""
-    client = get_client()
-    result = (
-        client.table("users")
-        .select("stripe_customer_id")
-        .eq("id", user_id)
-        .single()
-        .execute()
-    )
-    if result.data:
-        return result.data.get("stripe_customer_id")
-    return None
+    user = get_user(user_id)
+    return user.get("stripe_customer_id") if user else None
 
 
 def update_user_stripe_customer_id(user_id: str, customer_id: str) -> bool:
-    """Persist a Stripe customer ID against a user record."""
-    client = get_client()
-    client.table("users").update({"stripe_customer_id": customer_id}).eq("id", user_id).execute()
+    httpx.patch(_url(f"users?id=eq.{user_id}"), json={"stripe_customer_id": customer_id}, headers=_headers(), timeout=10)
     return True
