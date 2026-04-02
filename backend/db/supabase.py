@@ -110,7 +110,11 @@ def create_digest(user_id: str, content: str) -> dict:
     return data[0] if isinstance(data, list) and data else payload
 
 
-def get_digest(digest_id: str) -> Optional[dict]:
+def mark_digest_sent(digest_id: str) -> bool:
+    return update_digest_sent(digest_id)
+
+
+def get_digest(digest_id: str, user_id: str = None) -> Optional[dict]:
     r = httpx.get(_url(f"digests?id=eq.{digest_id}&limit=1"), headers=_headers(), timeout=10)
     data = r.json()
     return data[0] if isinstance(data, list) and data else None
