@@ -18,7 +18,8 @@ interface Competitor {
 
 interface Snapshot {
   id: string;
-  scraped_at: string;
+  scraped_at?: string;
+  created_at?: string;
   diff_summary?: string;
   diff?: string;
 }
@@ -240,7 +241,7 @@ export default function CompetitorDetailPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2 text-sm text-slate-400">
                       <Clock className="w-4 h-4" />
-                      {snap.scraped_at ? new Date(snap.scraped_at).toLocaleString() : "Date unknown"}
+                      {(snap.scraped_at || snap.created_at) ? new Date(snap.scraped_at || snap.created_at!).toLocaleString() : "Date unknown"}
                     </div>
                     {idx === 0 && (
                       <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-0.5 rounded-full">
