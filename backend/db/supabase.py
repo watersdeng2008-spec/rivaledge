@@ -85,6 +85,15 @@ def create_snapshot(competitor_id: str, content: dict, diff: Optional[dict] = No
     return data[0] if isinstance(data, list) and data else payload
 
 
+def get_latest_snapshot(competitor_id: str) -> Optional[dict]:
+    r = httpx.get(
+        _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit=1"),
+        headers=_headers(), timeout=10
+    )
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
+
+
 def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
     r = httpx.get(
         _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit=2"),
