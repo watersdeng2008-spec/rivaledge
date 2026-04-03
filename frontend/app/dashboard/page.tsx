@@ -79,17 +79,6 @@ function DashboardContent() {
     if (!isLoaded || !isSignedIn) return;
     fetchCompetitors();
     fetchBilling();
-    // Show onboarding if company_name not set
-    const checkOnboarding = async () => {
-      try {
-        const token = await getToken();
-        const profile = await apiRequest<{company_name?: string}>('/api/users/me', { token: token || undefined });
-        if (!profile?.company_name && competitors.length > 0) {
-          setShowOnboarding(true);
-        }
-      } catch { /* ignore */ }
-    };
-    setTimeout(checkOnboarding, 1500);
   }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
