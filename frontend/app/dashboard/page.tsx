@@ -79,6 +79,17 @@ function DashboardContent() {
     if (!isLoaded || !isSignedIn) return;
     fetchCompetitors();
     fetchBilling();
+    // Show onboarding if company_name not set
+    const checkOnboarding = async () => {
+      try {
+        const token = await getToken();
+        const profile = await apiRequest<{company_name?: string}>('/api/users/me', { token: token || undefined });
+        if (!profile?.company_name && competitors.length > 0) {
+          setShowOnboarding(true);
+        }
+      } catch { /* ignore */ }
+    };
+    setTimeout(checkOnboarding, 1500);
   }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
@@ -97,8 +108,10 @@ function DashboardContent() {
       setCompetitors(updatedCompetitors);
       setNewUrl('');
       setSuccessMsg('Competitor added successfully!');
-      // Show onboarding modal on first competitor added
-      if (updatedCompetitors.length === 1) {
+      // Show onboarding modal if not completed yet
+      const token2 = await getToken();
+      const userProfile = await apiRequest<{company_name?: string}>('/api/users/me', { token: token2 || undefined }).catch(() => null);
+      if (!userProfile?.company_name) {
         setTimeout(() => setShowOnboarding(true), 500);
       }
     } catch (e: unknown) {
