@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Plus, Zap, RefreshCw, Crown, Loader2, X } from 'lucide-react';
 import { apiRequest, ApiError } from '@/lib/api';
 import { FeedbackButton } from './feedback-button';
+import { OnboardingModal } from './onboarding-modal';
 
 interface Competitor {
   id: string;
@@ -37,6 +38,7 @@ function DashboardContent() {
   const [addingCompetitor, setAddingCompetitor] = useState(false);
   const [generatingDigest, setGeneratingDigest] = useState(false);
   const [latestDigest, setLatestDigest] = useState<{id: string; content: string} | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showDigest, setShowDigest] = useState(false);
   const [scrapingAll, setScrapingAll] = useState(false);
   const [upgradingPlan, setUpgradingPlan] = useState(false);
@@ -91,9 +93,14 @@ function DashboardContent() {
         body: JSON.stringify({ url: newUrl.trim() }),
         token: token || undefined,
       });
-      setCompetitors((prev) => [...prev, competitor]);
+      const updatedCompetitors = [...competitors, competitor];
+      setCompetitors(updatedCompetitors);
       setNewUrl('');
       setSuccessMsg('Competitor added successfully!');
+      // Show onboarding modal on first competitor added
+      if (updatedCompetitors.length === 1) {
+        setTimeout(() => setShowOnboarding(true), 500);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to add competitor');
     } finally {
@@ -403,6 +410,9 @@ function DashboardContent() {
         )}
       </main>
       <FeedbackButton />
+      {showOnboarding && (
+        <OnboardingModal onComplete={() => setShowOnboarding(false)} />
+      )}
     </div>
   );
 }
