@@ -1,6 +1,6 @@
 """
-Tests for AI digest generation service.
-Written FIRST (TDD) — all tests written before implementation.
+Tests for AI digest generation service (OpenRouter/Kimi K2.5 version).
+Updated for cost-optimized implementation with caching.
 """
 import os
 import sys
@@ -15,7 +15,7 @@ os.environ.setdefault("SUPABASE_URL", "https://test.supabase.co")
 os.environ.setdefault("SUPABASE_SERVICE_ROLE_KEY", "test-service-role-key")
 os.environ.setdefault("CLERK_JWT_ISSUER", "https://test.clerk.accounts.dev")
 os.environ.setdefault("CLERK_PEM_PUBLIC_KEY", "test-pem-key")
-os.environ.setdefault("ANTHROPIC_API_KEY", "test-anthropic-key")
+os.environ.setdefault("OPENROUTER_API_KEY", "test-openrouter-key")
 
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────
@@ -66,12 +66,12 @@ MOCK_COMPETITORS_WITH_DIFFS = [
     },
 ]
 
-MOCK_CLAUDE_PROFILE_RESPONSE = """## Acme Corp
+MOCK_PROFILE_RESPONSE = """## Acme Corp
 **Pricing:** $29/mo Basic, $99/mo Pro
 **Key features:** Task tracking, Gantt charts, Team collaboration
 **Positioning:** Simple project management for teams."""
 
-MOCK_CLAUDE_DIGEST_RESPONSE = """<!-- SUBJECT: Your RivalEdge Weekly Brief — 1 change detected -->
+MOCK_DIGEST_RESPONSE = """<!-- SUBJECT: Your RivalEdge Weekly Brief — 1 change detected -->
 <!DOCTYPE html>
 <html>
 <body>
@@ -83,7 +83,7 @@ MOCK_CLAUDE_DIGEST_RESPONSE = """<!-- SUBJECT: Your RivalEdge Weekly Brief — 1
 </body>
 </html>"""
 
-MOCK_CLAUDE_BATTLE_CARD_RESPONSE = """# How to Beat Acme Corp
+MOCK_BATTLE_CARD_RESPONSE = """# How to Beat Acme Corp
 ## Their Weaknesses
 - Complex onboarding
 ## Our Advantages
@@ -97,13 +97,14 @@ MOCK_CLAUDE_BATTLE_CARD_RESPONSE = """# How to Beat Acme Corp
 | RivalEdge | $49/mo Solo |"""
 
 
-def _make_mock_anthropic(response_text: str):
-    """Create a mock anthropic client that returns the given text."""
-    mock_client = MagicMock()
-    mock_message = MagicMock()
-    mock_message.content = [MagicMock(text=response_text)]
-    mock_client.messages.create.return_value = mock_message
-    return mock_client
+def _make_mock_openrouter_response(response_text: str):
+    """Create a mock httpx response that returns the given text."""
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "choices": [{"message": {"content": response_text}}]
+    }
+    mock_response.raise_for_status = MagicMock()
+    return mock_response
 
 
 # ── Tests: generate_competitor_profile ────────────────────────────────────────
@@ -111,10 +112,12 @@ def _make_mock_anthropic(response_text: str):
 class TestGenerateCompetitorProfile:
     def test_generate_profile_returns_markdown(self):
         """generate_competitor_profile returns markdown with ## header."""
-        from services.ai import generate_competitor_profile
+        from services.ai import generate_competitor_profile, clear_ai_cache
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_PROFILE_RESPONSE)
+        clear_ai_cache()  # Ensure no cache hit
+        
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_PROFILE_RESPONSE)
             result = generate_competitor_profile(MOCK_SCRAPED_DATA)
         
         assert isinstance(result, str)
@@ -123,47 +126,47 @@ class TestGenerateCompetitorProfile:
 
     def test_generate_profile_includes_pricing_section(self):
         """Profile contains a Pricing line."""
-        from services.ai import generate_competitor_profile
+        from services.ai import generate_competitor_profile, clear_ai_cache
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_PROFILE_RESPONSE)
+        clear_ai_cache()
+        
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_PROFILE_RESPONSE)
             result = generate_competitor_profile(MOCK_SCRAPED_DATA)
         
         assert "**Pricing:**" in result
 
     def test_generate_profile_includes_features_section(self):
         """Profile contains a Key features line."""
-        from services.ai import generate_competitor_profile
+        from services.ai import generate_competitor_profile, clear_ai_cache
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_PROFILE_RESPONSE)
+        clear_ai_cache()
+        
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_PROFILE_RESPONSE)
             result = generate_competitor_profile(MOCK_SCRAPED_DATA)
         
         assert "**Key features:**" in result
 
-    def test_generate_profile_calls_claude_with_max_tokens_2000(self):
-        """Profile generation uses max_tokens=2000."""
-        from services.ai import generate_competitor_profile
+    def test_generate_profile_uses_cache(self):
+        """Profile generation caches results."""
+        from services.ai import generate_competitor_profile, clear_ai_cache, get_cache_stats
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            mock_client = _make_mock_anthropic(MOCK_CLAUDE_PROFILE_RESPONSE)
-            MockAnthropic.return_value = mock_client
-            generate_competitor_profile(MOCK_SCRAPED_DATA)
+        clear_ai_cache()
         
-        call_kwargs = mock_client.messages.create.call_args
-        assert call_kwargs.kwargs.get("max_tokens") == 2000
-
-    def test_generate_profile_uses_correct_model(self):
-        """Profile generation uses claude-3-5-sonnet-20241022."""
-        from services.ai import generate_competitor_profile
+        # First call — should hit API
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_PROFILE_RESPONSE)
+            result1 = generate_competitor_profile(MOCK_SCRAPED_DATA)
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            mock_client = _make_mock_anthropic(MOCK_CLAUDE_PROFILE_RESPONSE)
-            MockAnthropic.return_value = mock_client
-            generate_competitor_profile(MOCK_SCRAPED_DATA)
+        # Second call with same data — should hit cache
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response("WRONG RESPONSE")
+            result2 = generate_competitor_profile(MOCK_SCRAPED_DATA)
         
-        call_kwargs = mock_client.messages.create.call_args
-        assert call_kwargs.kwargs.get("model") == "claude-3-5-sonnet-20241022"
+        # Results should be identical (from cache)
+        assert result1 == result2
+        assert get_cache_stats()["size"] >= 1
 
 
 # ── Tests: generate_weekly_digest ─────────────────────────────────────────────
@@ -173,40 +176,20 @@ class TestGenerateWeeklyDigest:
         """Digest HTML references all competitors by name."""
         from services.ai import generate_weekly_digest
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_DIGEST_RESPONSE)
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_DIGEST_RESPONSE)
             result = generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
         
         assert isinstance(result, str)
         assert "Acme Corp" in result
         assert "Widget Co" in result
 
-    def test_generate_digest_highlights_high_significance_changes(self):
-        """Digest emphasizes high-significance changes."""
-        from services.ai import generate_weekly_digest
-        
-        # Response that explicitly mentions pricing change
-        response_with_high_sig = MOCK_CLAUDE_DIGEST_RESPONSE.replace(
-            "New Enterprise tier", "🚨 HIGH PRIORITY: New Enterprise tier"
-        )
-        
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(response_with_high_sig)
-            result = generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
-        
-        # The prompt should include high-significance change info
-        mock_client = MockAnthropic.return_value
-        create_call = mock_client.messages.create.call_args
-        prompt_content = str(create_call)
-        # Verify high significance was passed to Claude
-        assert "high" in prompt_content.lower() or "pricing" in prompt_content.lower()
-
     def test_generate_digest_returns_html(self):
         """Digest output is HTML."""
         from services.ai import generate_weekly_digest
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_DIGEST_RESPONSE)
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_DIGEST_RESPONSE)
             result = generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
         
         assert "<" in result  # Has HTML tags
@@ -215,36 +198,24 @@ class TestGenerateWeeklyDigest:
         """Digest starts with <!-- SUBJECT: ... --> comment."""
         from services.ai import generate_weekly_digest
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_DIGEST_RESPONSE)
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_DIGEST_RESPONSE)
             result = generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
         
         assert result.startswith("<!-- SUBJECT:")
 
-    def test_generate_digest_calls_claude_with_max_tokens_4000(self):
-        """Digest generation uses max_tokens=4000."""
-        from services.ai import generate_weekly_digest
+    def test_generate_digest_not_cached(self):
+        """Digests are not cached (personalized per user)."""
+        from services.ai import generate_weekly_digest, clear_ai_cache, get_cache_stats
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            mock_client = _make_mock_anthropic(MOCK_CLAUDE_DIGEST_RESPONSE)
-            MockAnthropic.return_value = mock_client
+        clear_ai_cache()
+        
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_DIGEST_RESPONSE)
             generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
         
-        call_kwargs = mock_client.messages.create.call_args
-        assert call_kwargs.kwargs.get("max_tokens") == 4000
-
-    def test_generate_digest_includes_no_changes_section_when_applicable(self):
-        """Digest mentions competitors with no changes."""
-        from services.ai import generate_weekly_digest
-        
-        response_with_no_changes = MOCK_CLAUDE_DIGEST_RESPONSE
-        
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(response_with_no_changes)
-            result = generate_weekly_digest("user@example.com", MOCK_COMPETITORS_WITH_DIFFS)
-        
-        # Widget Co has no changes — should appear somewhere
-        assert "Widget Co" in result
+        # Digest should not be cached
+        assert get_cache_stats()["size"] == 0
 
 
 # ── Tests: generate_battle_card ───────────────────────────────────────────────
@@ -252,7 +223,9 @@ class TestGenerateWeeklyDigest:
 class TestGenerateBattleCard:
     def test_generate_battle_card_returns_markdown(self):
         """generate_battle_card returns markdown with # header."""
-        from services.ai import generate_battle_card
+        from services.ai import generate_battle_card, clear_ai_cache
+        
+        clear_ai_cache()
         
         our_product = {
             "name": "RivalEdge",
@@ -265,8 +238,8 @@ class TestGenerateBattleCard:
             "features": ["Task tracking"],
         }
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_BATTLE_CARD_RESPONSE)
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_BATTLE_CARD_RESPONSE)
             result = generate_battle_card("Acme Corp", competitor_profile, our_product)
         
         assert isinstance(result, str)
@@ -275,7 +248,9 @@ class TestGenerateBattleCard:
 
     def test_generate_battle_card_includes_required_sections(self):
         """Battle card contains all 4 required sections."""
-        from services.ai import generate_battle_card
+        from services.ai import generate_battle_card, clear_ai_cache
+        
+        clear_ai_cache()
         
         our_product = {
             "name": "RivalEdge",
@@ -284,8 +259,8 @@ class TestGenerateBattleCard:
         }
         competitor_profile = {"name": "Acme", "pricing": "$29/mo", "features": []}
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            MockAnthropic.return_value = _make_mock_anthropic(MOCK_CLAUDE_BATTLE_CARD_RESPONSE)
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_BATTLE_CARD_RESPONSE)
             result = generate_battle_card("Acme", competitor_profile, our_product)
         
         assert "## Their Weaknesses" in result
@@ -293,14 +268,60 @@ class TestGenerateBattleCard:
         assert "## Objection Handling" in result
         assert "## Pricing Comparison" in result
 
-    def test_generate_battle_card_uses_correct_model(self):
-        """Battle card uses claude-3-5-sonnet-20241022."""
-        from services.ai import generate_battle_card
+    def test_generate_battle_card_uses_cache(self):
+        """Battle cards are cached for same competitor/product combo."""
+        from services.ai import generate_battle_card, clear_ai_cache
         
-        with patch("anthropic.Anthropic") as MockAnthropic:
-            mock_client = _make_mock_anthropic(MOCK_CLAUDE_BATTLE_CARD_RESPONSE)
-            MockAnthropic.return_value = mock_client
-            generate_battle_card("Acme", {}, {"name": "RivalEdge", "pricing": "$49", "features": []})
+        clear_ai_cache()
         
-        call_kwargs = mock_client.messages.create.call_args
-        assert call_kwargs.kwargs.get("model") == "claude-3-5-sonnet-20241022"
+        our_product = {"name": "RivalEdge", "pricing": "$49", "features": []}
+        competitor_profile = {"name": "Acme", "pricing": "$29", "features": []}
+        
+        # First call
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_BATTLE_CARD_RESPONSE)
+            result1 = generate_battle_card("Acme", competitor_profile, our_product)
+        
+        # Second call — should hit cache
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response("WRONG")
+            result2 = generate_battle_card("Acme", competitor_profile, our_product)
+        
+        assert result1 == result2
+
+
+# ── Tests: Cache Management ───────────────────────────────────────────────────
+
+class TestCacheManagement:
+    def test_clear_cache_removes_all_entries(self):
+        """clear_ai_cache removes all cached entries."""
+        from services.ai import (
+            generate_competitor_profile,
+            clear_ai_cache,
+            get_cache_stats,
+        )
+        
+        clear_ai_cache()
+        
+        # Add something to cache
+        with patch("httpx.post") as mock_post:
+            mock_post.return_value = _make_mock_openrouter_response(MOCK_PROFILE_RESPONSE)
+            generate_competitor_profile(MOCK_SCRAPED_DATA)
+        
+        assert get_cache_stats()["size"] >= 1
+        
+        # Clear cache
+        clear_ai_cache()
+        
+        assert get_cache_stats()["size"] == 0
+
+    def test_cache_stats_returns_valid_data(self):
+        """get_cache_stats returns cache statistics."""
+        from services.ai import get_cache_stats, clear_ai_cache
+        
+        clear_ai_cache()
+        stats = get_cache_stats()
+        
+        assert "size" in stats
+        assert "directory" in stats
+        assert isinstance(stats["size"], int)

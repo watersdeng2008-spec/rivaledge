@@ -16,7 +16,7 @@ os.environ.setdefault("SUPABASE_SERVICE_ROLE_KEY", "test-service-role-key")
 os.environ.setdefault("CLERK_JWT_ISSUER", "https://test.clerk.accounts.dev")
 os.environ.setdefault("CLERK_PEM_PUBLIC_KEY", "test-pem-key")
 os.environ.setdefault("RESEND_API_KEY", "test-resend-key")
-os.environ.setdefault("ANTHROPIC_API_KEY", "test-anthropic-key")
+os.environ.setdefault("OPENROUTER_API_KEY", "test-openrouter-key")
 
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────

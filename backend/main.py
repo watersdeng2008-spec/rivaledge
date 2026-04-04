@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
         "SUPABASE_SERVICE_ROLE_KEY",
         "CLERK_JWT_ISSUER",
         "CLERK_PEM_PUBLIC_KEY",
-        "ANTHROPIC_API_KEY",
+        "OPENROUTER_API_KEY",
         "RESEND_API_KEY",
         "BRAVE_SEARCH_API_KEY",
     ]
@@ -92,8 +92,26 @@ app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway."""
+    from services.ai import get_cache_stats
     return {
         "status": "ok",
-        "version": "1.0.2",
+        "version": "1.0.4",
         "service": "rivaledge-api",
+        "ai_cache": get_cache_stats(),
+        "ai_model": os.environ.get("AI_MODEL", "moonshot/kimi-k2.5"),
     }
+
+
+@app.post("/admin/cache/clear")
+async def clear_cache():
+    """Clear AI response cache (admin endpoint)."""
+    from services.ai import clear_ai_cache
+    clear_ai_cache()
+    return {"status": "ok", "message": "AI cache cleared"}
+
+
+@app.get("/admin/cache/stats")
+async def cache_stats():
+    """Get AI cache statistics."""
+    from services.ai import get_cache_stats
+    return get_cache_stats()
