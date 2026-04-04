@@ -81,7 +81,14 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
             json=payload,
             timeout=120.0,
         )
-        response.raise_for_status()
+        
+        # Log response status for debugging
+        logger.info(f"OpenRouter response status: {response.status_code}")
+        
+        if response.status_code != 200:
+            logger.error(f"OpenRouter error response: {response.text[:500]}")
+            response.raise_for_status()
+        
         data = response.json()
         
         result = data["choices"][0]["message"]["content"]
