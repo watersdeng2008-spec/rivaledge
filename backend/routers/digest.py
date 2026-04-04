@@ -92,9 +92,16 @@ def generate_digest_endpoint(request: Request, current_user: dict = Depends(get_
             "current_profile": current_profile,
         })
     
-    # 3. Generate digest via Claude
+    # 3. Generate digest via AI
     user_email = current_user.get("email", user_id)
-    html_content = ai_service.generate_weekly_digest(user_email, competitors_with_diffs)
+    try:
+        html_content = ai_service.generate_weekly_digest(user_email, competitors_with_diffs)
+    except Exception as e:
+        logger.error(f"Failed to generate digest: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI generation failed: {str(e)}",
+        )
     
     # 4. Save to Supabase
     digest_record = db.create_digest(user_id=user_id, content=html_content)
