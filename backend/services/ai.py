@@ -18,7 +18,7 @@ from diskcache import Cache
 logger = logging.getLogger(__name__)
 
 # Configuration
-AI_MODEL = os.environ.get("AI_MODEL", "moonshot/kimi-k2.5")
+AI_MODEL = os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 

@@ -98,7 +98,7 @@ async def health():
         "version": "1.0.4",
         "service": "rivaledge-api",
         "ai_cache": get_cache_stats(),
-        "ai_model": os.environ.get("AI_MODEL", "moonshot/kimi-k2.5"),
+        "ai_model": os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5"),
     }
 
 
