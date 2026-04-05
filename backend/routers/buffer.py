@@ -22,6 +22,15 @@ def get_buffer_channels(current_user: dict = Depends(get_current_user)):
     """
     Get all connected Buffer channels (Twitter, LinkedIn, etc.)
     """
+    import os
+    api_key = os.environ.get("BUFFER_API_KEY", "")
+    if not api_key:
+        logger.error("BUFFER_API_KEY not set in environment")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Buffer API key not configured",
+        )
+    
     try:
         channels = buffer_service.get_channels()
         return {"channels": channels}
