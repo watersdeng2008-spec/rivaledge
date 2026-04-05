@@ -466,3 +466,168 @@ def reject_email(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to reject: {str(e)}",
         )
+
+
+# ── Outreach Agent Endpoints ──────────────────────────────────────────────────
+
+class SendEmailsRequest(BaseModel):
+    email_ids: List[str]
+
+
+@router.post("/outreach/send")
+def send_approved_emails(
+    request: SendEmailsRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Send approved emails via Instantly.
+    
+    Takes list of approved email IDs, sends via Instantly API.
+    Returns list of sent message IDs.
+    """
+    try:
+        from services.outreach_agent import get_outreach_agent
+        
+        agent = get_outreach_agent()
+        message_ids = agent.process_approved_emails(request.email_ids)
+        
+        return {
+            "success": True,
+            "sent_count": len(message_ids),
+            "message_ids": message_ids,
+        }
+        
+    except Exception as e:
+        logger.error(f"Outreach send failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send: {str(e)}",
+        )
+
+
+@router.post("/outreach/sequence/{lead_id}")
+def create_sequence(
+    lead_id: str,
+    email_id: str,  # Initial email ID
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Create 3-touch follow-up sequence for lead.
+    
+    Generates follow-up emails and creates sequence in Instantly.
+    """
+    try:
+        from services.outreach_agent import get_outreach_agent
+        from services.sales_db import supabase
+        
+        # Get initial email
+        email_result = supabase.table("personalized_emails")\
+            .select("*")\
+            .eq("id", email_id)\
+            .single()\
+            .execute()
+        
+        if not email_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Email not found",
+            )
+        
+        agent = get_outreach_agent()
+        sequence_id = agent.create_follow_up_sequence(
+            lead_id=lead_id,
+            initial_email=email_result.data,
+        )
+        
+        return {
+            "success": True,
+            "sequence_id": sequence_id,
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to create sequence: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create sequence: {str(e)}",
+        )
+
+
+@router.post("/outreach/webhook")
+async def instantly_webhook(
+    request: Request,
+):
+    """
+    Webhook endpoint for Instantly events.
+    
+    Receives open, click, reply events from Instantly.
+    Updates database and triggers notifications.
+    """
+    try:
+        from services.outreach_agent import get_outreach_agent
+        
+        webhook_data = await request.json()
+        
+        agent = get_outreach_agent()
+        success = agent.handle_webhook(webhook_data)
+        
+        return {
+            "success": success,
+        }
+        
+    except Exception as e:
+        logger.error(f"Webhook processing failed: {e}")
+        # Return 200 to prevent Instantly from retrying
+        return {
+            "success": False,
+            "error": str(e),
+        }
+
+
+@router.get("/outreach/stats")
+def get_outreach_stats(
+    days: int = Query(7, ge=1, le=30),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get outreach statistics.
+    
+    Returns: sent, delivered, opened, clicked, replied counts
+    """
+    try:
+        from services.sales_db import supabase
+        
+        # Get stats from email_sequences table
+        result = supabase.table("email_sequences")\
+            .select("status, opened_at, clicked_at, replied_at")\
+            .gte("created_at", (datetime.utcnow() - timedelta(days=days)).isoformat())\
+            .execute()
+        
+        emails = result.data or []
+        
+        stats = {
+            "period_days": days,
+            "total_sent": len([e for e in emails if e.get("status") == "sent"]),
+            "total_opened": len([e for e in emails if e.get("opened_at")]),
+            "total_clicked": len([e for e in emails if e.get("clicked_at")]),
+            "total_replied": len([e for e in emails if e.get("replied_at")]),
+        }
+        
+        # Calculate rates
+        if stats["total_sent"] > 0:
+            stats["open_rate"] = round(stats["total_opened"] / stats["total_sent"] * 100, 2)
+            stats["click_rate"] = round(stats["total_clicked"] / stats["total_sent"] * 100, 2)
+            stats["reply_rate"] = round(stats["total_replied"] / stats["total_sent"] * 100, 2)
+        
+        return {
+            "success": True,
+            "stats": stats,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get outreach stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get stats: {str(e)}",
+        )
