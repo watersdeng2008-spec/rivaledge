@@ -195,6 +195,9 @@ function DashboardContent() {
             <span className="text-slate-400 text-sm">Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/admin/buffer" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Social Media
+            </Link>
             <span className="text-slate-400 text-sm">{user?.primaryEmailAddress?.emailAddress}</span>
             <SignOutButton>
               <button className="text-slate-500 hover:text-white text-sm transition-colors">
