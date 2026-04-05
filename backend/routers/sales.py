@@ -7,7 +7,7 @@ import logging
 from typing import Optional, List
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from pydantic import BaseModel
 
 from auth import get_current_user
@@ -17,7 +17,9 @@ from services.sales_db import (
     get_leads,
     update_lead,
     delete_lead,
+    get_lead_by_email,
 )
+from services.research_agent import get_research_agent
 
 logger = logging.getLogger(__name__)
 
@@ -221,8 +223,102 @@ def delete_lead_endpoint(
 
 # ── Helper function (placeholder for actual implementation) ───────────────────
 
-def get_lead_by_email(email: str) -> Optional[dict]:
-    """Check if lead exists by email."""
-    # This will be implemented in services/sales_db.py
-    from services.sales_db import get_lead_by_email as _get_by_email
-    return _get_by_email(email)
+# ── Research Agent Endpoints ───────────────────────────────────────────────────
+
+class ApolloSearchRequest(BaseModel):
+    titles: Optional[List[str]] = None
+    company_sizes: Optional[List[str]] = None
+    limit: int = 50
+
+
+@router.post("/research/linkedin")
+async def research_linkedin(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Process LinkedIn Sales Navigator CSV export.
+    
+    Upload a CSV file exported from LinkedIn Sales Navigator.
+    Returns list of created lead IDs.
+    """
+    try:
+        # Read CSV content
+        content = await file.read()
+        csv_content = content.decode('utf-8')
+        
+        # Process with Research Agent
+        agent = get_research_agent()
+        lead_ids = agent.process_linkedin_export(csv_content)
+        
+        return {
+            "success": True,
+            "leads_created": len(lead_ids),
+            "lead_ids": lead_ids,
+        }
+        
+    except Exception as e:
+        logger.error(f"LinkedIn research failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process LinkedIn export: {str(e)}",
+        )
+
+
+@router.post("/research/apollo")
+def research_apollo(
+    request: ApolloSearchRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Search Apollo.io for leads.
+    
+    Searches Apollo and creates leads for matching prospects.
+    Returns list of created lead IDs.
+    """
+    try:
+        agent = get_research_agent()
+        lead_ids = agent.search_apollo(
+            titles=request.titles,
+            company_sizes=request.company_sizes,
+            limit=request.limit,
+        )
+        
+        return {
+            "success": True,
+            "leads_created": len(lead_ids),
+            "lead_ids": lead_ids,
+        }
+        
+    except Exception as e:
+        logger.error(f"Apollo research failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to search Apollo: {str(e)}",
+        )
+
+
+@router.get("/research/stats")
+def get_research_stats(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get research statistics.
+    
+    Returns counts by source, enrichment rates, etc.
+    """
+    try:
+        from services.sales_db import get_lead_stats
+        stats = get_lead_stats()
+        
+        return {
+            "success": True,
+            "stats": stats,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get research stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get stats: {str(e)}",
+        )
