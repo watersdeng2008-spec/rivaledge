@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
         "OPENROUTER_API_KEY",
         "RESEND_API_KEY",
         "BRAVE_SEARCH_API_KEY",
+        "BUFFER_API_KEY",
     ]
     missing = [v for v in warn_if_missing if not os.getenv(v)]
     if missing:
@@ -95,9 +96,11 @@ app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 async def health():
     """Health check endpoint for Railway."""
     from services.ai import get_cache_stats
+    import os
     return {
         "status": "ok",
-        "version": "1.0.4",
+        "version": "1.0.5",
+        "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "service": "rivaledge-api",
         "ai_cache": get_cache_stats(),
         "ai_model": os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5"),
