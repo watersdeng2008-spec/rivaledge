@@ -16,28 +16,33 @@ logger = logging.getLogger(__name__)
 BUFFER_API_KEY = os.environ.get("BUFFER_API_KEY", "")
 BUFFER_BASE_URL = "https://api.buffer.com"
 
-# Headers for Buffer API (mimics browser context)
-BUFFER_HEADERS = {
-    "Authorization": f"Bearer {BUFFER_API_KEY}",
-    "Content-Type": "application/json",
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-    "Accept": "application/json",
-    "Origin": "https://publish.buffer.com",
-    "Referer": "https://publish.buffer.com/",
-}
+
+def _get_headers() -> dict:
+    """Get headers for Buffer API (mimics browser context)."""
+    api_key = os.environ.get("BUFFER_API_KEY", "")
+    return {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "Accept": "application/json",
+        "Origin": "https://publish.buffer.com",
+        "Referer": "https://publish.buffer.com/",
+    }
 
 
 def _make_request(query: str) -> dict:
     """Make GraphQL request to Buffer API."""
-    if not BUFFER_API_KEY:
+    api_key = os.environ.get("BUFFER_API_KEY", "")
+    if not api_key:
         raise RuntimeError("BUFFER_API_KEY not set")
     
     payload = json.dumps({"query": query}).encode()
+    headers = _get_headers()
     
     try:
         response = httpx.post(
             BUFFER_BASE_URL,
-            headers=BUFFER_HEADERS,
+            headers=headers,
             content=payload,
             timeout=30.0,
         )

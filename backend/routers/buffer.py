@@ -27,6 +27,8 @@ def get_buffer_channels(current_user: dict = Depends(get_current_user)):
         return {"channels": channels}
     except Exception as e:
         logger.error(f"Failed to get Buffer channels: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get channels: {str(e)}",
