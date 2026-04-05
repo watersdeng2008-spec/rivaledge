@@ -95,6 +95,110 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Why RivalEdge */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
+        <h2 className="text-3xl font-bold text-center mb-4">Why RivalEdge?</h2>
+        <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          Competitive intelligence used to be a luxury. We&apos;re making it a standard tool for every team.
+        </p>
+        
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Left column */}
+          <div className="space-y-8">
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">$</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Priced for real businesses</h3>
+                <p className="text-slate-400 text-sm">
+                  Enterprise tools cost $20,000+/year and require months of implementation. 
+                  RivalEdge is $49/month and works in 5 minutes. No sales calls, no contracts.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">⚡</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Intelligence that never sleeps</h3>
+                <p className="text-slate-400 text-sm">
+                  Most tools give you a one-time snapshot. We monitor continuously and deliver 
+                  weekly AI briefings so you&apos;re always ahead of the curve, not reacting to it.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">🎯</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Built for action, not analysis</h3>
+                <p className="text-slate-400 text-sm">
+                  We don&apos;t just track prices. We analyze messaging, feature launches, and positioning 
+                  — then tell you exactly how to win. Battle cards included, not extra.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right column */}
+          <div className="space-y-8">
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">🚀</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Zero setup, zero maintenance</h3>
+                <p className="text-slate-400 text-sm">
+                  Add a competitor URL. That&apos;s it. We handle the scraping, analysis, and delivery. 
+                  No integrations to configure, no dashboards to check, no data to interpret.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">🔒</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Works everywhere</h3>
+                <p className="text-slate-400 text-sm">
+                  Track any competitor with a website — SaaS, e-commerce, services, B2B, B2C. 
+                  Not limited to Amazon or specific platforms. If they have a web presence, 
+                  we can monitor them.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-blue-400">💡</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">AI that understands context</h3>
+                <p className="text-slate-400 text-sm">
+                  Our AI doesn&apos;t just detect changes — it interprets significance. 
+                  A price drop gets flagged differently than a messaging pivot. 
+                  You get insights, not just alerts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Trust badge */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-full px-4 py-2">
+            <span className="text-green-400">●</span>
+            <span className="text-slate-300 text-sm">Trusted by 0 teams... so far. Be the first.</span>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section className="max-w-6xl mx-auto px-6 py-16" id="pricing">
         <h2 className="text-3xl font-bold text-center mb-12">Simple, honest pricing</h2>
