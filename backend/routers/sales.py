@@ -322,3 +322,147 @@ def get_research_stats(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get stats: {str(e)}",
         )
+
+
+# ── Personalization Agent Endpoints ────────────────────────────────────────────
+
+class PersonalizeRequest(BaseModel):
+    lead_ids: List[str]
+
+
+@router.post("/personalize")
+def personalize_leads(
+    request: PersonalizeRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Generate personalized emails for leads.
+    
+    Takes lead IDs, drafts personalized emails using AI (Qwen - free).
+    Returns list of created email IDs.
+    """
+    try:
+        from services.personalization_agent import get_personalization_agent
+        
+        agent = get_personalization_agent()
+        email_ids = agent.process_leads(request.lead_ids)
+        
+        return {
+            "success": True,
+            "emails_created": len(email_ids),
+            "email_ids": email_ids,
+        }
+        
+    except Exception as e:
+        logger.error(f"Personalization failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to personalize: {str(e)}",
+        )
+
+
+@router.get("/emails/pending")
+def get_pending_emails(
+    min_score: int = Query(6, ge=1, le=10),
+    limit: int = Query(50, ge=1, le=100),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get personalized emails awaiting approval.
+    
+    Query params:
+    - min_score: Minimum personalization score (1-10)
+    - limit: Max results
+    """
+    try:
+        from services.sales_db import supabase
+        
+        result = supabase.table("personalized_emails")\
+            .select("*, leads(name, email, company)")\
+            .eq("status", "draft")\
+            .gte("personalization_score", min_score)\
+            .limit(limit)\
+            .execute()
+        
+        return {
+            "success": True,
+            "emails": result.data,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get pending emails: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get emails: {str(e)}",
+        )
+
+
+@router.post("/emails/{email_id}/approve")
+def approve_email(
+    email_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Approve a personalized email for sending.
+    """
+    try:
+        from services.sales_db import supabase
+        
+        result = supabase.table("personalized_emails")\
+            .update({
+                "status": "approved",
+                "reviewed_by": current_user.get("email"),
+                "reviewed_at": "now()",
+            })\
+            .eq("id", email_id)\
+            .execute()
+        
+        return {
+            "success": True,
+            "email": result.data[0] if result.data else None,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to approve email: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to approve: {str(e)}",
+        )
+
+
+@router.post("/emails/{email_id}/reject")
+def reject_email(
+    email_id: str,
+    notes: str = Query(None),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Reject a personalized email.
+    """
+    try:
+        from services.sales_db import supabase
+        
+        update_data = {
+            "status": "rejected",
+            "reviewed_by": current_user.get("email"),
+            "reviewed_at": "now()",
+        }
+        if notes:
+            update_data["review_notes"] = notes
+        
+        result = supabase.table("personalized_emails")\
+            .update(update_data)\
+            .eq("id", email_id)\
+            .execute()
+        
+        return {
+            "success": True,
+            "email": result.data[0] if result.data else None,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to reject email: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to reject: {str(e)}",
+        )
