@@ -18,6 +18,7 @@ from routers import billing
 from routers import outreach
 from routers import feedback
 from routers import buffer as buffer_router
+from routers import ai_monitor
 
 
 @asynccontextmanager
@@ -89,6 +90,7 @@ app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(outreach.router, prefix="/api/outreach", tags=["outreach"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
+app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 

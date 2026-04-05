@@ -5,12 +5,15 @@ Cost-optimized implementation:
 - Kimi K2.5 for all tasks (80-90% cheaper than Claude Sonnet 4.6)
 - Disk-based caching to avoid redundant AI calls
 - Token-efficient prompts
+- Comprehensive token usage tracking for cost optimization
 """
 import os
 import logging
 import hashlib
-from typing import Optional
+import json
+from typing import Optional, Dict, Any
 from pathlib import Path
+from datetime import datetime
 
 import httpx
 from diskcache import Cache
@@ -34,6 +37,19 @@ MODELS = {
 # Cache setup — persists across restarts
 CACHE_DIR = Path(__file__).parent / ".ai_cache"
 cache = Cache(str(CACHE_DIR))
+
+# Token usage tracking
+TOKEN_LOG_DIR = Path(__file__).parent / ".token_logs"
+TOKEN_LOG_DIR.mkdir(exist_ok=True)
+
+# Model pricing (per million tokens) - for cost calculation
+MODEL_PRICING = {
+    "moonshotai/kimi-k2.5": {"input": 0.50, "output": 2.00},  # $0.50/$2.00 per million
+    "qwen/qwen3.6-plus:free": {"input": 0.00, "output": 0.00},  # Free
+    "qwen/qwen3-30b-a3b:free": {"input": 0.00, "output": 0.00},  # Free
+    "qwen/qwen3-coder:free": {"input": 0.00, "output": 0.00},  # Free
+    "anthropic/claude-sonnet-4-6": {"input": 3.00, "output": 15.00},  # $3/$15 per million
+}
 
 
 def _get_cache_key(prefix: str, content: str) -> str:
@@ -87,6 +103,20 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
         ],
     }
     
+    # Track token usage
+    token_usage = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "model": ai_model,
+        "task": "unknown",  # Will be set by wrapper functions
+        "cache_hit": False,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cost_usd": 0.0,
+        "prompt_length": len(system) + len(user),
+        "max_tokens_requested": max_tokens,
+    }
+    
     try:
         response = httpx.post(
             f"{OPENROUTER_BASE_URL}/chat/completions",
@@ -104,6 +134,21 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
         
         data = response.json()
         
+        # Extract token usage from response
+        usage = data.get("usage", {})
+        token_usage["input_tokens"] = usage.get("prompt_tokens", 0)
+        token_usage["output_tokens"] = usage.get("completion_tokens", 0)
+        token_usage["total_tokens"] = usage.get("total_tokens", 0)
+        
+        # Calculate cost
+        pricing = MODEL_PRICING.get(ai_model, {"input": 0.50, "output": 2.00})
+        input_cost = (token_usage["input_tokens"] / 1_000_000) * pricing["input"]
+        output_cost = (token_usage["output_tokens"] / 1_000_000) * pricing["output"]
+        token_usage["cost_usd"] = round(input_cost + output_cost, 6)
+        
+        # Log token usage
+        _log_token_usage(token_usage)
+        
         result = data["choices"][0]["message"]["content"]
         
         # Cache the result
@@ -115,6 +160,8 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
         
     except Exception as e:
         logger.error(f"AI call failed: {e}")
+        token_usage["error"] = str(e)
+        _log_token_usage(token_usage)
         raise
 
 
@@ -431,3 +478,196 @@ def get_model_info() -> dict:
             "coding": "moonshotai/kimi-k2.5 (paid)",
         }
     }
+
+
+# ── Token Usage Tracking ───────────────────────────────────────────────────────
+
+def _log_token_usage(usage: Dict[str, Any]):
+    """Log token usage to file for analysis."""
+    try:
+        date_str = datetime.utcnow().strftime("%Y-%m-%d")
+        log_file = TOKEN_LOG_DIR / f"token_usage_{date_str}.jsonl"
+        
+        with open(log_file, "a") as f:
+            f.write(json.dumps(usage) + "\n")
+    except Exception as e:
+        logger.error(f"Failed to log token usage: {e}")
+
+
+def get_token_usage_stats(days: int = 7) -> Dict[str, Any]:
+    """
+    Get token usage statistics for the last N days.
+    
+    Returns:
+        Dictionary with usage breakdown by model, task, and cost
+    """
+    stats = {
+        "total_requests": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost_usd": 0.0,
+        "cache_hits": 0,
+        "by_model": {},
+        "by_task": {},
+        "daily_breakdown": [],
+    }
+    
+    try:
+        for i in range(days):
+            date = datetime.utcnow() - __import__('datetime').timedelta(days=i)
+            date_str = date.strftime("%Y-%m-%d")
+            log_file = TOKEN_LOG_DIR / f"token_usage_{date_str}.jsonl"
+            
+            if not log_file.exists():
+                continue
+            
+            daily_stats = {
+                "date": date_str,
+                "requests": 0,
+                "cost_usd": 0.0,
+            }
+            
+            with open(log_file, "r") as f:
+                for line in f:
+                    try:
+                        entry = json.loads(line.strip())
+                        stats["total_requests"] += 1
+                        stats["total_input_tokens"] += entry.get("input_tokens", 0)
+                        stats["total_output_tokens"] += entry.get("output_tokens", 0)
+                        stats["total_cost_usd"] += entry.get("cost_usd", 0)
+                        
+                        if entry.get("cache_hit"):
+                            stats["cache_hits"] += 1
+                        
+                        # By model
+                        model = entry.get("model", "unknown")
+                        if model not in stats["by_model"]:
+                            stats["by_model"][model] = {
+                                "requests": 0,
+                                "cost_usd": 0.0,
+                                "tokens": 0,
+                            }
+                        stats["by_model"][model]["requests"] += 1
+                        stats["by_model"][model]["cost_usd"] += entry.get("cost_usd", 0)
+                        stats["by_model"][model]["tokens"] += entry.get("total_tokens", 0)
+                        
+                        # By task
+                        task = entry.get("task", "unknown")
+                        if task not in stats["by_task"]:
+                            stats["by_task"][task] = {
+                                "requests": 0,
+                                "cost_usd": 0.0,
+                            }
+                        stats["by_task"][task]["requests"] += 1
+                        stats["by_task"][task]["cost_usd"] += entry.get("cost_usd", 0)
+                        
+                        # Daily
+                        daily_stats["requests"] += 1
+                        daily_stats["cost_usd"] += entry.get("cost_usd", 0)
+                        
+                    except json.JSONDecodeError:
+                        continue
+            
+            stats["daily_breakdown"].append(daily_stats)
+        
+        # Round costs for readability
+        stats["total_cost_usd"] = round(stats["total_cost_usd"], 4)
+        for model in stats["by_model"]:
+            stats["by_model"][model]["cost_usd"] = round(stats["by_model"][model]["cost_usd"], 4)
+        for task in stats["by_task"]:
+            stats["by_task"][task]["cost_usd"] = round(stats["by_task"][task]["cost_usd"], 4)
+        for day in stats["daily_breakdown"]:
+            day["cost_usd"] = round(day["cost_usd"], 4)
+        
+    except Exception as e:
+        logger.error(f"Failed to get token stats: {e}")
+    
+    return stats
+
+
+def audit_context_efficiency() -> Dict[str, Any]:
+    """
+    Audit context management for inefficiencies.
+    
+    Identifies:
+    - High token count requests
+    - Expensive models for simple tasks
+    - Cache miss patterns
+    - Prompt length issues
+    """
+    audit = {
+        "inefficiencies": [],
+        "recommendations": [],
+        "summary": {},
+    }
+    
+    try:
+        # Get last 7 days of logs
+        all_entries = []
+        for i in range(7):
+            date = datetime.utcnow() - __import__('datetime').timedelta(days=i)
+            date_str = date.strftime("%Y-%m-%d")
+            log_file = TOKEN_LOG_DIR / f"token_usage_{date_str}.jsonl"
+            
+            if log_file.exists():
+                with open(log_file, "r") as f:
+                    for line in f:
+                        try:
+                            all_entries.append(json.loads(line.strip()))
+                        except:
+                            continue
+        
+        if not all_entries:
+            audit["summary"] = {"message": "No data available for audit"}
+            return audit
+        
+        # Find inefficiencies
+        high_token_requests = [e for e in all_entries if e.get("total_tokens", 0) > 10000]
+        expensive_models = [e for e in all_entries if e.get("model", "").startswith("anthropic")]
+        long_prompts = [e for e in all_entries if e.get("prompt_length", 0) > 50000]
+        
+        if high_token_requests:
+            audit["inefficiencies"].append({
+                "type": "high_token_usage",
+                "count": len(high_token_requests),
+                "description": f"{len(high_token_requests)} requests used >10K tokens",
+                "examples": high_token_requests[:3],
+            })
+            audit["recommendations"].append("Consider truncating long contexts or using smaller models for simple tasks")
+        
+        if expensive_models:
+            cost = sum(e.get("cost_usd", 0) for e in expensive_models)
+            audit["inefficiencies"].append({
+                "type": "expensive_model_usage",
+                "count": len(expensive_models),
+                "cost_usd": round(cost, 4),
+                "description": f"Using expensive Anthropic models ({len(expensive_models)} calls, ${cost:.4f})",
+            })
+            audit["recommendations"].append("Switch to Kimi or Qwen for non-critical tasks")
+        
+        if long_prompts:
+            audit["inefficiencies"].append({
+                "type": "long_prompts",
+                "count": len(long_prompts),
+                "description": f"{len(long_prompts)} requests had >50K character prompts",
+            })
+            audit["recommendations"].append("Review prompt templates for unnecessary verbosity")
+        
+        # Summary
+        total_cost = sum(e.get("cost_usd", 0) for e in all_entries)
+        total_tokens = sum(e.get("total_tokens", 0) for e in all_entries)
+        cache_hits = sum(1 for e in all_entries if e.get("cache_hit"))
+        
+        audit["summary"] = {
+            "total_requests": len(all_entries),
+            "total_cost_usd": round(total_cost, 4),
+            "total_tokens": total_tokens,
+            "cache_hit_rate": round(cache_hits / len(all_entries) * 100, 2) if all_entries else 0,
+            "avg_cost_per_request": round(total_cost / len(all_entries), 6) if all_entries else 0,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to audit context efficiency: {e}")
+        audit["error"] = str(e)
+    
+    return audit
