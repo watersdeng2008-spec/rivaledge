@@ -95,12 +95,13 @@ app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway."""
-    from services.ai import get_cache_stats
+    from services.ai import get_cache_stats, get_model_info
     import os
     return {
         "status": "ok",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
+        "ai_models": get_model_info(),
         "service": "rivaledge-api",
         "ai_cache": get_cache_stats(),
         "ai_model": os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5"),

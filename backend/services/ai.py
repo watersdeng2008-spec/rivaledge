@@ -22,6 +22,15 @@ AI_MODEL = os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
+# Model selection by task
+MODELS = {
+    "default": os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5"),
+    "coding": os.environ.get("AI_MODEL_CODING", "moonshotai/kimi-k2.5"),
+    "sales": os.environ.get("AI_MODEL_SALES", "qwen/qwen3.6-plus:free"),
+    "marketing": os.environ.get("AI_MODEL_MARKETING", "qwen/qwen3.6-plus:free"),
+    "research": os.environ.get("AI_MODEL_RESEARCH", "qwen/qwen3-30b-a3b:free"),
+}
+
 # Cache setup — persists across restarts
 CACHE_DIR = Path(__file__).parent / ".ai_cache"
 cache = Cache(str(CACHE_DIR))
@@ -33,7 +42,7 @@ def _get_cache_key(prefix: str, content: str) -> str:
     return hashlib.sha256(hash_input.encode()).hexdigest()[:32]
 
 
-def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = True) -> str:
+def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = True, model: Optional[str] = None) -> str:
     """
     Call AI via OpenRouter with caching support.
     
@@ -42,12 +51,16 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
         user: User prompt  
         max_tokens: Max tokens to generate
         use_cache: Whether to check/save cache
+        model: Optional model override (uses MODELS['default'] if not specified)
         
     Returns:
         Generated text
     """
+    # Use specified model or default
+    ai_model = model or MODELS["default"]
+    
     # Check cache first
-    cache_key = _get_cache_key("ai", f"{system}:{user}:{max_tokens}")
+    cache_key = _get_cache_key("ai", f"{system}:{user}:{max_tokens}:{ai_model}")
     if use_cache:
         cached = cache.get(cache_key)
         if cached:
@@ -66,7 +79,7 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
     }
     
     payload = {
-        "model": AI_MODEL,
+        "model": ai_model,
         "max_tokens": max_tokens,
         "messages": [
             {"role": "system", "content": system},
@@ -332,6 +345,64 @@ Their features: {comp_features_str}"""
     )
 
 
+# ── Task-Specific AI Functions ────────────────────────────────────────────────
+
+def generate_sales_copy(prompt: str, max_tokens: int = 2000) -> str:
+    """
+    Generate sales copy using free Qwen model.
+    For: cold emails, LinkedIn messages, outreach copy.
+    """
+    return _call_ai(
+        system="You are a sales copywriter. Write concise, persuasive copy that gets responses. Focus on value, not features. Keep it under 150 words.",
+        user=prompt,
+        max_tokens=max_tokens,
+        model=MODELS["sales"],
+        use_cache=True,
+    )
+
+
+def generate_marketing_content(prompt: str, max_tokens: int = 4000) -> str:
+    """
+    Generate marketing content using free Qwen model.
+    For: social media posts, blog content, landing page copy.
+    """
+    return _call_ai(
+        system="You are a marketing content writer. Create engaging, shareable content. Use clear headlines, bullet points, and calls to action.",
+        user=prompt,
+        max_tokens=max_tokens,
+        model=MODELS["marketing"],
+        use_cache=True,
+    )
+
+
+def research_lead(prompt: str, max_tokens: int = 1500) -> str:
+    """
+    Research and analyze leads using free Qwen model.
+    For: parsing LinkedIn profiles, company research, personalization hooks.
+    """
+    return _call_ai(
+        system="You are a sales researcher. Extract key facts, pain points, and personalization angles. Be concise and factual.",
+        user=prompt,
+        max_tokens=max_tokens,
+        model=MODELS["research"],
+        use_cache=True,
+    )
+
+
+def generate_code(prompt: str, max_tokens: int = 4000) -> str:
+    """
+    Generate code using Kimi (high quality, paid).
+    For: actual coding tasks, complex implementations.
+    """
+    return _call_ai(
+        system="You are a senior software engineer. Write clean, well-documented code. Follow best practices.",
+        user=prompt,
+        max_tokens=max_tokens,
+        model=MODELS["coding"],
+        use_cache=True,
+    )
+
+
 # ── Cache Management ───────────────────────────────────────────────────────────
 
 def clear_ai_cache():
@@ -345,4 +416,18 @@ def get_cache_stats() -> dict:
     return {
         "size": len(cache),
         "directory": str(CACHE_DIR),
+    }
+
+
+def get_model_info() -> dict:
+    """Get current model configuration."""
+    return {
+        "models": MODELS,
+        "default": MODELS["default"],
+        "cost_optimized": {
+            "sales": "qwen/qwen3.6-plus:free ($0)",
+            "marketing": "qwen/qwen3.6-plus:free ($0)",
+            "research": "qwen/qwen3-30b-a3b:free ($0)",
+            "coding": "moonshotai/kimi-k2.5 (paid)",
+        }
     }
