@@ -42,14 +42,19 @@ export default function BufferAdminPage() {
   const fetchChannels = async () => {
     try {
       const res = await fetch("/api/buffer/channels");
-      if (!res.ok) throw new Error("Failed to fetch channels");
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Channel fetch error:", errorData);
+        throw new Error(errorData.detail || "Failed to fetch channels");
+      }
       const data = await res.json();
       setChannels(data.channels || []);
       if (data.channels?.length > 0) {
         setSelectedChannel(data.channels[0].id);
       }
-    } catch (err) {
-      setError("Failed to load channels");
+    } catch (err: any) {
+      console.error("Fetch channels error:", err);
+      setError(err.message || "Failed to load channels");
     }
   };
 
