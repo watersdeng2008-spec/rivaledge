@@ -42,6 +42,22 @@ cache = Cache(str(CACHE_DIR))
 TOKEN_LOG_DIR = Path(__file__).parent / ".token_logs"
 TOKEN_LOG_DIR.mkdir(exist_ok=True)
 
+# Circuit breaker for autocompact failures (CSkill pattern)
+CIRCUIT_BREAKER_THRESHOLD = 3
+_circuit_breaker_state = {
+    "consecutive_failures": 0,
+    "tripped": False,
+    "last_trip_time": None,
+}
+
+# Context budget management (CSkill pattern)
+CONTEXT_BUDGETS = {
+    "simple_task": 2000,      # ~$0.001-0.004
+    "standard_task": 4000,    # ~$0.002-0.008
+    "complex_task": 8000,     # ~$0.004-0.016
+    "max_task": 16000,        # ~$0.008-0.032
+}
+
 # Model pricing (per million tokens) - for cost calculation
 MODEL_PRICING = {
     "moonshotai/kimi-k2.5": {"input": 0.50, "output": 2.00},  # $0.50/$2.00 per million
@@ -162,7 +178,23 @@ def _call_ai(system: str, user: str, max_tokens: int = 4000, use_cache: bool = T
         logger.error(f"AI call failed: {e}")
         token_usage["error"] = str(e)
         _log_token_usage(token_usage)
+        
+        # Circuit breaker: track consecutive failures (CSkill pattern)
+        _circuit_breaker_state["consecutive_failures"] += 1
+        if _circuit_breaker_state["consecutive_failures"] >= CIRCUIT_BREAKER_THRESHOLD:
+            if not _circuit_breaker_state["tripped"]:
+                logger.warning(f"CIRCUIT BREAKER TRIPPED: {CIRCUIT_BREAKER_THRESHOLD} consecutive failures")
+                _circuit_breaker_state["tripped"] = True
+                _circuit_breaker_state["last_trip_time"] = datetime.utcnow().isoformat()
+        
         raise
+    else:
+        # Success: reset circuit breaker (CSkill pattern)
+        if _circuit_breaker_state["consecutive_failures"] > 0:
+            logger.info(f"Circuit breaker reset after {_circuit_breaker_state['consecutive_failures']} failures")
+            _circuit_breaker_state["consecutive_failures"] = 0
+            _circuit_breaker_state["tripped"] = False
+            _circuit_breaker_state["last_trip_time"] = None
 
 
 # ── Competitor Profile ─────────────────────────────────────────────────────────
@@ -447,6 +479,72 @@ def generate_code(prompt: str, max_tokens: int = 4000) -> str:
         max_tokens=max_tokens,
         model=MODELS["coding"],
         use_cache=True,
+    )
+
+
+# ── Circuit Breaker & Budget Management (CSkill Patterns) ─────────────────────
+
+def check_circuit_breaker() -> Dict[str, Any]:
+    """Check circuit breaker status."""
+    return {
+        "tripped": _circuit_breaker_state["tripped"],
+        "consecutive_failures": _circuit_breaker_state["consecutive_failures"],
+        "threshold": CIRCUIT_BREAKER_THRESHOLD,
+        "last_trip_time": _circuit_breaker_state["last_trip_time"],
+    }
+
+
+def reset_circuit_breaker():
+    """Manually reset circuit breaker."""
+    _circuit_breaker_state["consecutive_failures"] = 0
+    _circuit_breaker_state["tripped"] = False
+    _circuit_breaker_state["last_trip_time"] = None
+    logger.info("Circuit breaker manually reset")
+
+
+def get_context_budget(task_type: str = "standard_task") -> int:
+    """Get token budget for task type (CSkill pattern)."""
+    return CONTEXT_BUDGETS.get(task_type, CONTEXT_BUDGETS["standard_task"])
+
+
+def call_ai_with_budget(
+    system: str,
+    user: str,
+    task_type: str = "standard_task",
+    use_cache: bool = True,
+    model: Optional[str] = None,
+) -> str:
+    """
+    Call AI with context budget enforcement (CSkill pattern).
+    
+    Args:
+        system: System prompt
+        user: User prompt
+        task_type: Budget category (simple_task, standard_task, complex_task, max_task)
+        use_cache: Whether to use cache
+        model: Optional model override
+    """
+    # Check circuit breaker first
+    if _circuit_breaker_state["tripped"]:
+        raise RuntimeError("Circuit breaker is tripped. Too many consecutive failures.")
+    
+    # Get budget for task type
+    budget = get_context_budget(task_type)
+    
+    # Truncate if over budget (simple truncation strategy)
+    combined_length = len(system) + len(user)
+    if combined_length > budget * 4:  # Rough chars to tokens estimate
+        logger.warning(f"Prompt length {combined_length} exceeds budget {budget * 4}, truncating")
+        # Truncate user content, keep system intact
+        max_user_chars = budget * 4 - len(system) - 100
+        user = user[:max_user_chars] + "\n...[truncated]"
+    
+    return _call_ai(
+        system=system,
+        user=user,
+        max_tokens=budget,
+        use_cache=use_cache,
+        model=model,
     )
 
 
