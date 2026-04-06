@@ -21,7 +21,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 RUN playwright install chromium --with-deps
 
 # Cache bust — forces fresh copy of application code
-ARG CACHE_BUST=1
+ARG CACHE_BUST=2
 # Copy the rest of the application code
 COPY . .
 
