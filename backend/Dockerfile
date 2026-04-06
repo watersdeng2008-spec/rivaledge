@@ -17,11 +17,11 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers (already included in the base image, but ensure)
-RUN playwright install chromium --with-deps
+# Playwright browsers already included in base image
+# Skip redundant install to avoid build failures
 
 # Cache bust — forces fresh copy of application code
-ARG CACHE_BUST=2
+ARG CACHE_BUST=3
 # Copy the rest of the application code
 COPY . .
 
