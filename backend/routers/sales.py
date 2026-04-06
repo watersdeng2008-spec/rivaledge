@@ -631,3 +631,182 @@ def get_outreach_stats(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get stats: {str(e)}",
         )
+
+
+# ── Dashboard Endpoints ───────────────────────────────────────────────────────
+
+@router.get("/dashboard/pipeline")
+def get_dashboard_pipeline(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get sales pipeline overview.
+    
+    Returns lead counts by stage and conversion rates.
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        overview = dashboard.get_pipeline_overview()
+        
+        return {
+            "success": True,
+            "data": overview,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get pipeline: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get pipeline: {str(e)}",
+        )
+
+
+@router.get("/dashboard/campaign")
+def get_dashboard_campaign(
+    days: int = Query(30, ge=1, le=90),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get campaign performance metrics.
+    
+    Query params:
+    - days: Analysis period (default: 30)
+    
+    Returns: open rates, click rates, reply rates
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        performance = dashboard.get_campaign_performance(days)
+        
+        return {
+            "success": True,
+            "data": performance,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get campaign metrics: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get campaign metrics: {str(e)}",
+        )
+
+
+@router.get("/dashboard/templates")
+def get_dashboard_templates(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get email template effectiveness analysis.
+    
+    Returns templates ranked by performance.
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        effectiveness = dashboard.get_template_effectiveness()
+        
+        return {
+            "success": True,
+            "data": effectiveness,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get template effectiveness: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get template effectiveness: {str(e)}",
+        )
+
+
+@router.get("/dashboard/recommendations")
+def get_dashboard_recommendations(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get optimization recommendations.
+    
+    Returns AI-generated recommendations based on performance data.
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        recommendations = dashboard.get_optimization_recommendations()
+        
+        return {
+            "success": True,
+            "data": recommendations,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get recommendations: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get recommendations: {str(e)}",
+        )
+
+
+@router.get("/dashboard/hot-leads")
+def get_dashboard_hot_leads(
+    min_score: int = Query(70, ge=0, le=100),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get hot leads (high priority + engagement).
+    
+    Query params:
+    - min_score: Minimum priority score (default: 70)
+    
+    Returns: List of hot leads requiring attention.
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        hot_leads = dashboard.get_hot_leads(min_score)
+        
+        return {
+            "success": True,
+            "count": len(hot_leads),
+            "data": hot_leads,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get hot leads: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get hot leads: {str(e)}",
+        )
+
+
+@router.get("/dashboard/daily-summary")
+def get_daily_summary(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Get daily summary for founder review.
+    
+    Returns formatted summary of day's activity.
+    """
+    try:
+        from services.sales_dashboard import get_dashboard
+        
+        dashboard = get_dashboard()
+        summary = dashboard.get_daily_summary()
+        
+        return {
+            "success": True,
+            "summary": summary,
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to generate daily summary: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate summary: {str(e)}",
+        )
