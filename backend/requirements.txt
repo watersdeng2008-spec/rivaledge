@@ -28,5 +28,7 @@ pytest==8.3.4
 pytest-asyncio==0.24.0
 # Rate limiting
 slowapi==0.1.9
+# Form data parsing (required for file uploads)
+python-multipart>=0.0.9
 # Dev
 python-dotenv==1.0.1

@@ -12,10 +12,20 @@ from supabase import create_client, Client
 
 logger = logging.getLogger(__name__)
 
-# Initialize Supabase client
-supabase_url = os.environ.get("SUPABASE_URL", "")
-supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-supabase: Client = create_client(supabase_url, supabase_key)
+# Lazy initialization of Supabase client
+_supabase_client: Optional[Client] = None
+
+
+def get_supabase() -> Client:
+    """Get or create Supabase client (lazy initialization)."""
+    global _supabase_client
+    if _supabase_client is None:
+        supabase_url = os.environ.get("SUPABASE_URL", "")
+        supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+        if not supabase_url or not supabase_key:
+            raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set")
+        _supabase_client = create_client(supabase_url, supabase_key)
+    return _supabase_client
 
 
 # ── Leads CRUD ────────────────────────────────────────────────────────────────
@@ -35,7 +45,7 @@ def create_lead(lead_data: Dict[str, Any]) -> Dict[str, Any]:
         score = calculate_priority_score(lead_data)
         lead_data["priority_score"] = score
         
-        result = supabase.table("leads").insert(lead_data).execute()
+        result = get_supabase().table("leads").insert(lead_data).execute()
         
         if result.data:
             return result.data[0]
@@ -58,7 +68,7 @@ def get_lead(lead_id: str) -> Optional[Dict[str, Any]]:
         Lead data or None if not found
     """
     try:
-        result = supabase.table("leads").select("*").eq("id", lead_id).execute()
+        result = get_supabase().table("leads").select("*").eq("id", lead_id).execute()
         
         if result.data and len(result.data) > 0:
             return result.data[0]
@@ -80,7 +90,7 @@ def get_lead_by_email(email: str) -> Optional[Dict[str, Any]]:
         Lead data or None if not found
     """
     try:
-        result = supabase.table("leads").select("*").eq("email", email).execute()
+        result = get_supabase().table("leads").select("*").eq("email", email).execute()
         
         if result.data and len(result.data) > 0:
             return result.data[0]
@@ -108,7 +118,7 @@ def get_leads(
         List of leads
     """
     try:
-        query = supabase.table("leads").select("*")
+        query = get_supabase().table("leads").select("*")
         
         # Apply filters
         if filters:
@@ -153,7 +163,7 @@ def update_lead(lead_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
                 merged = {**current, **update_data}
                 update_data["priority_score"] = calculate_priority_score(merged)
         
-        result = supabase.table("leads").update(update_data).eq("id", lead_id).execute()
+        result = get_supabase().table("leads").update(update_data).eq("id", lead_id).execute()
         
         if result.data and len(result.data) > 0:
             return result.data[0]
@@ -176,7 +186,7 @@ def delete_lead(lead_id: str) -> bool:
         True if deleted
     """
     try:
-        result = supabase.table("leads").delete().eq("id", lead_id).execute()
+        result = get_supabase().table("leads").delete().eq("id", lead_id).execute()
         return True
         
     except Exception as e:
@@ -241,19 +251,19 @@ def get_lead_stats() -> Dict[str, Any]:
     """
     try:
         # Total leads
-        total_result = supabase.table("leads").select("count", count="exact").execute()
+        total_result = get_supabase().table("leads").select("count", count="exact").execute()
         total = total_result.count if hasattr(total_result, 'count') else 0
         
         # By status
         status_counts = {}
         for status in ["new", "enriched", "personalized", "contacted", "replied", "qualified", "disqualified", "converted"]:
-            result = supabase.table("leads").select("count", count="exact").eq("status", status).execute()
+            result = get_supabase().table("leads").select("count", count="exact").eq("status", status).execute()
             count = result.count if hasattr(result, 'count') else 0
             if count > 0:
                 status_counts[status] = count
         
         # High priority leads (score >= 70)
-        high_priority_result = supabase.table("leads").select("count", count="exact").gte("priority_score", 70).execute()
+        high_priority_result = get_supabase().table("leads").select("count", count="exact").gte("priority_score", 70).execute()
         high_priority = high_priority_result.count if hasattr(high_priority_result, 'count') else 0
         
         return {
