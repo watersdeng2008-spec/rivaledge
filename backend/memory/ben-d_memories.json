@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Waters prefers Telegram for quick decisions, email for complex topics",
+    "importance": 9,
+    "category": "communication",
+    "timestamp": "2026-04-06T01:15:36.012211"
+  },
+  {
+    "content": "Switched from Claude Sonnet to Kimi K2.5 \u2014 90% cost reduction",
+    "importance": 8,
+    "category": "technical_decision",
+    "timestamp": "2026-04-06T01:15:36.012875"
+  },
+  {
+    "content": "Sales agent target: $10k MRR with 20+ demos/month",
+    "importance": 7,
+    "category": "goal",
+    "timestamp": "2026-04-06T01:15:36.012984"
+  },
+  {
+    "content": "Buffer social media automation built and deployed",
+    "importance": 6,
+    "category": "feature",
+    "timestamp": "2026-04-06T01:15:36.013050"
+  }
+]

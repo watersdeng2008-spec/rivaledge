@@ -21,6 +21,7 @@ import httpx
 
 from services.sales_db import create_lead, get_lead_by_email
 from services.ai import research_lead
+from services.memory_store import get_memory
 
 logger = logging.getLogger(__name__)
 
@@ -264,12 +265,14 @@ class ResearchAgent:
     2. Enrich with email (Hunter)
     3. AI research for pain signals
     4. Score and save to database
+    5. Store learnings in AgentMemory
     """
     
     def __init__(self):
         self.linkedin = LinkedInParser()
         self.apollo = ApolloClient()
         self.hunter = HunterClient()
+        self.memory = get_memory()
     
     def process_linkedin_export(self, csv_content: str) -> List[str]:
         """
@@ -336,6 +339,17 @@ class ResearchAgent:
         created_ids = self._enrich_and_save_parallel(raw_leads)
         
         logger.info(f"Created {len(created_ids)} leads from Apollo")
+        
+        # Store learnings in AgentMemory
+        if created_ids:
+            self.memory.remember(
+                content=f"Apollo search: Found {len(created_ids)} leads, {len(raw_leads) - len(created_ids)} skipped (duplicates/no email)",
+                importance=6,
+                category="research_learnings",
+                source="apollo",
+                leads_created=len(created_ids)
+            )
+        
         return created_ids
     
     def _enrich_and_save_parallel(self, lead_data_list: List[Dict[str, Any]], batch_size: int = 10) -> List[str]:

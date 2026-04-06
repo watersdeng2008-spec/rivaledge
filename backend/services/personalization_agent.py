@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 from services.ai import generate_sales_copy
 from services.sales_db import create_personalized_email
+from services.memory_store import get_memory
 
 logger = logging.getLogger(__name__)
 
@@ -328,10 +329,12 @@ class PersonalizationAgent:
     3. Generate personalized content
     4. Score quality
     5. Save to database for approval
+    6. Store template performance in AgentMemory
     """
     
     def __init__(self):
         self.engine = PersonalizationEngine()
+        self.memory = get_memory()
     
     def process_leads(self, lead_ids: List[str]) -> List[str]:
         """
@@ -369,9 +372,30 @@ class PersonalizationAgent:
                     })
                     created_emails.append(email_id)
                     logger.info(f"Created personalized email for {lead.get('email')}")
+                    
+                    # Store in AgentMemory for learning
+                    self.memory.remember(
+                        content=f"Email drafted for {lead.get('title')} at {lead.get('company')}: {email_data['template_used']} (score: {email_data['personalization_score']})",
+                        importance=5,
+                        category="email_personalization",
+                        template=email_data['template_used'],
+                        score=email_data['personalization_score'],
+                        lead_title=lead.get('title'),
+                        industry=lead.get('industry')
+                    )
                 
             except Exception as e:
                 logger.error(f"Failed to process lead {lead_id}: {e}")
+        
+        # Store batch summary
+        if created_emails:
+            self.memory.remember(
+                content=f"Personalization batch: Created {len(created_emails)} emails for {len(lead_ids)} leads",
+                importance=6,
+                category="personalization_summary",
+                batch_size=len(lead_ids),
+                success_rate=len(created_emails)/len(lead_ids) if lead_ids else 0
+            )
         
         return created_emails
     
