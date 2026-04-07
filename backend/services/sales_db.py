@@ -275,3 +275,76 @@ def get_lead_stats() -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Failed to get lead stats: {e}")
         raise
+
+
+# ── Email Sequences ───────────────────────────────────────────────────────────
+
+def create_email_sequence(sequence_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Create a new email sequence entry.
+    
+    Args:
+        sequence_data: Sequence information (lead_id, sequence_name, email_number, etc.)
+        
+    Returns:
+        Created sequence with ID
+    """
+    try:
+        result = get_supabase().table("email_sequences").insert(sequence_data).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise Exception("No data returned from insert")
+            
+    except Exception as e:
+        logger.error(f"Failed to create email sequence: {e}")
+        raise
+
+
+def get_email_sequences(lead_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    """
+    Get email sequences.
+    
+    Args:
+        lead_id: Optional lead ID to filter by
+        
+    Returns:
+        List of email sequences
+    """
+    try:
+        query = get_supabase().table("email_sequences").select("*")
+        
+        if lead_id:
+            query = query.eq("lead_id", lead_id)
+        
+        result = query.execute()
+        return result.data or []
+        
+    except Exception as e:
+        logger.error(f"Failed to get email sequences: {e}")
+        raise
+
+
+def update_email_sequence(sequence_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Update an email sequence.
+    
+    Args:
+        sequence_id: UUID of the sequence
+        update_data: Fields to update
+        
+    Returns:
+        Updated sequence
+    """
+    try:
+        result = get_supabase().table("email_sequences").update(update_data).eq("id", sequence_id).execute()
+        
+        if result.data and len(result.data) > 0:
+            return result.data[0]
+        else:
+            raise Exception("No data returned from update")
+            
+    except Exception as e:
+        logger.error(f"Failed to update email sequence {sequence_id}: {e}")
+        raise

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/dashboard/',
     },
-    sitemap: 'https://www.rivaledge.ai/sitemap.xml',
+    sitemap: 'https://rivaledge.ai/sitemap.xml',
   };
 }
