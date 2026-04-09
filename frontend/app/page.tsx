@@ -204,7 +204,8 @@ export default function HomePage() {
                 <span className="text-blue-400 font-semibold">S</span>
               </div>
               <div className="text-left">
-                <p className="text-slate-200 font-medium">A SaaS founder</p>
+                <p className="text-slate-200 font-medium">Sal Leone</p>
+                <p className="text-slate-400 text-sm">Founder, RouzeIQ</p>
               </div>
             </div>
           </div>
