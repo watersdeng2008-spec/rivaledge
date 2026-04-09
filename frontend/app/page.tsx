@@ -190,11 +190,24 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Trust badge */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-full px-4 py-2">
-            <span className="text-green-400">●</span>
-            <span className="text-slate-300 text-sm">Trusted by 0 teams... so far. Be the first.</span>
+      </section>
+
+      {/* Testimonial */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 md:p-12">
+            <p className="text-xl md:text-2xl text-slate-300 italic mb-6">
+              &ldquo;Finally, a tool that pays for itself the first time it prevents surprise.&rdquo;
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center">
+                <span className="text-blue-400 font-semibold">S</span>
+              </div>
+              <div className="text-left">
+                <p className="text-slate-200 font-medium">Sal Leone</p>
+                <p className="text-slate-400 text-sm">Founder, RouzeIQ</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
