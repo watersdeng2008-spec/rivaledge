@@ -56,7 +56,15 @@ export default function HomePage() {
             See pricing
           </Link>
         </div>
-        <p className="text-slate-500 text-sm mt-4">No credit card required. 14-day free trial.</p>
+        {/* Testimonial */}
+        <div className="mt-8 max-w-xl mx-auto">
+          <blockquote className="text-lg text-slate-300 italic border-l-4 border-blue-500 pl-4">
+            &ldquo;Finally, a tool that pays for itself the first time it prevents surprise.&rdquo;
+          </blockquote>
+          <p className="text-slate-400 text-sm mt-2">— SaaS Founder</p>
+        </div>
+        
+        <p className="text-slate-500 text-sm mt-6">No credit card required. 14-day free trial.</p>
         <div className="mt-12 flex justify-center">
           <img src="/hero.jpg" alt="RivalEdge in action" className="rounded-2xl shadow-2xl max-w-2xl w-full" />
         </div>
@@ -189,7 +197,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        
       </section>
 
       {/* Testimonial */}
