@@ -20,8 +20,25 @@ from routers import feedback
 from routers import buffer as buffer_router
 from routers import ai_monitor
 from routers import sales as sales_router
-from routers import ceo_dashboard
-from routers import sales_agent
+
+# Optional routers — log errors but don't crash if they fail
+try:
+    from routers import ceo_dashboard
+    CEO_DASHBOARD_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"CEO dashboard not available: {e}")
+    CEO_DASHBOARD_AVAILABLE = False
+    ceo_dashboard = None
+
+try:
+    from routers import sales_agent
+    SALES_AGENT_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"Sales agent not available: {e}")
+    SALES_AGENT_AVAILABLE = False
+    sales_agent = None
 
 
 @asynccontextmanager
@@ -95,8 +112,12 @@ app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
-app.include_router(ceo_dashboard.router, prefix="/api/ceo", tags=["ceo_dashboard"])
-app.include_router(sales_agent.router, prefix="/api/admin/sales-agent", tags=["sales_agent"])
+# Include optional routers only if available
+if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
+    app.include_router(ceo_dashboard.router, prefix="/api/ceo", tags=["ceo_dashboard"])
+
+if SALES_AGENT_AVAILABLE and sales_agent:
+    app.include_router(sales_agent.router, prefix="/api/admin/sales-agent", tags=["sales_agent"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
@@ -107,7 +128,7 @@ async def health():
     import os
     return {
         "status": "ok",
-        "version": "1.0.7",
+        "version": "1.0.8",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "ai_models": get_model_info(),
         "service": "rivaledge-api",
