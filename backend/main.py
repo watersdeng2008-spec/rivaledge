@@ -21,6 +21,7 @@ from routers import buffer as buffer_router
 from routers import ai_monitor
 from routers import sales as sales_router
 from routers import ceo_dashboard
+from routers import sales_agent
 
 
 @asynccontextmanager
@@ -95,6 +96,7 @@ app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 app.include_router(ceo_dashboard.router, prefix="/api/ceo", tags=["ceo_dashboard"])
+app.include_router(sales_agent.router, prefix="/api/admin/sales-agent", tags=["sales_agent"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
