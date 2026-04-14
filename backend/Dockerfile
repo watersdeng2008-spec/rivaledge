@@ -21,7 +21,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Skip redundant install to avoid build failures
 
 # Cache bust — forces fresh copy of application code
-ARG CACHE_BUST=3
+ARG CACHE_BUST=4
 # Copy the rest of the application code
 COPY . .
 
