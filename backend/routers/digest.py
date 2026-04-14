@@ -94,6 +94,21 @@ def generate_digest_endpoint(request: Request, current_user: dict = Depends(get_
     
     # 3. Generate digest via AI
     user_email = current_user.get("email", user_id)
+    
+    # Check if we have any usable data
+    has_any_data = any(
+        comp.get("current_profile") or comp.get("diff_result", {}).get("has_changes")
+        for comp in competitors_with_diffs
+    )
+    
+    if not has_any_data:
+        # No data yet — return a helpful message
+        logger.warning(f"User {user_id} has competitors but no scraped data yet")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Your competitors are being analyzed. Please try again in a few minutes, or check back tomorrow for your first weekly digest.",
+        )
+    
     try:
         html_content = ai_service.generate_weekly_digest(user_email, competitors_with_diffs)
     except Exception as e:
