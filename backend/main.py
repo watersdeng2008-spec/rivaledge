@@ -114,10 +114,10 @@ app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
-    app.include_router(ceo_dashboard.router, prefix="/api/ceo", tags=["ceo_dashboard"])
+    app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])
 
 if SALES_AGENT_AVAILABLE and sales_agent:
-    app.include_router(sales_agent.router, prefix="/api/admin/sales-agent", tags=["sales_agent"])
+    app.include_router(sales_agent.router, prefix="/api/admin", tags=["sales_agent"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
