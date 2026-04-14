@@ -108,3 +108,43 @@ async def sales_agent_status(
         },
         "targets_available": 10,
     }
+
+
+@router.post("/trigger-cron")
+async def trigger_sales_agent_cron(
+    target_count: int = Query(2, ge=1, le=10),
+    current_user: dict = Depends(require_admin),
+):
+    """
+    Manually trigger the sales agent cron job.
+    Use this to test or run on-demand.
+    """
+    import subprocess
+    import sys
+    
+    try:
+        # Run the cron script as a subprocess
+        result = subprocess.run(
+            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 minute timeout
+            cwd="/app"  # Railway app directory
+        )
+        
+        return {
+            "success": result.returncode == 0,
+            "return_code": result.returncode,
+            "stdout": result.stdout[-2000:] if result.stdout else "",  # Last 2000 chars
+            "stderr": result.stderr[-1000:] if result.stderr else "",  # Last 1000 chars
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "error": "Cron job timed out after 5 minutes",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+        }
