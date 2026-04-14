@@ -121,6 +121,16 @@ if SALES_AGENT_AVAILABLE and sales_agent:
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
+@app.get("/debug/routers")
+async def debug_routers():
+    """Debug endpoint to check which routers are loaded."""
+    return {
+        "ceo_dashboard_available": CEO_DASHBOARD_AVAILABLE,
+        "sales_agent_available": SALES_AGENT_AVAILABLE,
+        "version": "1.0.8",
+    }
+
+
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway."""
