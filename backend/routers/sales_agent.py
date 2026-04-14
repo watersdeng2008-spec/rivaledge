@@ -148,3 +148,39 @@ async def trigger_sales_agent_cron(
             "success": False,
             "error": str(e),
         }
+
+
+@router.post("/test-run")
+async def test_sales_agent_run(
+    target_count: int = Query(1, ge=1, le=3),
+    secret: str = Query(...),
+):
+    """
+    Test endpoint with simple secret key (no Clerk auth required).
+    Secret should match SALES_AGENT_TEST_SECRET env var.
+    """
+    import os
+    import subprocess
+    import sys
+    
+    expected_secret = os.environ.get("SALES_AGENT_TEST_SECRET", "")
+    if not expected_secret or secret != expected_secret:
+        raise HTTPException(status_code=403, detail="Invalid secret")
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
+            capture_output=True,
+            text=True,
+            timeout=300,
+            cwd="/app"
+        )
+        
+        return {
+            "success": result.returncode == 0,
+            "return_code": result.returncode,
+            "stdout": result.stdout[-3000:] if result.stdout else "",
+            "stderr": result.stderr[-1000:] if result.stderr else "",
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
