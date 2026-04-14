@@ -110,6 +110,21 @@ async def sales_agent_status(
     }
 
 
+@router.get("/public-status")
+async def sales_agent_public_status():
+    """Public status check (no auth required)."""
+    return {
+        "status": "active",
+        "version": "1.1.4",
+        "apis": {
+            "firecrawl": bool(os.environ.get("FIRECRAWL_API_KEY")),
+            "openrouter": bool(os.environ.get("OPENROUTER_API_KEY")),
+            "hunter": bool(os.environ.get("HUNTER_API_KEY")),
+            "instantly": bool(os.environ.get("INSTANTLY_API_KEY")),
+        },
+    }
+
+
 @router.post("/trigger-cron")
 async def trigger_sales_agent_cron(
     target_count: int = Query(2, ge=1, le=10),
