@@ -1,4 +1,4 @@
-# RivalEdge Backend — Railway-ready Dockerfile — build v3
+# RivalEdge Backend — Railway-ready Dockerfile — build v4
 FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 
 # Install Python and pip
@@ -20,10 +20,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Playwright browsers already included in base image
 # Skip redundant install to avoid build failures
 
-# Cache bust — forces fresh copy of application code
+# Force fresh copy of ALL application code
+# This layer should never be cached when code changes
 ARG CACHE_BUST=5
-# Copy the rest of the application code
-COPY . .
+COPY . /app/
 
 # Expose port
 EXPOSE 8000
