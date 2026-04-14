@@ -195,6 +195,11 @@ function DashboardContent() {
             <span className="text-slate-400 text-sm">Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
+            {user?.id === 'user_3Bh6we4LE9YddryP143qpQsIcoX' && (
+              <Link href="/admin/ceo" className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors font-medium">
+                CEO Dashboard
+              </Link>
+            )}
             <Link href="/admin/buffer" className="text-slate-400 hover:text-white text-sm transition-colors">
               Social Media
             </Link>
