@@ -138,7 +138,7 @@ async def health():
     import os
     return {
         "status": "ok",
-        "version": "1.0.8",
+        "version": "1.0.9",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "ai_models": get_model_info(),
         "service": "rivaledge-api",
