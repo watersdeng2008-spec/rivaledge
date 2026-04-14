@@ -40,6 +40,15 @@ except Exception as e:
     SALES_AGENT_AVAILABLE = False
     sales_agent = None
 
+try:
+    from routers import sales_analytics
+    SALES_ANALYTICS_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"Sales analytics not available: {e}")
+    SALES_ANALYTICS_AVAILABLE = False
+    sales_analytics = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -118,6 +127,9 @@ if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
 
 if SALES_AGENT_AVAILABLE and sales_agent:
     app.include_router(sales_agent.router, prefix="/api/admin", tags=["sales_agent"])
+
+if SALES_ANALYTICS_AVAILABLE and sales_analytics:
+    app.include_router(sales_analytics.router, prefix="/api/admin", tags=["sales_analytics"])
 # outreach v1.0 — cold email proxy via Railway/Resend
 
 
@@ -138,7 +150,7 @@ async def health():
     import os
     return {
         "status": "ok",
-        "version": "1.0.9",
+        "version": "1.1.0",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "ai_models": get_model_info(),
         "service": "rivaledge-api",

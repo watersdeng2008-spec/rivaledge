@@ -10,3 +10,8 @@ startCommand = "sh -c 'uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}'"
 name = "onboarding-email"
 schedule = "*/30 * * * *"
 command = "python -m cron.onboarding_email"
+
+[[cron]]
+name = "sales-agent-daily"
+schedule = "0 14 * * *"  # 9:00 AM CST (14:00 UTC)
+command = "python -m cron.sales_agent_cron 3"
