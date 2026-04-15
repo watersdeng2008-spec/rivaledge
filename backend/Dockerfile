@@ -22,7 +22,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Force fresh copy of ALL application code
 # This layer should never be cached when code changes
-ARG CACHE_BUST=213
+ARG CACHE_BUST=214
 COPY . /app/
 
 # Expose port

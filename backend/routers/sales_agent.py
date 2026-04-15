@@ -158,9 +158,9 @@ async def _run_sales_agent_cron(target_count: int):
     import sys
     
     try:
-        # Run the new v2 cron script as a subprocess
+        # Run the stable cron script (v1 - no tenacity dependency)
         result = subprocess.run(
-            [sys.executable, "-m", "cron.sales_agent_cron_v2", str(target_count)],
+            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
             capture_output=True,
             text=True,
             timeout=600,  # 10 minute timeout for 10 companies
