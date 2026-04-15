@@ -57,6 +57,33 @@ TARGETS = [
 ]
 
 
+def save_lead_to_supabase(lead_data: Dict) -> bool:
+    """Save individual lead to sales_leads table."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        print("⚠️ Supabase credentials not set, skipping lead save")
+        return False
+    
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+    }
+    
+    url = f"{SUPABASE_URL}/rest/v1/sales_leads"
+    
+    try:
+        response = httpx.post(url, json=lead_data, headers=headers, timeout=30)
+        if response.status_code == 201:
+            print(f"✅ Saved lead to Supabase: {lead_data.get('decision_maker_name', 'Unknown')}")
+            return True
+        else:
+            print(f"⚠️ Failed to save lead: {response.status_code} - {response.text[:200]}")
+            return False
+    except Exception as e:
+        print(f"⚠️ Error saving lead to Supabase: {e}")
+        return False
+
+
 def log_to_supabase(data: Dict):
     """Log sales agent run to database for tracking."""
     if not SUPABASE_URL or not SUPABASE_KEY:
@@ -183,13 +210,31 @@ async def run_daily_sales_agent(target_count: int = 3):
                 "emails": emails,
             }
             
-            # Add to Instantly if we have emails with actual email addresses
+            # Process each decision maker
             for email_data in result.get("emails", []):
                 dm = email_data.get('decision_maker', {})
                 email_address = dm.get('email', '')
                 first_name = dm.get('name', '').split()[0] if dm.get('name') else ''
                 company = result.get('company', {}).get('company_name', domain)
                 title = dm.get('title', '')
+                
+                # Save lead to database (regardless of email availability)
+                lead_record = {
+                    "run_id": run_id,
+                    "domain": domain,
+                    "industry": industry,
+                    "company_name": company,
+                    "decision_maker_name": dm.get('name', ''),
+                    "decision_maker_title": title,
+                    "email": email_address,
+                    "email_subject": email_data.get('subject', ''),
+                    "email_body": email_data.get('body', ''),
+                    "template_used": industry,
+                    "personalization_method": dm.get('source', 'unknown'),
+                    "source": dm.get('source', 'unknown'),
+                    "added_to_instantly": False,
+                    "status": "new"
+                }
                 
                 if email_address:
                     success = add_to_instantly(
@@ -202,8 +247,14 @@ async def run_daily_sales_agent(target_count: int = 3):
                     )
                     if success:
                         results["emails_added_to_instantly"] += 1
+                        lead_record["added_to_instantly"] = True
+                        lead_record["status"] = "sent"
+                        print(f"  ✅ Added to Instantly: {email_address}")
                 else:
-                    print(f"  📧 Generated email for: {dm.get('name', 'Unknown')} (no email - manual research needed)")
+                    print(f"  📧 Generated email for: {dm.get('name', 'Unknown')} (no email - LinkedIn DM candidate)")
+                
+                # Save to database
+                save_lead_to_supabase(lead_record)
             
             results["details"].append(detail)
             print(f"  ✅ Found {decision_makers} decision makers, {emails} emails")

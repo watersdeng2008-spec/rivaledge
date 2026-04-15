@@ -9,6 +9,7 @@ import os
 import logging
 from typing import Optional
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from auth import get_current_user
@@ -220,3 +221,87 @@ async def test_sales_agent_run(
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+@router.get("/linkedin-csv")
+async def get_linkedin_csv(
+    current_user: dict = Depends(require_admin),
+    days: int = Query(7, ge=1, le=30),
+):
+    """
+    Generate CSV of leads without email addresses for LinkedIn DM outreach.
+    Returns CSV with: name, title, company, domain, personalization
+    """
+    import csv
+    import io
+    from datetime import datetime, timedelta
+    
+    # Query Supabase for recent leads without emails
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+    
+    try:
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Content-Type": "application/json",
+        }
+        
+        # Calculate date filter
+        since_date = (datetime.now() - timedelta(days=days)).isoformat()
+        
+        # Query sales_leads table for leads without emails
+        url = f"{SUPABASE_URL}/rest/v1/sales_leads?select=*&email=eq.&created_at=gte.{since_date}&order=created_at.desc"
+        
+        response = httpx.get(url, headers=headers, timeout=30)
+        
+        if response.status_code != 200:
+            # If table doesn't exist or error, return empty CSV with headers
+            logger.warning(f"Failed to fetch leads: {response.status_code} - {response.text}")
+            leads = []
+        else:
+            leads = response.json()
+        
+        # Create CSV
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Name", "Title", "Company", "Domain", "Industry", "Personalization", "LinkedIn Search URL", "Notes"])
+        
+        for lead in leads:
+            name = lead.get("decision_maker_name", "")
+            title = lead.get("decision_maker_title", "")
+            company = lead.get("company_name", "")
+            domain = lead.get("domain", "")
+            industry = lead.get("industry", "")
+            personalization = lead.get("email_body", "")[:200] + "..." if lead.get("email_body") else ""
+            
+            # Generate LinkedIn search URL
+            linkedin_search = f"https://www.linkedin.com/search/results/people/?keywords={name.replace(' ', '%20')}%20{company.replace(' ', '%20')}" if name and company else ""
+            
+            writer.writerow([
+                name,
+                title,
+                company,
+                domain,
+                industry,
+                personalization,
+                linkedin_search,
+                "Send LinkedIn DM using template"
+            ])
+        
+        csv_content = output.getvalue()
+        output.close()
+        
+        return {
+            "csv": csv_content,
+            "count": len(leads),
+            "filename": f"linkedin_leads_{datetime.now().strftime('%Y%m%d')}.csv",
+            "days_queried": days
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating CSV: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating CSV: {str(e)}")
