@@ -12,7 +12,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from auth import get_current_user
-from services.sales_agent.self_healing_orchestrator import get_orchestrator
+from services.sales_agent.orchestrator import get_orchestrator
 
 logger = logging.getLogger(__name__)
 
