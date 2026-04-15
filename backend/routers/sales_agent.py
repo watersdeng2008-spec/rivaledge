@@ -12,7 +12,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from auth import get_current_user
-from services.sales_agent.orchestrator import get_orchestrator
+from services.sales_agent.self_healing_orchestrator import get_orchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -131,32 +131,32 @@ async def trigger_sales_agent_cron(
     current_user: dict = Depends(require_admin),
 ):
     """
-    Manually trigger the sales agent cron job.
+    Manually trigger the sales agent cron job v2 (self-healing).
     Use this to test or run on-demand.
     """
     import subprocess
     import sys
     
     try:
-        # Run the cron script as a subprocess
+        # Run the new v2 cron script as a subprocess
         result = subprocess.run(
-            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
+            [sys.executable, "-m", "cron.sales_agent_cron_v2", str(target_count)],
             capture_output=True,
             text=True,
-            timeout=300,  # 5 minute timeout
+            timeout=600,  # 10 minute timeout for 10 companies
             cwd="/app"  # Railway app directory
         )
         
         return {
             "success": result.returncode == 0,
             "return_code": result.returncode,
-            "stdout": result.stdout[-2000:] if result.stdout else "",  # Last 2000 chars
+            "stdout": result.stdout[-3000:] if result.stdout else "",  # Last 3000 chars
             "stderr": result.stderr[-1000:] if result.stderr else "",  # Last 1000 chars
         }
     except subprocess.TimeoutExpired:
         return {
             "success": False,
-            "error": "Cron job timed out after 5 minutes",
+            "error": "Cron job timed out after 10 minutes",
         }
     except Exception as e:
         return {
@@ -167,11 +167,12 @@ async def trigger_sales_agent_cron(
 
 @router.post("/test-run")
 async def test_sales_agent_run(
-    target_count: int = Query(1, ge=1, le=3),
+    target_count: int = Query(1, ge=1, le=5),
     secret: str = Query(...),
 ):
     """
     Test endpoint with simple secret key (no Clerk auth required).
+    Uses self-healing orchestrator v2.
     Secret should match SALES_AGENT_TEST_SECRET env var.
     """
     import os
@@ -183,19 +184,20 @@ async def test_sales_agent_run(
         raise HTTPException(status_code=403, detail="Invalid secret")
     
     try:
+        # Use the new v2 cron with self-healing
         result = subprocess.run(
-            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
+            [sys.executable, "-m", "cron.sales_agent_cron_v2", str(target_count)],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=600,
             cwd="/app"
         )
         
         return {
             "success": result.returncode == 0,
             "return_code": result.returncode,
-            "stdout": result.stdout[-3000:] if result.stdout else "",
-            "stderr": result.stderr[-1000:] if result.stderr else "",
+            "stdout": result.stdout[-5000:] if result.stdout else "",
+            "stderr": result.stderr[-2000:] if result.stderr else "",
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
