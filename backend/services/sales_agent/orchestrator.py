@@ -403,9 +403,27 @@ Return JSON array with objects containing:
                 json_start = response.find("[")
                 json_end = response.rfind("]") + 1
                 if json_start >= 0 and json_end > json_start:
-                    return json.loads(response[json_start:json_end])
-            except:
-                pass
+                    extracted_dms = json.loads(response[json_start:json_end])
+                    
+                    # Method 5: Try Hunter email finder for extracted names
+                    if self.hunter and extracted_dms:
+                        for dm in extracted_dms:
+                            name_parts = dm.get("name", "").split()
+                            if len(name_parts) >= 2:
+                                first_name = name_parts[0]
+                                last_name = name_parts[-1]
+                                try:
+                                    hunter_result = await self.hunter.find_email(domain, first_name, last_name)
+                                    if hunter_result and hunter_result.get("email"):
+                                        dm["email"] = hunter_result["email"]
+                                        dm["source"] = "hunter.io (finder)"
+                                        print(f"[Hunter] Found email for {dm['name']}: {hunter_result['email']}")
+                                except Exception as e:
+                                    print(f"[Hunter] Email finder failed for {dm['name']}: {e}")
+                    
+                    return extracted_dms
+            except Exception as e:
+                print(f"[Research] LLM extraction failed: {e}")
         
         # Fallback
         return [

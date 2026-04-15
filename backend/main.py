@@ -150,7 +150,7 @@ async def health():
     import os
     return {
         "status": "ok",
-        "version": "1.3.4",
+        "version": "1.3.5",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "ai_models": get_model_info(),
         "service": "rivaledge-api",
