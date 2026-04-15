@@ -323,6 +323,8 @@ Return ONLY a JSON object with these fields:
     
     async def find_decision_makers(self, domain: str, company_name: str) -> List[Dict]:
         """Find decision-makers at the company using multiple methods."""
+        print(f"[Research] Finding decision makers for {domain}")
+        print(f"[Research] Hunter client available: {self.hunter is not None}")
         
         decision_makers = []
         
