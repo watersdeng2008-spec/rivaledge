@@ -15,11 +15,11 @@ from datetime import datetime, timezone
 from typing import List, Dict, Optional, Literal
 from dataclasses import dataclass, asdict
 
-# API Keys from environment
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "")
-INSTANTLY_API_KEY = os.environ.get("INSTANTLY_API_KEY", "")
-HUNTER_API_KEY = os.environ.get("HUNTER_API_KEY", "")
+# API Keys from environment (strip whitespace to avoid header errors)
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
+FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "").strip()
+INSTANTLY_API_KEY = os.environ.get("INSTANTLY_API_KEY", "").strip()
+HUNTER_API_KEY = os.environ.get("HUNTER_API_KEY", "").strip()
 
 DEFAULT_MODEL = "qwen/qwen-2.5-72b-instruct"
 
