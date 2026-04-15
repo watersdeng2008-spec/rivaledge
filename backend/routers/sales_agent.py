@@ -172,7 +172,6 @@ async def test_sales_agent_run(
 ):
     """
     Test endpoint with simple secret key (no Clerk auth required).
-    Uses self-healing orchestrator v2.
     Secret should match SALES_AGENT_TEST_SECRET env var.
     """
     import os
@@ -184,12 +183,12 @@ async def test_sales_agent_run(
         raise HTTPException(status_code=403, detail="Invalid secret")
     
     try:
-        # Use the new v2 cron with self-healing
+        # Use the original cron
         result = subprocess.run(
-            [sys.executable, "-m", "cron.sales_agent_cron_v2", str(target_count)],
+            [sys.executable, "-m", "cron.sales_agent_cron", str(target_count)],
             capture_output=True,
             text=True,
-            timeout=600,
+            timeout=300,
             cwd="/app"
         )
         
