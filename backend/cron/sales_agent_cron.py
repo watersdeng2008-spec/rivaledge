@@ -94,6 +94,8 @@ def add_to_instantly(email: str, first_name: str, company: str, title: str,
             "Content-Type": "application/json",
         }
         
+        # Instantly API v2 expects personalization as custom fields, not nested object
+        # Store the personalized content in custom fields
         payload = {
             "campaign_id": INSTANTLY_CAMPAIGN_ID,
             "email": email,
@@ -101,9 +103,10 @@ def add_to_instantly(email: str, first_name: str, company: str, title: str,
             "last_name": "",
             "company_name": company,
             "title": title,
-            "personalization": {
-                "subject": personalized_subject,
-                "body": personalized_body,
+            # Custom variables for email templates - these become {{variable}} in Instantly
+            "custom_variables": {
+                "personalized_subject": personalized_subject,
+                "personalized_body": personalized_body,
             }
         }
         
