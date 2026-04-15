@@ -525,6 +525,10 @@ class SalesAgentOrchestrator:
     
     async def process_company(self, domain: str, industry_hint: str = None) -> Dict:
         """Process a company through the full pipeline."""
+        print(f"[Orchestrator] Processing {domain}")
+        print(f"[Orchestrator] Hunter available: {self.hunter is not None}")
+        print(f"[Orchestrator] ResearchAgent hunter: {self.research.hunter is not None}")
+        
         results = {
             "domain": domain,
             "steps": [],
@@ -538,15 +542,19 @@ class SalesAgentOrchestrator:
             results["company"] = company_data
             results["steps"].append({"research": "completed", "data": company_data})
         except Exception as e:
+            print(f"[Orchestrator] Research failed: {e}")
             results["steps"].append({"research": "failed", "error": str(e)})
             return results
         
         # Step 2: Find decision-makers
+        print(f"[Orchestrator] Calling find_decision_makers for {domain}")
         try:
             decision_makers = await self.research.find_decision_makers(domain, company_data.get("company_name", domain))
+            print(f"[Orchestrator] Found {len(decision_makers)} decision makers")
             results["decision_makers"] = decision_makers
             results["steps"].append({"decision_makers": "completed", "count": len(decision_makers)})
         except Exception as e:
+            print(f"[Orchestrator] find_decision_makers failed: {e}")
             results["steps"].append({"decision_makers": "failed", "error": str(e)})
             return results
         
