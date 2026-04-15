@@ -129,8 +129,7 @@ class HunterClient:
     
     async def domain_search(self, domain: str, limit: int = 10) -> List[Dict]:
         """Find all emails for a domain."""
-        import logging
-        logger = logging.getLogger(__name__)
+        print(f"[Hunter] Searching domain: {domain}")
         
         async with httpx.AsyncClient() as client:
             response = await client.get(
@@ -142,12 +141,12 @@ class HunterClient:
                 },
                 timeout=30.0
             )
-            logger.info(f"Hunter domain search for {domain}: status {response.status_code}")
+            print(f"[Hunter] Response status: {response.status_code}")
             
             if response.status_code == 200:
                 data = response.json()
                 emails = data.get("data", {}).get("emails", [])
-                logger.info(f"Hunter found {len(emails)} emails for {domain}")
+                print(f"[Hunter] Found {len(emails)} total emails for {domain}")
                 
                 if not emails:
                     return []
@@ -164,16 +163,16 @@ class HunterClient:
                     if any(title in position for title in decision_maker_titles):
                         filtered.append(email)
                 
-                logger.info(f"Hunter filtered to {len(filtered)} decision makers for {domain}")
+                print(f"[Hunter] Filtered to {len(filtered)} decision makers for {domain}")
                 
                 # If no decision makers found, return first 3 emails anyway
                 if not filtered and emails:
-                    logger.info(f"No decision makers found, returning first {min(3, len(emails))} emails")
+                    print(f"[Hunter] No decision makers found, returning first {min(3, len(emails))} emails")
                     return emails[:3]
                 
                 return filtered[:5]  # Top 5
             else:
-                logger.error(f"Hunter API error: {response.status_code} - {response.text[:200]}")
+                print(f"[Hunter] API error: {response.status_code} - {response.text[:200]}")
             return []
 
 
