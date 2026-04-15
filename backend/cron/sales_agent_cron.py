@@ -28,23 +28,27 @@ INSTANTLY_CAMPAIGN_ID = "a0b77cca-5750-4048-a5f2-98c05fecce0f"  # RivalEdge Outr
 
 # Target companies by priority
 TARGETS = [
-    # Online Retail / E-commerce (high priority - proven market)
-    {"domain": "anker.com", "industry": "online_retail", "priority": 1},
-    {"domain": "belkin.com", "industry": "online_retail", "priority": 1},
-    {"domain": "ravpower.com", "industry": "online_retail", "priority": 2},
-    {"domain": "aukey.com", "industry": "online_retail", "priority": 2},
-    {"domain": "mophie.com", "industry": "online_retail", "priority": 2},
+    # SaaS / Software (better team pages)
+    {"domain": "notion.so", "industry": "saas", "priority": 1},
+    {"domain": "figma.com", "industry": "saas", "priority": 1},
+    {"domain": "linear.app", "industry": "saas", "priority": 2},
+    {"domain": "raycast.com", "industry": "saas", "priority": 2},
+    {"domain": "loom.com", "industry": "saas", "priority": 2},
+    {"domain": "cal.com", "industry": "saas", "priority": 2},
+    {"domain": "vercel.com", "industry": "saas", "priority": 2},
+    {"domain": "supabase.com", "industry": "saas", "priority": 2},
+    
+    # Online Retail / E-commerce
+    {"domain": "anker.com", "industry": "online_retail", "priority": 3},
+    {"domain": "belkin.com", "industry": "online_retail", "priority": 3},
+    {"domain": "ravpower.com", "industry": "online_retail", "priority": 3},
+    {"domain": "aukey.com", "industry": "online_retail", "priority": 3},
+    {"domain": "mophie.com", "industry": "online_retail", "priority": 3},
     {"domain": "nonda.co", "industry": "online_retail", "priority": 3},
     {"domain": "zendure.com", "industry": "online_retail", "priority": 3},
     {"domain": "ugreen.com", "industry": "online_retail", "priority": 3},
     {"domain": "baseus.com", "industry": "online_retail", "priority": 3},
     {"domain": "spigen.com", "industry": "online_retail", "priority": 3},
-    
-    # SaaS / Software (medium priority)
-    {"domain": "notion.so", "industry": "saas", "priority": 2},
-    {"domain": "figma.com", "industry": "saas", "priority": 2},
-    {"domain": "linear.app", "industry": "saas", "priority": 3},
-    {"domain": "raycast.com", "industry": "saas", "priority": 3},
     
     # Physical Therapy (experimental - Chuck's market)
     {"domain": "atipt.com", "industry": "physical_therapy", "priority": 3, "note": "Chuck's company - skip"},
