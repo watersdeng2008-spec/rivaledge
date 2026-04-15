@@ -129,6 +129,9 @@ class HunterClient:
     
     async def domain_search(self, domain: str, limit: int = 10) -> List[Dict]:
         """Find all emails for a domain."""
+        import logging
+        logger = logging.getLogger(__name__)
+        
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"{self.base_url}/domain-search",
@@ -139,20 +142,38 @@ class HunterClient:
                 },
                 timeout=30.0
             )
+            logger.info(f"Hunter domain search for {domain}: status {response.status_code}")
+            
             if response.status_code == 200:
                 data = response.json()
                 emails = data.get("data", {}).get("emails", [])
+                logger.info(f"Hunter found {len(emails)} emails for {domain}")
+                
+                if not emails:
+                    return []
+                
                 # Filter for decision makers
                 decision_maker_titles = [
                     "ceo", "founder", "chief", "vp", "vice president",
-                    "head of", "director", "manager", "lead"
+                    "head of", "director", "manager", "lead", "president",
+                    "cco", "cmo", "cto", "cfo"
                 ]
                 filtered = []
                 for email in emails:
                     position = email.get("position", "").lower()
                     if any(title in position for title in decision_maker_titles):
                         filtered.append(email)
+                
+                logger.info(f"Hunter filtered to {len(filtered)} decision makers for {domain}")
+                
+                # If no decision makers found, return first 3 emails anyway
+                if not filtered and emails:
+                    logger.info(f"No decision makers found, returning first {min(3, len(emails))} emails")
+                    return emails[:3]
+                
                 return filtered[:5]  # Top 5
+            else:
+                logger.error(f"Hunter API error: {response.status_code} - {response.text[:200]}")
             return []
 
 
