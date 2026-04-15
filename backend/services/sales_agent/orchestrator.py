@@ -126,6 +126,34 @@ class HunterClient:
                 if data.get("data") and data["data"].get("email"):
                     return data["data"]
             return None
+    
+    async def domain_search(self, domain: str, limit: int = 10) -> List[Dict]:
+        """Find all emails for a domain."""
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{self.base_url}/domain-search",
+                params={
+                    "domain": domain,
+                    "limit": limit,
+                    "api_key": self.api_key
+                },
+                timeout=30.0
+            )
+            if response.status_code == 200:
+                data = response.json()
+                emails = data.get("data", {}).get("emails", [])
+                # Filter for decision makers
+                decision_maker_titles = [
+                    "ceo", "founder", "chief", "vp", "vice president",
+                    "head of", "director", "manager", "lead"
+                ]
+                filtered = []
+                for email in emails:
+                    position = email.get("position", "").lower()
+                    if any(title in position for title in decision_maker_titles):
+                        filtered.append(email)
+                return filtered[:5]  # Top 5
+            return []
 
 
 class EmailTemplateManager:
@@ -227,9 +255,10 @@ Ben""",
 class ResearchAgent:
     """Agent for researching leads and extracting personalization data."""
     
-    def __init__(self, firecrawl: FirecrawlClient, openrouter: OpenRouterClient):
+    def __init__(self, firecrawl: FirecrawlClient, openrouter: OpenRouterClient, hunter: HunterClient = None):
         self.firecrawl = firecrawl
         self.openrouter = openrouter
+        self.hunter = hunter
     
     async def research_company(self, domain: str) -> Dict:
         """Research a company and extract key information."""
@@ -273,9 +302,33 @@ Return ONLY a JSON object with these fields:
             return {"error": str(e)}
     
     async def find_decision_makers(self, domain: str, company_name: str) -> List[Dict]:
-        """Find decision-makers at the company."""
+        """Find decision-makers at the company using multiple methods."""
         
-        # Try team/leadership pages
+        decision_makers = []
+        
+        # Method 1: Hunter.io domain search (most reliable)
+        if self.hunter:
+            try:
+                hunter_emails = await self.hunter.domain_search(domain)
+                if hunter_emails:
+                    for email_data in hunter_emails[:3]:
+                        first_name = email_data.get("first_name", "")
+                        last_name = email_data.get("last_name", "")
+                        position = email_data.get("position", "")
+                        if first_name and position:
+                            decision_makers.append({
+                                "name": f"{first_name} {last_name}".strip(),
+                                "title": position,
+                                "relevance": f"{position} would care about competitive positioning",
+                                "email": email_data.get("value", ""),
+                                "source": "hunter.io"
+                            })
+                    if decision_makers:
+                        return decision_makers
+            except Exception as e:
+                print(f"Hunter search failed: {e}")
+        
+        # Method 2: Try team/leadership pages
         team_urls = [
             f"https://{domain}/team",
             f"https://{domain}/about",
@@ -295,7 +348,7 @@ Return ONLY a JSON object with these fields:
             except:
                 continue
         
-        # Search for leadership if no team page
+        # Method 3: Search for leadership if no team page
         if not team_content:
             try:
                 search_result = await self.firecrawl.search(f"{company_name} CEO founder leadership team", limit=3)
@@ -305,7 +358,9 @@ Return ONLY a JSON object with these fields:
             except:
                 pass
         
-        prompt = f"""
+        # Method 4: Extract from content using LLM
+        if team_content:
+            prompt = f"""
 Extract decision-makers from this company information.
 
 Company: {company_name}
@@ -320,20 +375,20 @@ Return JSON array with objects containing:
 - title (exact job title)
 - relevance (why they care about competitor monitoring, 1 sentence)
 """
-        
-        try:
-            response = await self.openrouter.complete(prompt, max_tokens=800)
-            json_start = response.find("[")
-            json_end = response.rfind("]") + 1
-            if json_start >= 0 and json_end > json_start:
-                return json.loads(response[json_start:json_end])
-        except:
-            pass
+            
+            try:
+                response = await self.openrouter.complete(prompt, max_tokens=800)
+                json_start = response.find("[")
+                json_end = response.rfind("]") + 1
+                if json_start >= 0 and json_end > json_start:
+                    return json.loads(response[json_start:json_end])
+            except:
+                pass
         
         # Fallback
         return [
-            {"name": "CEO", "title": "Chief Executive Officer", "relevance": "Sets overall strategy"},
-            {"name": "VP Product", "title": "VP Product", "relevance": "Manages product strategy"},
+            {"name": "CEO", "title": "Chief Executive Officer", "relevance": "Sets overall strategy", "source": "fallback"},
+            {"name": "VP Product", "title": "VP Product", "relevance": "Manages product strategy", "source": "fallback"},
         ]
 
 
@@ -442,9 +497,9 @@ class SalesAgentOrchestrator:
     def __init__(self):
         self.firecrawl = FirecrawlClient(FIRECRAWL_API_KEY)
         self.openrouter = OpenRouterClient(OPENROUTER_API_KEY)
-        self.research = ResearchAgent(self.firecrawl, self.openrouter)
-        self.personalization = PersonalizationAgent(self.openrouter)
         self.hunter = HunterClient(HUNTER_API_KEY) if HUNTER_API_KEY else None
+        self.research = ResearchAgent(self.firecrawl, self.openrouter, self.hunter)
+        self.personalization = PersonalizationAgent(self.openrouter)
     
     async def process_company(self, domain: str, industry_hint: str = None) -> Dict:
         """Process a company through the full pipeline."""
