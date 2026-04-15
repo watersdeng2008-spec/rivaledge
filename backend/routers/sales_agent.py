@@ -125,6 +125,22 @@ async def sales_agent_public_status():
     }
 
 
+CRON_SECRET = os.environ.get("SALES_AGENT_CRON_SECRET", "rivaledge-test-2024")
+
+@router.post("/trigger-cron-public")
+async def trigger_sales_agent_cron_public(
+    target_count: int = Query(3, ge=1, le=10),
+    secret: str = Query(...),
+):
+    """
+    Public endpoint for cron-job.org to trigger sales agent.
+    Requires secret key for authentication.
+    """
+    if secret != CRON_SECRET:
+        raise HTTPException(status_code=401, detail="Invalid secret")
+    
+    return await _run_sales_agent_cron(target_count)
+
 @router.post("/trigger-cron")
 async def trigger_sales_agent_cron(
     target_count: int = Query(2, ge=1, le=10),
@@ -132,8 +148,12 @@ async def trigger_sales_agent_cron(
 ):
     """
     Manually trigger the sales agent cron job v2 (self-healing).
-    Use this to test or run on-demand.
+    Use this to test or run on-demand (admin only).
     """
+    return await _run_sales_agent_cron(target_count)
+
+async def _run_sales_agent_cron(target_count: int):
+    """Internal function to run the sales agent cron job."""
     import subprocess
     import sys
     
