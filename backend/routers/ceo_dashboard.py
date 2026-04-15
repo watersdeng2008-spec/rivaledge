@@ -108,12 +108,20 @@ def get_ceo_dashboard(
         # Get sales pipeline
         pipeline = _get_sales_pipeline(supabase)
         
+        # Get sales agent data
+        sales_agent = _get_sales_agent_data(supabase)
+        
+        # Get daily report
+        daily_report = _get_daily_report_data(supabase)
+        
         return CEODashboardData(
             registrations=registrations["stats"],
             recent_signups=registrations["completed"][:10],
             incomplete_signups=registrations["incomplete"][:10],
             revenue_metrics=revenue,
             sales_pipeline=pipeline,
+            sales_agent=sales_agent,
+            daily_report=daily_report,
         )
         
     except Exception as e:
@@ -405,4 +413,72 @@ def _get_sales_pipeline(supabase) -> Dict[str, Any]:
         "total_leads": len(leads),
         "by_status": by_status,
         "recent_emails": len(recent_emails.data),
+    }
+
+
+def _get_sales_agent_data(supabase) -> Dict[str, Any]:
+    """Get sales agent performance data."""
+    
+    # Get recent runs
+    runs = supabase.table("sales_agent_logs")\
+        .select("*")\
+        .order("started_at", desc=True)\
+        .limit(5)\
+        .execute()
+    
+    # Get today's stats (last 24 hours)
+    today = (datetime.utcnow() - timedelta(days=1)).isoformat()
+    today_runs = supabase.table("sales_agent_logs")\
+        .select("*")\
+        .gte("started_at", today)\
+        .execute()
+    
+    today_stats = {
+        "companies": sum(r.get("companies_processed", 0) for r in today_runs.data),
+        "decision_makers": sum(r.get("decision_makers_found", 0) for r in today_runs.data),
+        "emails_sent": sum(r.get("emails_added_to_instantly", 0) for r in today_runs.data),
+    }
+    
+    return {
+        "recent_runs": runs.data[:5] if runs.data else [],
+        "today_stats": today_stats,
+    }
+
+
+def _get_daily_report_data(supabase) -> Dict[str, Any]:
+    """Get yesterday's daily report data."""
+    
+    yesterday = (datetime.utcnow() - timedelta(days=1)).date().isoformat()
+    today = datetime.utcnow().date().isoformat()
+    
+    # New signups yesterday
+    new_users = supabase.table("users")\
+        .select("*")\
+        .gte("created_at", yesterday)\
+        .lt("created_at", today)\
+        .execute()
+    
+    # New leads
+    new_leads = supabase.table("leads")\
+        .select("*")\
+        .gte("created_at", yesterday)\
+        .lt("created_at", today)\
+        .execute()
+    
+    # Email engagement
+    email_engagement = supabase.table("email_sequences")\
+        .select("*")\
+        .gte("created_at", yesterday)\
+        .lt("created_at", today)\
+        .execute()
+    
+    replies = [e for e in email_engagement.data if e.get("replied_at")]
+    
+    return {
+        "date": yesterday,
+        "new_signups": len(new_users.data),
+        "new_leads": len(new_leads.data),
+        "emails_sent": len(email_engagement.data),
+        "email_replies": len(replies),
+        "hot_leads": len(replies),
     }

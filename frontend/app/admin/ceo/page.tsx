@@ -14,6 +14,15 @@ interface User {
   onboarding_completed?: boolean;
 }
 
+interface SalesAgentRun {
+  run_id: string;
+  started_at: string;
+  companies_processed: number;
+  decision_makers_found: number;
+  emails_generated: number;
+  emails_added_to_instantly: number;
+}
+
 interface DashboardData {
   registrations: {
     total_registrations: number;
@@ -38,6 +47,22 @@ interface DashboardData {
     total_leads: number;
     by_status: Record<string, number>;
     recent_emails: number;
+  };
+  sales_agent?: {
+    recent_runs: SalesAgentRun[];
+    today_stats: {
+      companies: number;
+      decision_makers: number;
+      emails_sent: number;
+    };
+  };
+  daily_report?: {
+    date: string;
+    new_signups: number;
+    new_leads: number;
+    emails_sent: number;
+    email_replies: number;
+    hot_leads: number;
   };
 }
 
@@ -216,6 +241,88 @@ export default function CEODashboard() {
           </div>
         </div>
 
+        {/* Sales Agent Section */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">🤖 Sales Agent</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={downloadLinkedInCSV}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+              >
+                📥 Download LinkedIn CSV
+              </button>
+              <button
+                onClick={triggerSalesAgent}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
+              >
+                ▶️ Run Now
+              </button>
+            </div>
+          </div>
+          
+          {data.sales_agent ? (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <StatCard
+                title="Today's Companies"
+                value={data.sales_agent.today_stats.companies}
+                subtitle="Processed"
+              />
+              <StatCard
+                title="Decision Makers"
+                value={data.sales_agent.today_stats.decision_makers}
+                subtitle="Identified"
+              />
+              <StatCard
+                title="Emails Sent"
+                value={data.sales_agent.today_stats.emails_sent}
+                subtitle="To Instantly"
+              />
+              <StatCard
+                title="Status"
+                value="✅ Active"
+                subtitle="Daily at 9 AM"
+              />
+            </div>
+          ) : (
+            <div className="text-gray-500">Sales agent data loading...</div>
+          )}
+        </div>
+
+        {/* Daily Report */}
+        {data.daily_report && (
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">📊 Yesterday's Report ({data.daily_report.date})</h2>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <StatCard
+                title="New Signups"
+                value={data.daily_report.new_signups}
+                subtitle="Users"
+              />
+              <StatCard
+                title="New Leads"
+                value={data.daily_report.new_leads}
+                subtitle="Added"
+              />
+              <StatCard
+                title="Emails Sent"
+                value={data.daily_report.emails_sent}
+                subtitle="Outreach"
+              />
+              <StatCard
+                title="Replies"
+                value={data.daily_report.email_replies}
+                subtitle="Responses"
+              />
+              <StatCard
+                title="Hot Leads"
+                value={data.daily_report.hot_leads}
+                subtitle="Priority"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Incomplete Signups */}
         {data.incomplete_signups.length > 0 && (
           <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -244,6 +351,62 @@ export default function CEODashboard() {
       </div>
     </div>
   );
+
+  async function downloadLinkedInCSV() {
+    try {
+      const token = await getToken();
+      const response = await fetch(`${API_URL}/api/admin/sales-agent/linkedin-csv?days=7`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        alert("Failed to download CSV");
+        return;
+      }
+
+      const data = await response.json();
+      
+      // Create and download CSV file
+      const blob = new Blob([data.csv], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = data.filename || "linkedin_leads.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Error downloading CSV: " + err);
+    }
+  }
+
+  async function triggerSalesAgent() {
+    try {
+      const token = await getToken();
+      const response = await fetch(`${API_URL}/api/admin/sales-agent/run?target_count=3`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        alert("Failed to trigger sales agent");
+        return;
+      }
+
+      const data = await response.json();
+      alert(`Sales agent triggered! Processed ${data.processed} companies.`);
+      
+      // Refresh dashboard
+      window.location.reload();
+    } catch (err) {
+      alert("Error triggering sales agent: " + err);
+    }
+  }
 }
 
 function StatCard({
