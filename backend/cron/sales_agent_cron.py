@@ -180,12 +180,27 @@ async def run_daily_sales_agent(target_count: int = 3):
                 "emails": emails,
             }
             
-            # Add to Instantly if we have emails
+            # Add to Instantly if we have emails with actual email addresses
             for email_data in result.get("emails", []):
-                # TODO: Extract email from Hunter or other source
-                # For now, just log that we would add it
-                print(f"  📧 Generated email for: {email_data.get('decision_maker', {}).get('name', 'Unknown')}")
-                # add_to_instantly(...)  # Uncomment when ready
+                dm = email_data.get('decision_maker', {})
+                email_address = dm.get('email', '')
+                first_name = dm.get('name', '').split()[0] if dm.get('name') else ''
+                company = result.get('company', {}).get('company_name', domain)
+                title = dm.get('title', '')
+                
+                if email_address:
+                    success = add_to_instantly(
+                        email=email_address,
+                        first_name=first_name,
+                        company=company,
+                        title=title,
+                        personalized_subject=email_data.get('subject', ''),
+                        personalized_body=email_data.get('body', '')
+                    )
+                    if success:
+                        results["emails_added_to_instantly"] += 1
+                else:
+                    print(f"  📧 Generated email for: {dm.get('name', 'Unknown')} (no email - manual research needed)")
             
             results["details"].append(detail)
             print(f"  ✅ Found {decision_makers} decision makers, {emails} emails")

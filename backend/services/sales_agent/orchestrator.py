@@ -159,7 +159,7 @@ class HunterClient:
                 ]
                 filtered = []
                 for email in emails:
-                    position = email.get("position", "").lower()
+                    position = (email.get("position") or "").lower()
                     if any(title in position for title in decision_maker_titles):
                         filtered.append(email)
                 
