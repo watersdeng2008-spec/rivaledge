@@ -38,6 +38,20 @@ def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     return current_user
 
 
+def require_admin_or_api_key(
+    current_user: dict = Depends(get_current_user),
+    api_key: str = Query(None)
+) -> dict:
+    """Require admin access OR valid API key (for Google Apps Script)."""
+    # Check if valid API key provided
+    expected_api_key = os.environ.get("CEO_DASHBOARD_API_KEY", "")
+    if api_key and expected_api_key and api_key == expected_api_key:
+        return {"sub": "api_key_access", "api_access": True}
+    
+    # Otherwise require admin auth
+    return require_admin(current_user)
+
+
 # ── Pydantic Models ───────────────────────────────────────────────────────────
 
 class UserRegistration(BaseModel):
@@ -86,7 +100,7 @@ def get_supabase_client():
 @router.get("/dashboard", response_model=CEODashboardData)
 def get_ceo_dashboard(
     days: int = Query(30, ge=1, le=90, description="Analysis period in days"),
-    current_user: dict = Depends(require_admin),
+    current_user: dict = Depends(require_admin_or_api_key),
 ):
     """
     Get CEO dashboard with all key metrics.
