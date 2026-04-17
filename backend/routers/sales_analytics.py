@@ -11,7 +11,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from auth import get_current_user
-from db.supabase import get_supabase
+from db.supabase import (
+    get_sales_agent_logs,
+    get_sales_leads,
+    get_sales_leads_by_statuses,
+    update_sales_lead,
+    get_sales_performance,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,17 +51,13 @@ async def get_performance(
     - Reply rates by industry
     - Best performing templates
     """
-    supabase = get_supabase()
-    
     # Get recent runs
     since = (datetime.utcnow() - timedelta(days=days)).isoformat()
     
-    logs_result = supabase.table("sales_agent_logs").select("*").gte("started_at", since).execute()
-    logs = logs_result.data or []
+    logs = get_sales_agent_logs(since=since)
     
     # Get leads
-    leads_result = supabase.table("sales_leads").select("*").gte("created_at", since).execute()
-    leads = leads_result.data or []
+    leads = get_sales_leads(since=since)
     
     # Calculate metrics
     total_companies = sum(log.get("companies_processed", 0) for log in logs)
@@ -136,18 +138,11 @@ async def get_recent_leads(
     current_user: dict = Depends(require_admin),
 ):
     """Get recent leads with optional status filter."""
-    supabase = get_supabase()
-    
-    query = supabase.table("sales_leads").select("*").order("created_at", desc=True).limit(limit)
-    
-    if status:
-        query = query.eq("status", status)
-    
-    result = query.execute()
+    leads = get_sales_leads(status=status, limit=limit)
     
     return {
-        "leads": result.data or [],
-        "count": len(result.data or []),
+        "leads": leads,
+        "count": len(leads),
     }
 
 
@@ -159,8 +154,6 @@ async def update_lead_status(
     current_user: dict = Depends(require_admin),
 ):
     """Update lead status (called by Instantly webhook)."""
-    supabase = get_supabase()
-    
     update_data = {
         "status": status,
         "updated_at": datetime.utcnow().isoformat(),
@@ -170,9 +163,9 @@ async def update_lead_status(
         update_data["reply_received_at"] = datetime.utcnow().isoformat()
         update_data["reply_content"] = reply_content
     
-    result = supabase.table("sales_leads").update(update_data).eq("id", lead_id).execute()
+    lead = update_sales_lead(lead_id, update_data)
     
-    return {"success": True, "lead": result.data[0] if result.data else None}
+    return {"success": True, "lead": lead}
 
 
 @router.get("/dashboard")
@@ -180,26 +173,24 @@ async def get_dashboard(
     current_user: dict = Depends(require_admin),
 ):
     """Get complete sales agent dashboard."""
-    supabase = get_supabase()
-    
     # Last 7 days
     week_ago = (datetime.utcnow() - timedelta(days=7)).isoformat()
     
     # Recent runs
-    runs_result = supabase.table("sales_agent_logs").select("*").gte("started_at", week_ago).order("started_at", desc=True).execute()
+    recent_runs = get_sales_agent_logs(since=week_ago)
     
     # Recent replies
-    replies_result = supabase.table("sales_leads").select("*").in_("status", ["replied", "positive"]).order("reply_received_at", desc=True).limit(10).execute()
+    recent_replies = get_sales_leads_by_statuses(["replied", "positive"], limit=10)
     
     # Performance by template
-    performance_result = supabase.table("sales_performance").select("*").order("reply_rate", desc=True).execute()
+    template_performance = get_sales_performance()
     
     return {
-        "recent_runs": runs_result.data or [],
-        "recent_replies": replies_result.data or [],
-        "template_performance": performance_result.data or [],
+        "recent_runs": recent_runs,
+        "recent_replies": recent_replies,
+        "template_performance": template_performance,
         "summary": {
-            "runs_this_week": len(runs_result.data or []),
-            "replies_this_week": len(replies_result.data or []),
+            "runs_this_week": len(recent_runs),
+            "replies_this_week": len(recent_replies),
         }
     }
