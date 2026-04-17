@@ -198,3 +198,65 @@ def get_sales_performance(limit: int = 100) -> list:
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
     data = r.json()
     return data if isinstance(data, list) else []
+
+
+# ── CEO Dashboard Tables ──────────────────────────────────────────────────────
+
+def get_subscriptions(status: Optional[str] = None) -> list:
+    """Get all subscriptions, optionally filtered by status."""
+    path = "subscriptions?order=created_at.desc"
+    if status:
+        path += f"&status=eq.{status}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_leads(since: Optional[str] = None, until: Optional[str] = None, limit: int = 200) -> list:
+    """Get leads, optionally filtered by creation date range."""
+    path = "leads?order=created_at.desc"
+    if since:
+        path += f"&created_at=gte.{since}"
+    if until:
+        path += f"&created_at=lt.{until}"
+    if limit:
+        path += f"&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_email_sequences(since: Optional[str] = None, until: Optional[str] = None, limit: int = 200) -> list:
+    """Get email sequence records, optionally filtered by creation date range."""
+    path = "email_sequences?order=created_at.desc"
+    if since:
+        path += f"&created_at=gte.{since}"
+    if until:
+        path += f"&created_at=lt.{until}"
+    if limit:
+        path += f"&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_personalized_emails(limit: int = 10) -> list:
+    """Get the most recently created personalized emails."""
+    path = f"personalized_emails?order=created_at.desc&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_users_since(since: Optional[str] = None, until: Optional[str] = None, limit: int = 200) -> list:
+    """Get users created within an optional date range."""
+    path = "users?order=created_at.desc"
+    if since:
+        path += f"&created_at=gte.{since}"
+    if until:
+        path += f"&created_at=lt.{until}"
+    if limit:
+        path += f"&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
