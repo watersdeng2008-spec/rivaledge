@@ -12,10 +12,10 @@ import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
-from auth import get_current_user
+from auth import get_current_user, get_optional_user
 from db.supabase import (
     get_users_since,
     get_subscriptions,
@@ -47,13 +47,23 @@ def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
 
 
 def require_admin_or_api_key(
-    current_user: dict = Depends(get_current_user),
     api_key: str = Query(None),
+    current_user: Optional[dict] = Depends(get_optional_user),
 ) -> dict:
     """Require admin access OR valid API key (for Google Apps Script)."""
     expected_api_key = os.environ.get("CEO_DASHBOARD_API_KEY", "")
+
+    # Check API key first — allows access without Clerk auth (e.g. Google Apps Script)
     if api_key and expected_api_key and api_key == expected_api_key:
         return {"sub": "api_key_access", "api_access": True}
+
+    # No valid API key — fall back to requiring an authenticated admin user
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     return require_admin(current_user)
 
