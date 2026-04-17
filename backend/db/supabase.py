@@ -146,3 +146,55 @@ def get_user_stripe_customer_id(user_id: str) -> Optional[str]:
 def update_user_stripe_customer_id(user_id: str, customer_id: str) -> bool:
     httpx.patch(_url(f"users?id=eq.{user_id}"), json={"stripe_customer_id": customer_id}, headers=_headers(), timeout=10)
     return True
+
+
+# ── Sales Analytics Tables ────────────────────────────────────────────────────
+
+def get_sales_agent_logs(since: Optional[str] = None, limit: int = 100) -> list:
+    """Get sales agent run logs, optionally filtered by a start timestamp."""
+    path = "sales_agent_logs?order=started_at.desc"
+    if since:
+        path += f"&started_at=gte.{since}"
+    if limit:
+        path += f"&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_sales_leads(since: Optional[str] = None, status: Optional[str] = None, limit: int = 100) -> list:
+    """Get sales leads, optionally filtered by creation date and/or status."""
+    path = "sales_leads?order=created_at.desc"
+    if since:
+        path += f"&created_at=gte.{since}"
+    if status:
+        path += f"&status=eq.{status}"
+    if limit:
+        path += f"&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_sales_leads_by_statuses(statuses: list, limit: int = 10) -> list:
+    """Get sales leads whose status is one of the provided values (PostgREST `in` filter)."""
+    status_list = ",".join(statuses)
+    path = f"sales_leads?status=in.({status_list})&order=reply_received_at.desc&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def update_sales_lead(lead_id: str, update_data: dict) -> Optional[dict]:
+    """Update a sales lead by ID."""
+    r = httpx.patch(_url(f"sales_leads?id=eq.{lead_id}"), json=update_data, headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
+
+
+def get_sales_performance(limit: int = 100) -> list:
+    """Get sales performance records ordered by reply rate descending."""
+    path = f"sales_performance?order=reply_rate.desc&limit={limit}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
