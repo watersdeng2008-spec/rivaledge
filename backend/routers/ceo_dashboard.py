@@ -13,6 +13,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from auth import get_current_user, get_optional_user
@@ -133,6 +134,225 @@ def get_ceo_dashboard(
 
     except Exception as e:
         logger.error(f"Failed to get CEO dashboard: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/dashboard-html", response_class=HTMLResponse)
+def get_ceo_dashboard_html(
+    days: int = Query(30, ge=1, le=90, description="Analysis period in days"),
+    current_user: dict = Depends(require_admin_or_api_key),
+):
+    """
+    Get CEO dashboard as a formatted HTML page.
+
+    Returns the same data as /dashboard but rendered as a styled HTML view
+    for easy reading directly in a browser.
+    """
+    try:
+        start_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+
+        registrations = _get_registrations(start_date, days)
+        revenue = _get_revenue_metrics(start_date)
+        pipeline = _get_sales_pipeline()
+
+        stats = registrations["stats"]
+        recent_signups = registrations["completed"][:10]
+        incomplete_signups = registrations["incomplete"][:10]
+
+        generated_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+
+        def _row(user: Dict[str, Any]) -> str:
+            email = user.get("email", "—")
+            company = user.get("company") or user.get("company_name") or "—"
+            plan = user.get("plan") or user.get("subscription_status") or "—"
+            created = user.get("created_at", "")
+            if created and "T" in str(created):
+                created = str(created).split("T")[0]
+            return (
+                f"<tr>"
+                f"<td style='padding:8px 12px;border-bottom:1px solid #e5e7eb;'>{email}</td>"
+                f"<td style='padding:8px 12px;border-bottom:1px solid #e5e7eb;'>{company}</td>"
+                f"<td style='padding:8px 12px;border-bottom:1px solid #e5e7eb;'>{plan}</td>"
+                f"<td style='padding:8px 12px;border-bottom:1px solid #e5e7eb;'>{created}</td>"
+                f"</tr>"
+            )
+
+        recent_rows = "".join(_row(u) for u in recent_signups) or (
+            "<tr><td colspan='4' style='padding:12px;text-align:center;color:#6b7280;'>No signups in this period</td></tr>"
+        )
+        incomplete_rows = "".join(_row(u) for u in incomplete_signups) or (
+            "<tr><td colspan='4' style='padding:12px;text-align:center;color:#6b7280;'>No incomplete signups</td></tr>"
+        )
+
+        pipeline_by_status_rows = "".join(
+            f"<tr>"
+            f"<td style='padding:6px 12px;border-bottom:1px solid #e5e7eb;text-transform:capitalize;'>{status_name}</td>"
+            f"<td style='padding:6px 12px;border-bottom:1px solid #e5e7eb;font-weight:600;'>{count}</td>"
+            f"</tr>"
+            for status_name, count in pipeline.get("by_status", {}).items()
+        ) or "<tr><td colspan='2' style='padding:12px;text-align:center;color:#6b7280;'>No pipeline data</td></tr>"
+
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEO Dashboard — RivalEdge</title>
+  <style>
+    *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      padding: 32px 16px;
+    }}
+    .container {{ max-width: 960px; margin: 0 auto; }}
+    h1 {{ font-size: 1.75rem; font-weight: 700; margin-bottom: 4px; }}
+    .subtitle {{ color: #6b7280; font-size: 0.875rem; margin-bottom: 32px; }}
+    .section {{ margin-bottom: 32px; }}
+    .section-title {{
+      font-size: 1rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #374151; margin-bottom: 12px;
+      padding-bottom: 6px; border-bottom: 2px solid #e5e7eb;
+    }}
+    .cards {{ display: flex; flex-wrap: wrap; gap: 16px; }}
+    .card {{
+      background: #fff; border-radius: 10px; padding: 20px 24px;
+      flex: 1 1 140px; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }}
+    .card-label {{ font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }}
+    .card-value {{ font-size: 1.5rem; font-weight: 700; color: #111827; }}
+    .card-value.green {{ color: #059669; }}
+    .card-value.blue {{ color: #2563eb; }}
+    table {{
+      width: 100%; border-collapse: collapse; background: #fff;
+      border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }}
+    thead {{ background: #f9fafb; }}
+    th {{
+      padding: 10px 12px; text-align: left; font-size: 0.75rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280;
+    }}
+    tr:last-child td {{ border-bottom: none !important; }}
+    @media (max-width: 600px) {{
+      .card {{ flex: 1 1 100%; }}
+      table {{ font-size: 0.85rem; }}
+    }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CEO Dashboard</h1>
+    <p class="subtitle">Last {days} days &nbsp;·&nbsp; Generated {generated_at}</p>
+
+    <!-- Registration Stats -->
+    <div class="section">
+      <div class="section-title">Registration Stats</div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Total Registrations</div>
+          <div class="card-value">{stats.total_registrations}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Completed Signups</div>
+          <div class="card-value blue">{stats.completed_signups}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Incomplete Signups</div>
+          <div class="card-value">{stats.incomplete_signups}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Trial Users</div>
+          <div class="card-value">{stats.trial_users}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Paying Customers</div>
+          <div class="card-value green">{stats.paying_customers}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Conversion Rate</div>
+          <div class="card-value green">{stats.conversion_rate}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Signups -->
+    <div class="section">
+      <div class="section-title">Recent Signups (last 10)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th><th>Company</th><th>Plan</th><th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>{recent_rows}</tbody>
+      </table>
+    </div>
+
+    <!-- Incomplete Signups -->
+    <div class="section">
+      <div class="section-title">Incomplete Signups (last 10)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th><th>Company</th><th>Plan</th><th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>{incomplete_rows}</tbody>
+      </table>
+    </div>
+
+    <!-- Revenue Metrics -->
+    <div class="section">
+      <div class="section-title">Revenue Metrics</div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">MRR</div>
+          <div class="card-value green">{revenue.get("mrr_formatted", "$0.00")}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Active Subscriptions</div>
+          <div class="card-value blue">{revenue.get("active_subscriptions", 0)}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">New Revenue (period)</div>
+          <div class="card-value green">{revenue.get("new_revenue_formatted", "$0.00")}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">New Subscriptions</div>
+          <div class="card-value">{revenue.get("new_subscriptions_period", 0)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales Pipeline -->
+    <div class="section">
+      <div class="section-title">Sales Pipeline</div>
+      <div class="cards" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-label">Total Leads</div>
+          <div class="card-value">{pipeline.get("total_leads", 0)}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Recent Emails</div>
+          <div class="card-value">{pipeline.get("recent_emails", 0)}</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Status</th><th>Count</th></tr>
+        </thead>
+        <tbody>{pipeline_by_status_rows}</tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>"""
+
+        return HTMLResponse(content=html, status_code=200)
+
+    except Exception as e:
+        logger.error(f"Failed to render CEO dashboard HTML: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
