@@ -20,6 +20,7 @@ from routers import feedback
 from routers import buffer as buffer_router
 from routers import ai_monitor
 from routers import sales as sales_router
+from routers import onboarding
 
 # Optional routers — log errors but don't crash if they fail
 try:
@@ -121,6 +122,7 @@ app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
+app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
     app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])

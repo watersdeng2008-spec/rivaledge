@@ -16,10 +16,11 @@ from services.sales_db import (
     get_lead,
     create_email_sequence,
     update_lead,
-    supabase,
+    get_supabase,
 )
 from services.ai import generate_sales_copy
 from services.instantly_client import InstantlyClient
+from services.entity_detector import enrich_lead
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +144,7 @@ class OutreachAgent:
         for email_id in email_ids:
             try:
                 # Fetch email and lead
-                email_result = supabase.table("personalized_emails")\
+                email_result = get_supabase().table("personalized_emails")\
                     .select("*, leads(*)")\
                     .eq("id", email_id)\
                     .single()\
@@ -169,10 +170,14 @@ class OutreachAgent:
         if not emails_to_send:
             return campaign_ids
         
-        # Create leads list for Instantly
+        # Create leads list for Instantly (with enrichment)
         leads = []
         for item in emails_to_send:
             lead = item["lead"]
+            
+            # Enrich lead data with entity detection
+            lead = self.enrich_lead_data(lead)
+            
             name = lead.get("name", "")
             name_parts = name.split() if name else ["", ""]
             
@@ -203,7 +208,7 @@ class OutreachAgent:
             
             # Update email statuses
             for item in emails_to_send:
-                supabase.table("personalized_emails")\
+                get_supabase().table("personalized_emails")\
                     .update({
                         "status": "sent",
                         "campaign_id": campaign_id,
@@ -239,6 +244,9 @@ class OutreachAgent:
         if not lead:
             logger.warning(f"Lead not found: {lead_id}")
             return None
+        
+        # Enrich lead data
+        lead = self.enrich_lead_data(lead)
         
         # Generate follow-up emails
         sequence_steps = self._generate_sequence(lead, initial_email)
@@ -350,7 +358,7 @@ Subject line should reference the previous email."""
                 return False
             
             # Find lead by email
-            lead_result = supabase.table("leads")\
+            lead_result = get_supabase().table("leads")\
                 .select("id")\
                 .eq("email", lead_email)\
                 .single()\
@@ -363,7 +371,7 @@ Subject line should reference the previous email."""
             lead_id = lead_result.data["id"]
             
             # Find email sequence by campaign_id
-            sequence_result = supabase.table("email_sequences")\
+            sequence_result = get_supabase().table("email_sequences")\
                 .select("*")\
                 .eq("campaign_id", campaign_id)\
                 .eq("lead_id", lead_id)\
@@ -379,7 +387,7 @@ Subject line should reference the previous email."""
             now = datetime.utcnow().isoformat()
             
             if event_type == "open":
-                supabase.table("email_sequences")\
+                get_supabase().table("email_sequences")\
                     .update({
                         "opened_at": now,
                         "open_count": sequence_data.get("open_count", 0) + 1,
@@ -388,7 +396,7 @@ Subject line should reference the previous email."""
                     .execute()
                 
             elif event_type == "click":
-                supabase.table("email_sequences")\
+                get_supabase().table("email_sequences")\
                     .update({
                         "clicked_at": now,
                         "click_count": sequence_data.get("click_count", 0) + 1,
@@ -397,7 +405,7 @@ Subject line should reference the previous email."""
                     .execute()
                 
             elif event_type == "reply":
-                supabase.table("email_sequences")\
+                get_supabase().table("email_sequences")\
                     .update({
                         "replied_at": now,
                     })\
@@ -415,6 +423,28 @@ Subject line should reference the previous email."""
         except Exception as e:
             logger.error(f"Failed to handle webhook: {e}")
             return False
+    
+    def enrich_lead_data(self, lead: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Enrich lead data with entity detection.
+        
+        Extracts company, role, industry from available lead info.
+        """
+        try:
+            enriched = enrich_lead(lead)
+            
+            # Merge enriched data with existing lead data
+            lead.update({
+                k: v for k, v in enriched.items()
+                if v is not None and (k not in lead or lead[k] is None)
+            })
+            
+            logger.info(f"Enriched lead: {lead.get('email')} -> {lead.get('company')}")
+            return lead
+            
+        except Exception as e:
+            logger.warning(f"Failed to enrich lead {lead.get('email')}: {e}")
+            return lead
     
     def test_connection(self) -> bool:
         """Test Instantly API connection."""

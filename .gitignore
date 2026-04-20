@@ -32,3 +32,5 @@ test-results/
 
 # Logs
 *.log
+.vercel
+.env*.local

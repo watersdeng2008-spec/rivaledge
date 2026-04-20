@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  camofox:
+    image: joainc/camofox-browser:latest
+    container_name: camofox-browser
+    ports:
+      - "9377:9377"
+    environment:
+      - PORT=9377
+      - CAMOFOX_API_KEY=${CAMOFOX_API_KEY}
+      - LOG_LEVEL=info
+    volumes:
+      - camofox-cookies:/app/cookies
+      - camofox-sessions:/app/sessions
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9377/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  camofox-cookies:
+  camofox-sessions:
