@@ -16,7 +16,7 @@ class OnboardingStep2(BaseModel):
 
 @router.post("/step/1")
 async def save_step_1(data: OnboardingStep1, current_user: dict = Depends(get_current_user)):
-    user_id = current_user["id"]
+    user_id = current_user["sub"]  # Clerk uses "sub" not "id"
     result = upsert_user(user_id, {
         "company_name": data.company_name,
         "company_url": data.company_url,
@@ -30,7 +30,7 @@ async def save_step_1(data: OnboardingStep1, current_user: dict = Depends(get_cu
 
 @router.post("/step/2")
 async def save_step_2(data: OnboardingStep2, current_user: dict = Depends(get_current_user)):
-    user_id = current_user["id"]
+    user_id = current_user["sub"]  # Clerk uses "sub" not "id"
     result = upsert_user(user_id, {
         "tracking_preferences": data.tracking_preferences,
         "onboarding_step": 2
