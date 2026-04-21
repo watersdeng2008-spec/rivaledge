@@ -124,6 +124,8 @@ app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
+app.include_router(email.router, prefix="/api/email", tags=["email"])
+app.include_router(email.router, prefix="/api/email", tags=["email"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
     app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])
