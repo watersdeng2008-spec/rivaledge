@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -7,12 +7,10 @@ import { useUser } from "@clerk/nextjs";
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    company_name: "",
-    company_url: "",
-    industry: "",
-    tracking_preferences: [] as string[],
-  });
+  const [companyName, setCompanyName] = useState("");
+  const [companyUrl, setCompanyUrl] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [trackingPrefs, setTrackingPrefs] = useState<string[]>([]);
   
   const router = useRouter();
   const { user, isLoaded } = useUser();
@@ -51,9 +49,9 @@ export default function OnboardingPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            company_name: formData.company_name,
-            company_url: formData.company_url,
-            industry: formData.industry,
+            company_name: companyName,
+            company_url: companyUrl,
+            industry: industry,
           }),
         });
         if (response.ok) setStep(2);
@@ -65,7 +63,7 @@ export default function OnboardingPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tracking_preferences: formData.tracking_preferences,
+            tracking_preferences: trackingPrefs,
           }),
         });
         if (response.ok) setStep(3);
@@ -78,12 +76,9 @@ export default function OnboardingPage() {
   };
 
   const toggleTracking = (id: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tracking_preferences: prev.tracking_preferences.includes(id)
-        ? prev.tracking_preferences.filter((t) => t !== id)
-        : [...prev.tracking_preferences, id],
-    }));
+    setTrackingPrefs((prev) => 
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
+    );
   };
 
   if (!isLoaded) return <div>Loading...</div>;return(
@@ -109,15 +104,39 @@ export default function OnboardingPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Company Name *</label>
-                <input type="text" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Acme Inc." />
+                <input 
+                  type="text" 
+                  name="companyName"
+                  id="companyName"
+                  value={companyName} 
+                  onChange={(e) => setCompanyName(e.target.value)} 
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
+                  placeholder="Acme Inc."
+                  autoComplete="off"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Company Website</label>
-                <input type="url" value={formData.company_url} onChange={(e) => setFormData({ ...formData, company_url: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="https://acme.com" />
+                <input 
+                  type="url" 
+                  name="companyUrl"
+                  id="companyUrl"
+                  value={companyUrl} 
+                  onChange={(e) => setCompanyUrl(e.target.value)} 
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
+                  placeholder="https://acme.com"
+                  autoComplete="off"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Industry</label>
-                <select value={formData.industry} onChange={(e) => setFormData({ ...formData, industry: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                <select 
+                  name="industry"
+                  id="industry"
+                  value={industry} 
+                  onChange={(e) => setIndustry(e.target.value)} 
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-black"
+                >
                   <option value="">Select an industry</option>
                   {industries.map((ind) => <option key={ind} value={ind}>{ind}</option>)}
                 </select>
@@ -133,8 +152,13 @@ export default function OnboardingPage() {
             <div className="space-y-3">
               {trackingOptions.map((option) => (
                 <label key={option.id} className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <input type="checkbox" checked={formData.tracking_preferences.includes(option.id)} onChange={() => toggleTracking(option.id)} className="w-4 h-4 text-blue-600 rounded" />
-                  <span className="ml-3">{option.label}</span>
+                  <input 
+                    type="checkbox"
+                    name={option.id}
+                    checked={trackingPrefs.includes(option.id)} 
+                    onChange={() => toggleTracking(option.id)} 
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />                  <span className="ml-3">{option.label}</span>
                 </label>
               ))}
             </div>
@@ -146,8 +170,9 @@ export default function OnboardingPage() {
             <h2 className="text-2xl font-bold mb-2">Add Competitors</h2>
             <p className="text-gray-600 mb-6">You&apos;ll add competitors in the next step. For now, let&apos;s preview what you&apos;ll get.</p>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Your Competitive Briefing will include:</h3>              <ul className="space-y-2 text-sm">
-                {formData.tracking_preferences.map((pref) => {
+              <h3 className="font-semibold mb-2">Your Competitive Briefing will include:</h3>
+              <ul className="space-y-2 text-sm">
+                {trackingPrefs.map((pref) => {
                   const option = trackingOptions.find((o) => o.id === pref);
                   return <li key={pref} className="flex items-center"><span className="w-2 h-2 bg-blue-600 rounded-full mr-2" />{option?.label}</li>;
                 })}
@@ -156,15 +181,16 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {step === 4 && (<div>
+        {step === 4 && (
+          <div>
             <h2 className="text-2xl font-bold mb-2">You&apos;re All Set!</h2>
-            <p className="text-gray-600 mb-6">Here&apos;s what we&apos;ll track for {formData.company_name}:</p>
+            <p className="text-gray-600 mb-6">Here&apos;s what we&apos;ll track for {companyName}:</p>
             <div className="bg-green-50 p-4 rounded-lg mb-6">
               <h3 className="font-semibold text-green-800 mb-2">Configuration Summary</h3>
               <ul className="space-y-1 text-sm text-green-700">
-                <li>Company: {formData.company_name}</li>
-                <li>Industry: {formData.industry || "Not specified"}</li>
-                <li>Tracking: {formData.tracking_preferences.length} items</li>
+                <li>Company: {companyName}</li>
+                <li>Industry: {industry || "Not specified"}</li>
+                <li>Tracking: {trackingPrefs.length} items</li>
               </ul>
             </div>
             <p className="text-gray-600">You&apos;ll receive your first competitive briefing tomorrow morning.</p>
@@ -173,7 +199,11 @@ export default function OnboardingPage() {
 
         <div className="mt-8 flex justify-between">
           {step > 1 && <button onClick={() => setStep(step - 1)} className="px-4 py-2 text-gray-600 hover:text-gray-800">Back</button>}
-          <button onClick={handleNext} disabled={loading || (step === 1 && !formData.company_name) || (step === 2 && formData.tracking_preferences.length === 0)} className="ml-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button 
+            onClick={handleNext} 
+            disabled={loading || (step === 1 && !companyName) || (step === 2 && trackingPrefs.length === 0)} 
+            className="ml-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {loading ? "Saving..." : step === 4 ? "Go to Dashboard" : "Next"}
           </button>
         </div>
