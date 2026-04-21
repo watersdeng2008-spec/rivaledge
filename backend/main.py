@@ -21,6 +21,7 @@ from routers import buffer as buffer_router
 from routers import ai_monitor
 from routers import sales as sales_router
 from routers import onboarding
+from routers import email
 
 # Optional routers — log errors but don't crash if they fail
 try:
