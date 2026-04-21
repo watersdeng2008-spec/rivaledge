@@ -200,6 +200,7 @@ function DashboardContent() {
                 CEO Dashboard
               </Link>
             )}
+            <Link href="/onboarding" className="text-slate-400 hover:text-white text-sm transition-colors">Onboarding</Link>
             <Link href="/admin/buffer" className="text-slate-400 hover:text-white text-sm transition-colors">
               Social Media
             </Link>
