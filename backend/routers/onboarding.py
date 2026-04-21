@@ -4,7 +4,7 @@ from typing import List, Optional
 from db.supabase import get_user, upsert_user
 from auth import get_current_user
 
-router = APIRouter(prefix="/onboarding", tags=["onboarding"])
+router = APIRouter(tags=["onboarding"])
 
 class OnboardingStep1(BaseModel):
     company_name: str
