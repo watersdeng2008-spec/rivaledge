@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
@@ -14,6 +14,7 @@ export default function OnboardingPage() {
   
   const router = useRouter();
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -42,12 +43,21 @@ export default function OnboardingPage() {
   ];
 
   const handleNext = async () => {
+    // Get Clerk session token
+    const token = await getToken();
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     if (step === 1) {
       setLoading(true);
       try {
         const response = await fetch("/api/onboarding/step/1", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             company_name: companyName,
             company_url: companyUrl,
@@ -55,18 +65,26 @@ export default function OnboardingPage() {
           }),
         });
         if (response.ok) setStep(2);
+        else {
+          const error = await response.json();
+          console.error("Step 1 error:", error);
+        }
       } finally { setLoading(false); }
     } else if (step === 2) {
       setLoading(true);
       try {
         const response = await fetch("/api/onboarding/step/2", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             tracking_preferences: trackingPrefs,
           }),
         });
         if (response.ok) setStep(3);
+        else {
+          const error = await response.json();
+          console.error("Step 2 error:", error);
+        }
       } finally { setLoading(false); }
     } else if (step === 3) {
       setStep(4);
@@ -81,7 +99,8 @@ export default function OnboardingPage() {
     );
   };
 
-  if (!isLoaded) return <div>Loading...</div>;return(
+  if (!isLoaded) return <div>Loading...</div>;
+  if (!user) return <div>Redirecting to sign in...</div>;return(
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <div className="mb-8">
@@ -168,7 +187,7 @@ export default function OnboardingPage() {
         {step === 3 && (
           <div>
             <h2 className="text-2xl font-bold mb-2">Add Competitors</h2>
-            <p className="text-gray-600 mb-6">You&apos;ll add competitors in the next step. For now, let&apos;s preview what you&apos;ll get.</p>
+            <p className="text-gray-600 mb-6">You&apos;ll add competitors in the next step. For now, let&apos;s preview whatyou&apos;ll get.</p>
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold mb-2">Your Competitive Briefing will include:</h3>
               <ul className="space-y-2 text-sm">
