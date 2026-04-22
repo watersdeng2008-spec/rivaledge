@@ -15,3 +15,8 @@ command = "python -m cron.onboarding_email"
 name = "sales-agent-daily"
 schedule = "0 14 * * *"  # 9:00 AM CST (14:00 UTC)
 command = "python -m cron.sales_agent_cron 10"
+
+[[cron]]
+name = "automated-emails"
+schedule = "0 9 * * 1" # Every Monday at 9:00 AM UTC (4:00 AM CST)
+command = "python cron/automated_emails.py"
