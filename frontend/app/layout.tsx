@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import Script from 'next/script';
-// import { PHProvider } from './providers'; // Temporarily disabled - debugging React DOM crash
+import { PHProvider } from './providers';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -50,7 +50,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
+      <PHProvider>
           {children}
+      </PHProvider>
 
           {/* Google Analytics — lazyOnload to avoid appendChild crash */}
           {GA_ID && (
