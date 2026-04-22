@@ -22,6 +22,7 @@ from routers import ai_monitor
 from routers import sales as sales_router
 from routers import onboarding
 from routers import email
+from routers import admin_upgrade
 
 # Optional routers — log errors but don't crash if they fail
 try:

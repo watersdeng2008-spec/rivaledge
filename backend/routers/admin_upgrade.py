@@ -10,7 +10,7 @@ from db.supabase import get_supabase_client
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/admin", tags=["Admin"])
+router = APIRouter(tags=["Admin"])
 
 # Admin user IDs (Clerk user IDs)
 ADMIN_USER_IDS = [
@@ -36,7 +36,7 @@ class UpgradeResponse(BaseModel):
     message: str
 
 
-@router.post("/upgrade-user", response_model=UpgradeResponse)
+@router.post("/admin/upgrade-user", response_model=UpgradeResponse)
 def admin_upgrade_user(
     user_email: str = Query(..., description="Email of user to upgrade"),
     plan: str = Query("pro", enum=["solo", "pro"]),
