@@ -2,11 +2,12 @@
 Admin user upgrade endpoint
 """
 import logging
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from auth import get_current_user
-from db.supabase import get_supabase_client
+import db.supabase as db
 
 logger = logging.getLogger(__name__)
 
@@ -46,21 +47,26 @@ def admin_upgrade_user(
     Admin endpoint to manually upgrade any user to Pro or Solo.
     """
     try:
-        supabase = get_supabase_client()
+        # Find user by email using raw HTTP
+        url = db._url(f"users?email=eq.{user_email}&limit=1")
+        r = httpx.get(url, headers=db._headers(), timeout=10)
+        users = r.json()
         
-        # Find user by email
-        result = supabase.table("users").select("*").eq("email", user_email).execute()
-        
-        if not result.data or len(result.data) == 0:
+        if not isinstance(users, list) or len(users) == 0:
             raise HTTPException(
                 status_code=404,
                 detail=f"User with email {user_email} not found"
             )
         
-        # Update user plan
-        update_result = supabase.table("users").update({"plan": plan}).eq("email", user_email).execute()
+        user_id = users[0].get("id")
         
-        if update_result.data:
+        # Update user plan using raw HTTP
+        update_url = db._url(f"users?id=eq.{user_id}")
+        headers = {**db._headers(), "Prefer": "return=representation"}
+        update_r = httpx.patch(update_url, json={"plan": plan}, headers=headers, timeout=10)
+        updated = update_r.json()
+        
+        if isinstance(updated, list) and len(updated) > 0:
             return {
                 "success": True,
                 "user_email": user_email,
