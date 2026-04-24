@@ -255,7 +255,7 @@ DIGEST_SYSTEM = """You are a competitive intelligence analyst for RivalEdge. Gen
 Requirements:
 1. First line must be: <!-- SUBJECT: [subject line] -->
 2. Use inline CSS, max-width 600px, dark background (#0f172a), white text, mobile-responsive
-3. Header: "Your RivalEdge Weekly Brief"
+3. Header: "Your RivalEdge Weekly Brief" - include the actual date (not a placeholder)
 4. ALWAYS include a "Competitor Snapshot" section for ALL competitors with:
    - Competitor name + URL as a section header
    - Current pricing (if known)
@@ -265,7 +265,9 @@ Requirements:
 6. For competitors with NO changes: show the snapshot with a note "No changes detected this week"
 7. Footer with: {{unsubscribe_url}} placeholder
 8. Keep tone sharp and actionable — like a briefing from a sharp analyst
-9. End with a "What to watch" section: 1-2 strategic observations about the competitive landscape"""
+9. End with a "What to watch" section: 1-2 strategic observations about the competitive landscape
+
+IMPORTANT: Use the actual current date provided in the prompt. Do NOT use placeholders like {{current_date}}."""
 
 
 def generate_weekly_digest(user_email: str, competitors_with_diffs: list[dict]) -> str:
@@ -273,6 +275,11 @@ def generate_weekly_digest(user_email: str, competitors_with_diffs: list[dict]) 
     Generate a full HTML email digest for the user.
     Cached per user per week based on competitor data hash.
     """
+    from datetime import datetime
+    
+    # Get current date for the digest
+    current_date = datetime.now().strftime("%B %d, %Y")
+    
     # Build context
     changed = [c for c in competitors_with_diffs if c.get("diff_result", {}).get("has_changes")]
     unchanged = [c for c in competitors_with_diffs if not c.get("diff_result", {}).get("has_changes")]
@@ -332,6 +339,8 @@ def generate_weekly_digest(user_email: str, competitors_with_diffs: list[dict]) 
     
     prompt = f"""Generate a weekly competitor digest email for {user_email}.
 
+CURRENT DATE: {current_date}
+
 Summary: {change_count} competitor(s) with changes, {high_sig_count} high-significance.
 
 COMPETITORS WITH CHANGES:
@@ -340,7 +349,7 @@ COMPETITORS WITH CHANGES:
 COMPETITORS WITH NO CHANGES:
 {', '.join(unchanged_names) if unchanged_names else "None"}
 
-Generate a complete HTML email following the system instructions."""
+Generate a complete HTML email following the system instructions. Use the CURRENT DATE ({current_date}) in the header, not a placeholder."""
     
     return _call_ai(
         system=DIGEST_SYSTEM,
