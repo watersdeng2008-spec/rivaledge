@@ -28,6 +28,8 @@ pytest==8.3.4
 pytest-asyncio==0.24.0
 # Rate limiting
 slowapi==0.1.9
+# Retry logic
+tenacity>=8.0.0
 # Form data parsing (required for file uploads)
 python-multipart>=0.0.9
 # Dev
