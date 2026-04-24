@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from auth import get_current_user
-from db.supabase import get_supabase_client
+from db.supabase import get_user_by_email, update_user_plan
 
 logger = logging.getLogger(__name__)
 
@@ -46,33 +46,25 @@ def admin_upgrade_user(
     Admin endpoint to manually upgrade any user to Pro or Solo.
     """
     try:
-        supabase = get_supabase_client()
-        
         # Find user by email
-        result = supabase.table("users").select("*").eq("email", user_email).execute()
-        
-        if not result.data or len(result.data) == 0:
+        user = get_user_by_email(user_email)
+
+        if not user:
             raise HTTPException(
                 status_code=404,
                 detail=f"User with email {user_email} not found"
             )
-        
+
         # Update user plan
-        update_result = supabase.table("users").update({"plan": plan}).eq("email", user_email).execute()
-        
-        if update_result.data:
-            return {
-                "success": True,
-                "user_email": user_email,
-                "plan": plan,
-                "message": f"User upgraded to {plan} successfully"
-            }
-        else:
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to update user plan"
-            )
-            
+        update_user_plan(user.get("id"), plan)
+
+        return {
+            "success": True,
+            "user_email": user_email,
+            "plan": plan,
+            "message": f"User upgraded to {plan} successfully"
+        }
+
     except HTTPException:
         raise
     except Exception as e:
