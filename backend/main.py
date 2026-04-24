@@ -11,6 +11,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from rate_limit import limiter
+from services.analytics import track_page_view, track_event
 from routers import competitors, users, webhooks
 from routers import jobs
 from routers import digest
@@ -24,6 +25,7 @@ from routers import onboarding
 from routers import email
 from routers import admin_upgrade
 from routers import test_email
+from routers import analytics
 
 # Optional routers — log errors but don't crash if they fail
 try:
@@ -113,6 +115,37 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+# Analytics middleware - track API requests
+@app.middleware("http")
+async def analytics_middleware(request: Request, call_next):
+    """Track API requests in PostHog"""
+    response = await call_next(request)
+    
+    # Track page views for GET requests
+    if request.method == "GET" and not request.url.path.startswith(("/health", "/debug", "/admin/cache")):
+        try:
+            # Get user ID from request state if available
+            user_id = getattr(request.state, "user_id", None)
+            
+            track_page_view(
+                user_id=user_id,
+                page_path=request.url.path,
+                page_title=f"API: {request.url.path}",
+                referrer=request.headers.get("referer", ""),
+                properties={
+                    "method": request.method,
+                    "status_code": response.status_code,
+                    "user_agent": request.headers.get("user-agent", "")
+                }
+            )
+        except Exception:
+            # Don't let analytics errors break the app
+            pass
+    
+    return response
+
+
 # Routers
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(competitors.router, prefix="/api/competitors", tags=["competitors"])
@@ -128,6 +161,7 @@ app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
 app.include_router(email.router, prefix="/api/email", tags=["email"])
 app.include_router(test_email.router, prefix="/test", tags=["test"])
+app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
     app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])

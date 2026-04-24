@@ -34,3 +34,5 @@ tenacity>=8.0.0
 python-multipart>=0.0.9
 # Dev
 python-dotenv==1.0.1
+# Analytics
+posthog==3.5.0
