@@ -7,7 +7,7 @@ from services.email_service import send_welcome_email
 
 router = APIRouter(tags=["Test"])
 
-@router.post("/test/send-welcome")
+@router.post("/send-welcome")
 async def test_send_welcome(
     to_email: str = Query(..., description="Recipient email"),
     to_name: str = Query(default="Test User", description="Recipient name"),
