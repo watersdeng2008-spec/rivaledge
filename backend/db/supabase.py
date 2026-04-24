@@ -260,3 +260,94 @@ def get_users_since(since: Optional[str] = None, until: Optional[str] = None, li
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
     data = r.json()
     return data if isinstance(data, list) else []
+
+
+# ── Price Tracking ────────────────────────────────────────────────────────────
+
+def get_users_with_price_tracking() -> list:
+    """Get all users who have enabled price tracking."""
+    r = httpx.get(
+        _url("users?track_pricing=eq.true&select=*"),
+        headers=_headers(),
+        timeout=10
+    )
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def get_competitors_with_price_tracking(user_id: str) -> list:
+    """Get competitors for a user that have price tracking enabled."""
+    r = httpx.get(
+        _url(f"competitors?user_id=eq.{user_id}&track_pricing=eq.true&select=*"),
+        headers=_headers(),
+        timeout=10
+    )
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def update_user_price_tracking(user_id: str, track_pricing: bool, alert_threshold: float = 0.02) -> bool:
+    """Update user's price tracking preferences."""
+    payload = {
+        "track_pricing": track_pricing,
+        "price_alert_threshold": alert_threshold
+    }
+    r = httpx.patch(_url(f"users?id=eq.{user_id}"), json=payload, headers=_headers(), timeout=10)
+    return r.status_code in [200, 204]
+
+
+def update_competitor_price_tracking(competitor_id: str, track_pricing: bool, retail_channels: list = None) -> bool:
+    """Update competitor's price tracking settings."""
+    payload = {"track_pricing": track_pricing}
+    if retail_channels:
+        payload["retail_channels"] = retail_channels
+    r = httpx.patch(_url(f"competitors?id=eq.{competitor_id}"), json=payload, headers=_headers(), timeout=10)
+    return r.status_code in [200, 204]
+
+
+def get_price_history(competitor_id: str, limit: int = 50) -> list:
+    """Get price history for a competitor."""
+    r = httpx.get(
+        _url(f"price_history?competitor_id=eq.{competitor_id}&order=checked_at.desc&limit={limit}"),
+        headers=_headers(),
+        timeout=10
+    )
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def create_price_alert(user_id: str, competitor_id: str, old_price: float, new_price: float, change_percent: float, channel: str) -> dict:
+    """Create a price alert record."""
+    payload = {
+        "user_id": user_id,
+        "competitor_id": competitor_id,
+        "old_price": old_price,
+        "new_price": new_price,
+        "change_percent": change_percent,
+        "channel": channel,
+        "status": "pending"  # pending, sent, dismissed
+    }
+    r = httpx.post(_url("price_alerts"), json=payload, headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else payload
+
+
+def get_pending_price_alerts(user_id: str = None) -> list:
+    """Get pending price alerts, optionally filtered by user."""
+    path = "price_alerts?status=eq.pending&order=created_at.desc"
+    if user_id:
+        path += f"&user_id=eq.{user_id}"
+    r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    data = r.json()
+    return data if isinstance(data, list) else []
+
+
+def mark_price_alert_sent(alert_id: str) -> bool:
+    """Mark a price alert as sent."""
+    from datetime import datetime, timezone
+    payload = {
+        "status": "sent",
+        "sent_at": datetime.now(timezone.utc).isoformat()
+    }
+    r = httpx.patch(_url(f"price_alerts?id=eq.{alert_id}"), json=payload, headers=_headers(), timeout=10)
+    return r.status_code in [200, 204]

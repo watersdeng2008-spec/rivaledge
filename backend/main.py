@@ -26,6 +26,7 @@ from routers import email
 from routers import admin_upgrade
 from routers import test_email
 from routers import analytics
+from routers import price_tracking
 
 # Optional routers — log errors but don't crash if they fail
 try:
@@ -162,6 +163,7 @@ app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboardin
 app.include_router(email.router, prefix="/api/email", tags=["email"])
 app.include_router(test_email.router, prefix="/test", tags=["test"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
+app.include_router(price_tracking.router, prefix="/api", tags=["price_tracking"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
     app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])
