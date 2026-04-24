@@ -518,6 +518,26 @@ def get_daily_report(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/campaign-stats")
+def get_campaign_stats_endpoint(
+    current_user: dict = Depends(require_admin),
+):
+    """
+    Get Instantly campaign statistics.
+
+    Shows opens, clicks, replies, and hot leads.
+    """
+    try:
+        stats = _get_instantly_campaign_stats()
+        return {
+            "success": True,
+            "campaign": stats,
+        }
+    except Exception as e:
+        logger.error(f"Failed to get campaign stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── Internal Helper Functions ────────────────────────────────────────────────
 
 def _get_registrations(start_date: str, period_days: int) -> Dict:
@@ -602,6 +622,42 @@ def _get_sales_agent_data() -> Dict[str, Any]:
         "recent_runs": recent_runs[:5],
         "today_stats": today_stats,
     }
+
+
+def _get_instantly_campaign_stats() -> Dict[str, Any]:
+    """Get Instantly campaign performance stats."""
+    import subprocess
+    import json
+    import os
+
+    INSTANTLY_KEY = os.environ.get("INSTANTLY_API_KEY", "")
+    CAMPAIGN_ID = "a0b77cca-5750-4048-a5f2-98c05fecce0f"
+
+    if not INSTANTLY_KEY:
+        return {"error": "Instantly API key not configured"}
+
+    try:
+        # Get campaign data
+        result = subprocess.run([
+            'curl', '-s',
+            f'https://api.instantly.ai/api/v2/campaigns/{CAMPAIGN_ID}',
+            '-H', f'Authorization: Bearer {INSTANTLY_KEY}'
+        ], capture_output=True, text=True, timeout=10)
+
+        campaign = json.loads(result.stdout)
+
+        return {
+            "campaign_name": campaign.get("name", "Unknown"),
+            "status": "ACTIVE" if campaign.get("status") == 1 else "INACTIVE",
+            "total_leads": campaign.get("leads_count", 0),
+            "emails_sent": campaign.get("emails_sent", 0),
+            "emails_opened": campaign.get("emails_opened", 0),
+            "emails_replied": campaign.get("emails_replied", 0),
+            "open_rate": campaign.get("open_rate", 0),
+            "reply_rate": campaign.get("reply_rate", 0),
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def _get_daily_report_data() -> Dict[str, Any]:
