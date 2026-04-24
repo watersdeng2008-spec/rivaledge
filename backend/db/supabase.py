@@ -133,6 +133,12 @@ def get_all_active_users() -> list:
     return data if isinstance(data, list) else []
 
 
+def get_user_by_email(email: str) -> Optional[dict]:
+    r = httpx.get(_url(f"users?email=eq.{email}&limit=1"), headers=_headers(), timeout=10)
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
+
+
 def update_user_plan(user_id: str, plan: str) -> bool:
     httpx.patch(_url(f"users?id=eq.{user_id}"), json={"plan": plan}, headers=_headers(), timeout=10)
     return True
