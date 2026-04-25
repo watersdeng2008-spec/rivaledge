@@ -20,3 +20,8 @@ command = "python -m cron.sales_agent_cron 10"
 name = "automated-emails"
 schedule = "0 9 * * 1" # Every Monday at 9:00 AM UTC (4:00 AM CST)
 command = "python cron/automated_emails.py"
+
+[[cron]]
+name = "posthog-monitor"
+schedule = "0 */4 * * *"  # Every 4 hours
+command = "python -m cron.posthog_monitor"
