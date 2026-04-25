@@ -248,3 +248,25 @@ def get_model_info(model: str = None) -> dict:
     if model and model in models:
         return models[model]
     return models
+
+
+def research_lead(prompt: str, max_tokens: int = 500) -> str:
+    """
+    Use AI to research a lead and return structured insights.
+
+    Args:
+        prompt: The research prompt (e.g. asking for pain signals)
+        max_tokens: Maximum tokens for the response
+
+    Returns:
+        AI response as a string, or "[]" if the call fails
+    """
+    try:
+        return _call_ai(
+            system="You are a sales research assistant. Analyze leads and identify pain signals.",
+            user=prompt,
+            max_tokens=max_tokens,
+            use_cache=False,
+        )
+    except Exception:
+        return "[]"
