@@ -19,7 +19,14 @@ from routers import billing
 from routers import outreach
 from routers import feedback
 from routers import buffer as buffer_router
-from routers import sales as sales_router
+try:
+    from routers import sales as sales_router
+    SALES_ROUTER_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"Sales router not available: {e}")
+    SALES_ROUTER_AVAILABLE = False
+    sales_router = None
 from routers import onboarding
 from routers import email
 from routers import admin_upgrade
@@ -167,7 +174,8 @@ app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
 if AI_MONITOR_AVAILABLE and ai_monitor:
     app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
-app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
+if SALES_ROUTER_AVAILABLE and sales_router:
+    app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
 app.include_router(email.router, prefix="/api/email", tags=["email"])
 app.include_router(test_email.router, prefix="/test", tags=["test"])
