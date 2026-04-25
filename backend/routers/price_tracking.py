@@ -3,12 +3,16 @@ Price tracking router for RivalEdge
 API endpoints for managing price tracking preferences and alerts
 """
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Header
 from pydantic import BaseModel
+import os
 
 from auth import get_current_user
 from rate_limit import limiter
 import db.supabase as db
+
+# Admin secret for cron jobs (set in Railway environment variables)
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "dev-secret-change-in-production")
 from services.price_tracker import (
     process_price_alerts,
     process_and_send_pending_alerts,
@@ -277,18 +281,19 @@ def dismiss_price_alert(
 @limiter.limit("5/hour")
 def trigger_price_scan(
     request: Request,
-    current_user: dict = Depends(get_current_user)
+    x_admin_secret: str = Header(None, alias="X-Admin-Secret")
 ):
     """
     Admin endpoint to manually trigger a price scan.
     Processes all users with price tracking enabled.
+    Requires X-Admin-Secret header for authentication.
     """
-    # Check if user is admin (you may want to add proper admin check)
-    user_id = current_user["sub"]
-    user = db.get_user(user_id)
-    
-    # For now, allow any authenticated user to trigger scan
-    # In production, add admin role check
+    # Verify admin secret
+    if x_admin_secret != ADMIN_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing admin secret"
+        )
     
     result = process_price_alerts()
     
@@ -302,11 +307,19 @@ def trigger_price_scan(
 @limiter.limit("5/hour")
 def send_pending_alerts(
     request: Request,
-    current_user: dict = Depends(get_current_user)
+    x_admin_secret: str = Header(None, alias="X-Admin-Secret")
 ):
     """
     Admin endpoint to send all pending price alert emails.
+    Requires X-Admin-Secret header for authentication.
     """
+    # Verify admin secret
+    if x_admin_secret != ADMIN_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing admin secret"
+        )
+    
     result = process_and_send_pending_alerts()
     
     return {
@@ -319,11 +332,19 @@ def send_pending_alerts(
 @limiter.limit("30/minute")
 def get_price_tracking_stats(
     request: Request,
-    current_user: dict = Depends(get_current_user)
+    x_admin_secret: str = Header(None, alias="X-Admin-Secret")
 ):
     """
     Get price tracking statistics (admin only).
+    Requires X-Admin-Secret header for authentication.
     """
+    # Verify admin secret
+    if x_admin_secret != ADMIN_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing admin secret"
+        )
+    
     # Get counts
     users_with_tracking = db.get_users_with_price_tracking()
     pending_alerts = db.get_pending_price_alerts()

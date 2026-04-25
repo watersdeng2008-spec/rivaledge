@@ -192,3 +192,59 @@ Generate the complete HTML email following the DAILY BRIEFING format. Be specifi
         max_tokens=4000,
         use_cache=False,
     )
+
+
+# ── Token Usage Monitoring (Stub functions for ai_monitor router) ─────────────
+
+def get_token_usage_stats(days: int = 7) -> dict:
+    """
+    Get AI token usage statistics for the specified period.
+    Stub implementation - returns empty stats.
+    """
+    return {
+        "total_requests": 0,
+        "total_tokens": 0,
+        "total_cost": 0.0,
+        "by_model": {},
+        "by_day": [],
+        "note": "Token tracking not yet implemented"
+    }
+
+
+def audit_context_efficiency() -> dict:
+    """
+    Audit context management efficiency.
+    Stub implementation - returns basic info.
+    """
+    return {
+        "status": "ok",
+        "context_hits": 0,
+        "context_misses": 0,
+        "efficiency_score": 1.0,
+        "note": "Context efficiency tracking not yet implemented"
+    }
+
+
+def get_model_info(model: str = None) -> dict:
+    """
+    Get information about available AI models.
+    Stub implementation - returns basic model info.
+    """
+    models = {
+        "kimi-k2.5": {
+            "name": "Kimi K2.5",
+            "provider": "moonshot",
+            "cost_per_1k_input": 0.0001,
+            "cost_per_1k_output": 0.0002,
+        },
+        "claude-sonnet": {
+            "name": "Claude Sonnet",
+            "provider": "anthropic",
+            "cost_per_1k_input": 0.003,
+            "cost_per_1k_output": 0.015,
+        }
+    }
+    
+    if model and model in models:
+        return models[model]
+    return models
