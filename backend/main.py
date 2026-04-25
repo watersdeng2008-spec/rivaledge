@@ -19,7 +19,6 @@ from routers import billing
 from routers import outreach
 from routers import feedback
 from routers import buffer as buffer_router
-from routers import ai_monitor
 from routers import sales as sales_router
 from routers import onboarding
 from routers import email
@@ -29,6 +28,15 @@ from routers import analytics
 from routers import price_tracking
 
 # Optional routers — log errors but don't crash if they fail
+try:
+    from routers import ai_monitor
+    AI_MONITOR_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"AI monitor not available: {e}")
+    AI_MONITOR_AVAILABLE = False
+    ai_monitor = None
+
 try:
     from routers import ceo_dashboard
     CEO_DASHBOARD_AVAILABLE = True
@@ -157,7 +165,8 @@ app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(outreach.router, prefix="/api/outreach", tags=["outreach"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
-app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
+if AI_MONITOR_AVAILABLE and ai_monitor:
+    app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 app.include_router(sales_router.router, prefix="/api/sales", tags=["sales"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
 app.include_router(email.router, prefix="/api/email", tags=["email"])
@@ -189,15 +198,19 @@ async def debug_routers():
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway."""
-    from services.ai import get_cache_stats, get_model_info
     import os
+    try:
+        from services.ai import get_cache_stats, get_model_info
+    except ImportError:
+        get_cache_stats = None
+        get_model_info = None
     return {
         "status": "ok",
         "version": "1.3.9",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
-        "ai_models": get_model_info(),
+        "ai_models": get_model_info() if get_model_info is not None else None,
         "service": "rivaledge-api",
-        "ai_cache": get_cache_stats(),
+        "ai_cache": get_cache_stats() if get_cache_stats is not None else None,
         "ai_model": os.environ.get("AI_MODEL", "moonshotai/kimi-k2.5"),
     }
 
@@ -205,7 +218,13 @@ async def health():
 @app.post("/admin/cache/clear")
 async def clear_cache():
     """Clear AI response cache (admin endpoint)."""
-    from services.ai import clear_ai_cache
+    try:
+        from services.ai import clear_ai_cache
+    except ImportError:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "message": "AI cache service unavailable"},
+        )
     clear_ai_cache()
     return {"status": "ok", "message": "AI cache cleared"}
 
@@ -213,5 +232,11 @@ async def clear_cache():
 @app.get("/admin/cache/stats")
 async def cache_stats():
     """Get AI cache statistics."""
-    from services.ai import get_cache_stats
+    try:
+        from services.ai import get_cache_stats
+    except ImportError:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "message": "AI cache service unavailable"},
+        )
     return get_cache_stats()
