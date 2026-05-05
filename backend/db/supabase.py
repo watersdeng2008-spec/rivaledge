@@ -3,8 +3,12 @@ Supabase database operations using raw HTTP — no client library.
 Avoids supabase-py version incompatibilities across environments.
 """
 import os
+import logging
 import httpx
 from typing import Optional
+
+
+logger = logging.getLogger(__name__)
 
 
 def _headers() -> dict:
@@ -22,8 +26,17 @@ def _url(path: str) -> str:
     return f"{base}/rest/v1/{path}"
 
 
+def _check_response(r: httpx.Response, operation: str) -> None:
+    """Raise if the Supabase response indicates failure."""
+    if r.status_code >= 400:
+        body = r.text[:500]
+        logger.error("Supabase %s FAILED [%s]: %s", operation, r.status_code, body)
+        raise Exception(f"Supabase {operation} failed: HTTP {r.status_code} — {body}")
+
+
 def get_user(user_id: str) -> Optional[dict]:
     r = httpx.get(_url(f"users?id=eq.{user_id}&limit=1"), headers=_headers(), timeout=10)
+    _check_response(r, "get_user")
     data = r.json()
     return data[0] if isinstance(data, list) and data else None
 
@@ -32,6 +45,7 @@ def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
     payload = {"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan}
     headers = {**_headers(), "Prefer": "resolution=merge-duplicates,return=representation"}
     r = httpx.post(_url("users"), json=payload, headers=headers, timeout=10)
+    _check_response(r, "upsert_user")
     data = r.json()
     return data[0] if isinstance(data, list) and data else payload
 
@@ -41,30 +55,52 @@ def get_competitors(user_id: str) -> list:
         _url(f"competitors?user_id=eq.{user_id}&order=created_at.desc"),
         headers=_headers(), timeout=10
     )
+    _check_response(r, "get_competitors")
     data = r.json()
     return data if isinstance(data, list) else []
 
 
 def create_competitor(user_id: str, url: str, name: Optional[str] = None) -> dict:
+    """
+    Insert a competitor row into Supabase.
+    Raises Exception on failure — never returns a fabricated row.
+    """
     payload = {"user_id": user_id, "url": url, "name": name}
+    logger.info("create_competitor: POST %s with payload=%s", _url("competitors"), payload)
     r = httpx.post(_url("competitors"), json=payload, headers=_headers(), timeout=10)
+
+    logger.info("create_competitor: status=%s, body=%s", r.status_code, r.text[:500])
+    _check_response(r, "create_competitor")
+
     data = r.json()
     if isinstance(data, list) and data:
         return data[0]
-    # Fetch back if insert didn't return data
+
+    # Insert succeeded but Supabase returned empty (Supabase v2 quirk) — fetch the row
+    logger.warning("create_competitor: insert succeeded but returned empty — fetching back")
     fetch = httpx.get(
         _url(f"competitors?user_id=eq.{user_id}&url=eq.{url}&order=created_at.desc&limit=1"),
         headers=_headers(), timeout=10
     )
+    _check_response(fetch, "create_competitor_fallback_fetch")
     rows = fetch.json()
-    return rows[0] if isinstance(rows, list) and rows else {**payload, "id": "pending", "profile": None, "created_at": ""}
+    if isinstance(rows, list) and rows:
+        return rows[0]
+
+    # Insert returned success but we can't find the row — raise, don't fabricate
+    logger.error("create_competitor: insert returned 2xx but row not found in fallback. Payload: %s", payload)
+    raise Exception(
+        f"Competitor insert appeared to succeed but row not found for user={user_id} url={url}. "
+        "Check Supabase table schema, triggers, and RLS."
+    )
 
 
 def delete_competitor(competitor_id: str, user_id: str) -> bool:
-    httpx.delete(
+    r = httpx.delete(
         _url(f"competitors?id=eq.{competitor_id}&user_id=eq.{user_id}"),
         headers=_headers(), timeout=10
     )
+    _check_response(r, "delete_competitor")
     return True
 
 
@@ -73,14 +109,15 @@ def get_competitor_snapshots(competitor_id: str, limit: int = 12) -> list:
         _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit={limit}"),
         headers=_headers(), timeout=10
     )
+    _check_response(r, "get_competitor_snapshots")
     data = r.json()
     return data if isinstance(data, list) else []
 
 
 def create_snapshot(competitor_id: str, content: dict, diff: Optional[dict] = None) -> dict:
-    import json
     payload = {"competitor_id": competitor_id, "content": content, "diff": diff}
     r = httpx.post(_url("snapshots"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "create_snapshot")
     data = r.json()
     return data[0] if isinstance(data, list) and data else payload
 
@@ -90,6 +127,7 @@ def get_latest_snapshot(competitor_id: str) -> Optional[dict]:
         _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit=1"),
         headers=_headers(), timeout=10
     )
+    _check_response(r, "get_latest_snapshot")
     data = r.json()
     return data[0] if isinstance(data, list) and data else None
 
@@ -99,6 +137,7 @@ def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
         _url(f"snapshots?competitor_id=eq.{competitor_id}&order=created_at.desc&limit=2"),
         headers=_headers(), timeout=10
     )
+    _check_response(r, "get_prior_snapshot")
     data = r.json()
     return data[1] if isinstance(data, list) and len(data) > 1 else None
 
@@ -106,6 +145,7 @@ def get_prior_snapshot(competitor_id: str) -> Optional[dict]:
 def create_digest(user_id: str, content: str) -> dict:
     payload = {"user_id": user_id, "content": content}
     r = httpx.post(_url("digests"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "create_digest")
     data = r.json()
     return data[0] if isinstance(data, list) and data else payload
 
@@ -116,6 +156,7 @@ def mark_digest_sent(digest_id: str) -> bool:
 
 def get_digest(digest_id: str, user_id: str = None) -> Optional[dict]:
     r = httpx.get(_url(f"digests?id=eq.{digest_id}&limit=1"), headers=_headers(), timeout=10)
+    _check_response(r, "get_digest")
     data = r.json()
     return data[0] if isinstance(data, list) and data else None
 
@@ -123,18 +164,21 @@ def get_digest(digest_id: str, user_id: str = None) -> Optional[dict]:
 def update_digest_sent(digest_id: str) -> bool:
     from datetime import datetime, timezone
     payload = {"sent_at": datetime.now(timezone.utc).isoformat()}
-    httpx.patch(_url(f"digests?id=eq.{digest_id}"), json=payload, headers=_headers(), timeout=10)
+    r = httpx.patch(_url(f"digests?id=eq.{digest_id}"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "update_digest_sent")
     return True
 
 
 def get_all_active_users() -> list:
     r = httpx.get(_url("users?select=*"), headers=_headers(), timeout=10)
+    _check_response(r, "get_all_active_users")
     data = r.json()
     return data if isinstance(data, list) else []
 
 
 def update_user_plan(user_id: str, plan: str) -> bool:
-    httpx.patch(_url(f"users?id=eq.{user_id}"), json={"plan": plan}, headers=_headers(), timeout=10)
+    r = httpx.patch(_url(f"users?id=eq.{user_id}"), json={"plan": plan}, headers=_headers(), timeout=10)
+    _check_response(r, "update_user_plan")
     return True
 
 
@@ -144,7 +188,8 @@ def get_user_stripe_customer_id(user_id: str) -> Optional[str]:
 
 
 def update_user_stripe_customer_id(user_id: str, customer_id: str) -> bool:
-    httpx.patch(_url(f"users?id=eq.{user_id}"), json={"stripe_customer_id": customer_id}, headers=_headers(), timeout=10)
+    r = httpx.patch(_url(f"users?id=eq.{user_id}"), json={"stripe_customer_id": customer_id}, headers=_headers(), timeout=10)
+    _check_response(r, "update_user_stripe_customer_id")
     return True
 
 
@@ -158,6 +203,7 @@ def get_sales_agent_logs(since: Optional[str] = None, limit: int = 100) -> list:
     if limit:
         path += f"&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_sales_agent_logs")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -172,6 +218,7 @@ def get_sales_leads(since: Optional[str] = None, status: Optional[str] = None, l
     if limit:
         path += f"&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_sales_agent_logs")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -181,6 +228,7 @@ def get_sales_leads_by_statuses(statuses: list, limit: int = 10) -> list:
     status_list = ",".join(statuses)
     path = f"sales_leads?status=in.({status_list})&order=reply_received_at.desc&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_sales_leads_by_statuses")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -188,6 +236,7 @@ def get_sales_leads_by_statuses(statuses: list, limit: int = 10) -> list:
 def update_sales_lead(lead_id: str, update_data: dict) -> Optional[dict]:
     """Update a sales lead by ID."""
     r = httpx.patch(_url(f"sales_leads?id=eq.{lead_id}"), json=update_data, headers=_headers(), timeout=10)
+    _check_response(r, "update_sales_lead")
     data = r.json()
     return data[0] if isinstance(data, list) and data else None
 
@@ -196,6 +245,7 @@ def get_sales_performance(limit: int = 100) -> list:
     """Get sales performance records ordered by reply rate descending."""
     path = f"sales_performance?order=reply_rate.desc&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_sales_performance")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -208,6 +258,7 @@ def get_subscriptions(status: Optional[str] = None) -> list:
     if status:
         path += f"&status=eq.{status}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_leads")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -222,6 +273,7 @@ def get_leads(since: Optional[str] = None, until: Optional[str] = None, limit: i
     if limit:
         path += f"&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_email_sequences")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -236,6 +288,7 @@ def get_email_sequences(since: Optional[str] = None, until: Optional[str] = None
     if limit:
         path += f"&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_personalized_emails")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -244,6 +297,7 @@ def get_personalized_emails(limit: int = 10) -> list:
     """Get the most recently created personalized emails."""
     path = f"personalized_emails?order=created_at.desc&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_users_since")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -258,6 +312,7 @@ def get_users_since(since: Optional[str] = None, until: Optional[str] = None, li
     if limit:
         path += f"&limit={limit}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_users_since")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -271,6 +326,7 @@ def get_users_with_price_tracking() -> list:
         headers=_headers(),
         timeout=10
     )
+    _check_response(r, "get_users_with_price_tracking")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -282,6 +338,7 @@ def get_competitors_with_price_tracking(user_id: str) -> list:
         headers=_headers(),
         timeout=10
     )
+    _check_response(r, "get_competitors_with_price_tracking")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -293,6 +350,7 @@ def update_user_price_tracking(user_id: str, track_pricing: bool, alert_threshol
         "price_alert_threshold": alert_threshold
     }
     r = httpx.patch(_url(f"users?id=eq.{user_id}"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "update_user_price_tracking")
     return r.status_code in [200, 204]
 
 
@@ -302,6 +360,7 @@ def update_competitor_price_tracking(competitor_id: str, track_pricing: bool, re
     if retail_channels:
         payload["retail_channels"] = retail_channels
     r = httpx.patch(_url(f"competitors?id=eq.{competitor_id}"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "update_competitor_price_tracking")
     return r.status_code in [200, 204]
 
 
@@ -312,6 +371,7 @@ def get_price_history(competitor_id: str, limit: int = 50) -> list:
         headers=_headers(),
         timeout=10
     )
+    _check_response(r, "get_price_history")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -328,6 +388,7 @@ def create_price_alert(user_id: str, competitor_id: str, old_price: float, new_p
         "status": "pending"  # pending, sent, dismissed
     }
     r = httpx.post(_url("price_alerts"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "create_price_alert")
     data = r.json()
     return data[0] if isinstance(data, list) and data else payload
 
@@ -338,6 +399,7 @@ def get_pending_price_alerts(user_id: str = None) -> list:
     if user_id:
         path += f"&user_id=eq.{user_id}"
     r = httpx.get(_url(path), headers=_headers(), timeout=10)
+    _check_response(r, "get_pending_price_alerts")
     data = r.json()
     return data if isinstance(data, list) else []
 
@@ -350,4 +412,5 @@ def mark_price_alert_sent(alert_id: str) -> bool:
         "sent_at": datetime.now(timezone.utc).isoformat()
     }
     r = httpx.patch(_url(f"price_alerts?id=eq.{alert_id}"), json=payload, headers=_headers(), timeout=10)
+    _check_response(r, "mark_price_alert_sent")
     return r.status_code in [200, 204]
