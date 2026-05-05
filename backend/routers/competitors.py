@@ -59,11 +59,12 @@ def add_competitor(
     # Auto-create user in DB if they don't exist yet (Clerk webhook may not have fired)
     user = db.get_user(user_id)
     if not user:
-        db.upsert_user(user_id, user_email)
+        db.upsert_user(user_id, user_email, plan="solo")
+        user = db.get_user(user_id)  # re-fetch for plan field
     
     # Plan limits: solo = 3 competitors, pro = 10
     existing = db.get_competitors(user_id)
-    plan = user.get("plan", "solo") if user else "solo"
+    plan = (user.get("plan") or "solo") if user else "solo"
     
     limits = {"solo": 3, "pro": 10}
     limit = limits.get(plan, 3)

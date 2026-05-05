@@ -41,8 +41,10 @@ def get_user(user_id: str) -> Optional[dict]:
     return data[0] if isinstance(data, list) and data else None
 
 
-def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
-    payload = {"id": user_id, "email": email or f"{user_id}@unknown.local", "plan": plan}
+def upsert_user(user_id: str, email: str = "", plan: Optional[str] = None) -> dict:
+    payload: dict = {"id": user_id, "email": email or f"{user_id}@unknown.local"}
+    if plan is not None:
+        payload["plan"] = plan  # only set plan on explicit pass (first creation)
     headers = {**_headers(), "Prefer": "resolution=merge-duplicates,return=representation"}
     r = httpx.post(_url("users"), json=payload, headers=headers, timeout=10)
     _check_response(r, "upsert_user")

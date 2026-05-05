@@ -41,7 +41,13 @@ def create_or_update_me(current_user: dict = Depends(get_current_user)):
         # Clerk may put email in different claim depending on template
         email = current_user.get("email_addresses", [{}])[0].get("email_address", "")
 
-    user = db.upsert_user(user_id=user_id, email=email)
+    existing = db.get_user(user_id)
+    if existing:
+        # User already exists — only update email, don't touch plan
+        user = db.upsert_user(user_id=user_id, email=email)
+    else:
+        # New user — create with solo plan
+        user = db.upsert_user(user_id=user_id, email=email, plan="solo")
     return UserProfile(**user)
 
 
