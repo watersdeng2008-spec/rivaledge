@@ -57,29 +57,16 @@ def save_onboarding(
     current_user: dict = Depends(get_current_user),
 ):
     """Save onboarding info — company name, description, industry."""
-    import httpx, os
     user_id = current_user["sub"]
-    
-    supabase_url = os.environ.get("SUPABASE_URL", "")
-    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-    
-    headers = {
-        "apikey": supabase_key,
-        "Authorization": f"Bearer {supabase_key}",
-        "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates"
-    }
-    
-    httpx.patch(
-        f"{supabase_url}/rest/v1/users?id=eq.{user_id}",
-        json={
-            "company_name": body.company_name,
-            "business_description": body.business_description,
-            "industry": body.industry,
-            "onboarding_completed": True,
-        },
-        headers=headers,
-        timeout=10
-    )
-    
-    return {"saved": True}
+
+    result = db.update_user_profile(user_id, {
+        "company_name": body.company_name,
+        "business_description": body.business_description,
+        "industry": body.industry,
+        "onboarding_completed": True,
+    })
+
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to save onboarding data")
+
+    return {"saved": True, "company_name": body.company_name}

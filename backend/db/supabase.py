@@ -50,6 +50,15 @@ def upsert_user(user_id: str, email: str = "", plan: str = "solo") -> dict:
     return data[0] if isinstance(data, list) and data else payload
 
 
+def update_user_profile(user_id: str, fields: dict) -> dict:
+    """PATCH user profile fields. Does NOT touch id/email/plan — use upsert_user for those."""
+    headers = _headers()
+    r = httpx.patch(_url(f"users?id=eq.{user_id}"), json=fields, headers=headers, timeout=10)
+    _check_response(r, "update_user_profile")
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else {}
+
+
 def get_competitors(user_id: str) -> list:
     r = httpx.get(
         _url(f"competitors?user_id=eq.{user_id}&order=created_at.desc"),
