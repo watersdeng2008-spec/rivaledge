@@ -46,8 +46,8 @@ def create_or_update_me(current_user: dict = Depends(get_current_user)):
         # User already exists — only update email, don't touch plan
         user = db.upsert_user(user_id=user_id, email=email)
     else:
-        # New user — create with solo plan
-        user = db.upsert_user(user_id=user_id, email=email, plan="solo")
+        # New user — create record; upsert_user handles email dedup + plan preservation
+        user = db.upsert_user(user_id=user_id, email=email)
     return UserProfile(**user)
 
 

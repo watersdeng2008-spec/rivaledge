@@ -62,9 +62,13 @@ def upsert_user(user_id: str, email: str = "", plan: Optional[str] = None) -> di
     if email:
         existing = get_user_by_email(email)
         if existing and existing["id"] != user_id:
-            # Preserve existing plan unless explicitly overridden
+            existing_plan = existing.get("plan")
+            # Preserve existing premium plan — never downgrade a paying user
             if plan is None:
-                plan = existing.get("plan")
+                plan = existing_plan
+            elif existing_plan and existing_plan != "solo" and plan == "solo":
+                # Caller tried to set solo but user already has a premium plan
+                plan = existing_plan
             user_id = existing["id"]
 
     payload: dict = {"id": user_id, "email": email or f"{user_id}@unknown.local"}
