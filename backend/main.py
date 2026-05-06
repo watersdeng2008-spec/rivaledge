@@ -214,7 +214,7 @@ async def health():
         get_model_info = None
     return {
         "status": "ok",
-        "version": "1.3.9",
+        "version": "1.4.0",
         "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
         "ai_models": get_model_info() if get_model_info is not None else None,
         "service": "rivaledge-api",
