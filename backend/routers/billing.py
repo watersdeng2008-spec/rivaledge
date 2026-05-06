@@ -52,6 +52,7 @@ class BillingStatusResponse(BaseModel):
     plan: str
     status: str  # "active" | "inactive"
     competitor_limit: int
+    competitor_count: int = 0
 
 
 # ── Endpoints ──────────────────────────────────────────────────────────────────
@@ -133,17 +134,23 @@ def get_billing_status(current_user: dict = Depends(get_current_user)):
     user_id = current_user["sub"]
     user = db.get_user(user_id)
 
-    # If user not in DB yet (Clerk webhook not fired), default to solo plan
+    logger.info("billing_status: user_id=%s, db_result=%s", user_id, user.get("plan") if user else "NOT_FOUND")
+
+    # If user not in DB yet, default to solo plan
     if not user:
         plan = "solo"
     else:
-        plan = user.get("plan", "solo")
-    # A user record exists → they're active (free tier counts as active)
+        plan = user.get("plan") or "solo"  # or-operator handles null values too
     sub_status = "active"
     competitor_limit = PLAN_LIMITS.get(plan, 3)
 
-    return BillingStatusResponse(
-        plan=plan,
-        status=sub_status,
-        competitor_limit=competitor_limit,
-    )
+    # Count actual competitors
+    competitors = db.get_competitors(user_id)
+    competitor_count = len(competitors) if competitors else 0
+
+    return {
+        "plan": plan,
+        "status": sub_status,
+        "competitor_limit": competitor_limit,
+        "competitor_count": competitor_count,
+    }
