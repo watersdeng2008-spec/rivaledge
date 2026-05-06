@@ -59,7 +59,7 @@ def add_competitor(
     # Auto-create user in DB if they don't exist yet (Clerk webhook may not have fired)
     user = db.get_user(user_id)
     if not user:
-        db.upsert_user(user_id, user_email, plan="solo")
+        db.upsert_user(user_id, user_email)  # Don't force plan — keep existing on merge
         user = db.get_user(user_id)  # re-fetch for plan field
     
     # Plan limits: solo = 3 competitors, pro = 10
@@ -74,6 +74,15 @@ def add_competitor(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
             detail=f"Plan limit reached ({limit} competitors). Upgrade to add more.",
         )
+    
+    # Duplicate check — normalize URLs for comparison
+    new_url = str(body.url).rstrip("/").lower()
+    for c in existing:
+        if str(c.get("url", "")).rstrip("/").lower() == new_url:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"You're already tracking {body.url}.",
+            )
     
     competitor = db.create_competitor(
         user_id=user_id,
