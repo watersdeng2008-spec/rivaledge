@@ -84,8 +84,8 @@ function DashboardContent() {
       if (!token) {
         console.error('[RivalEdge] No Clerk token available — API calls will fail');
       }
-      fetchCompetitors(token);
-      fetchBilling(token);
+      fetchCompetitors(token ?? undefined);
+      fetchBilling(token ?? undefined);
     })();
   }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn, getToken]);
 
