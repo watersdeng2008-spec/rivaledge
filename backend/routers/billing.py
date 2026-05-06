@@ -8,7 +8,7 @@ import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 from rate_limit import limiter
 import db.supabase as db
 
@@ -74,7 +74,7 @@ def create_checkout(
             detail=f"Invalid plan '{body.plan}'. Must be one of: {list(PLAN_TO_PRICE)}",
         )
 
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user_email = current_user.get("email", "")
 
     price_id = PLAN_TO_PRICE[body.plan]
@@ -105,7 +105,7 @@ def create_portal(current_user: dict = Depends(get_current_user)):
     Create a Stripe Customer Portal session so the user can manage their subscription.
     Requires the user to have an existing Stripe customer ID.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
 
     customer_id = db.get_user_stripe_customer_id(user_id)
     if not customer_id:
@@ -131,7 +131,7 @@ def create_portal(current_user: dict = Depends(get_current_user)):
 @router.get("/status", response_model=BillingStatusResponse)
 def get_billing_status(current_user: dict = Depends(get_current_user)):
     """Return the current subscription plan and competitor limit for the user."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user = db.get_user(user_id)
 
     logger.info("billing_status: user_id=%s, db_result=%s", user_id, user.get("plan") if user else "NOT_FOUND")

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status, Header
 from pydantic import BaseModel
 import os
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 from rate_limit import limiter
 import db.supabase as db
 
@@ -58,7 +58,7 @@ def get_price_tracking_settings(
     """
     Get current price tracking settings for the authenticated user.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user = db.get_user(user_id)
     
     if not user:
@@ -87,7 +87,7 @@ def update_price_tracking_settings(
     - track_pricing: Enable/disable price tracking
     - alert_threshold: Minimum price change percentage to trigger alert (e.g., 0.02 for 2%)
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     success = db.update_user_price_tracking(
         user_id=user_id,
@@ -120,7 +120,7 @@ def get_competitor_price_settings(
     """
     Get price tracking settings for a specific competitor.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # Verify competitor belongs to user
     competitors = db.get_competitors(user_id)
@@ -154,7 +154,7 @@ def update_competitor_price_settings(
     - track_pricing: Enable/disable price tracking for this competitor
     - retail_channels: List of channels to monitor (e.g., ["amazon", "walmart", "website"])
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # Verify competitor belongs to user
     competitors = db.get_competitors(user_id)
@@ -201,7 +201,7 @@ def get_price_alerts(
     Query params:
     - status: Filter by status (pending, sent, dismissed). Default: pending
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     if status == "pending":
         alerts = db.get_pending_price_alerts(user_id)
@@ -244,7 +244,7 @@ def dismiss_price_alert(
     """
     Dismiss a price alert.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # Verify alert belongs to user
     alerts = db.get_pending_price_alerts(user_id)
@@ -369,7 +369,7 @@ def check_competitor_prices(
     Manually check for price changes on a specific competitor.
     Returns any alerts that would be triggered.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # Verify competitor belongs to user
     competitors = db.get_competitors(user_id)

@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, HttpUrl
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 import db.supabase as db
 
 router = APIRouter()
@@ -39,7 +39,7 @@ class CompetitorList(BaseModel):
 @router.get("/", response_model=CompetitorList)
 def list_competitors(current_user: dict = Depends(get_current_user)):
     """List all competitors tracked by the authenticated user."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     competitors = db.get_competitors(user_id)
     return CompetitorList(
         competitors=[CompetitorResponse(**c) for c in competitors],
@@ -53,7 +53,7 @@ def add_competitor(
     current_user: dict = Depends(get_current_user),
 ):
     """Add a new competitor URL to track."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user_email = current_user.get("email", "")
 
     # Auto-create user in DB if they don't exist yet (Clerk webhook may not have fired)
@@ -98,7 +98,7 @@ def get_competitor(
     current_user: dict = Depends(get_current_user),
 ):
     """Get a single competitor by ID."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     competitors = db.get_competitors(user_id)
     for c in competitors:
         if str(c.get("id")) == str(competitor_id):
@@ -115,7 +115,7 @@ def get_competitor_snapshots(
     Get the last 12 snapshots for a competitor (newest first).
     Returns each snapshot with id, created_at, diff (if exists), and content summary.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
 
     # Verify this competitor belongs to the user
     competitors = db.get_competitors(user_id)
@@ -150,5 +150,5 @@ def remove_competitor(
     current_user: dict = Depends(get_current_user),
 ):
     """Remove a competitor from tracking."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     db.delete_competitor(str(competitor_id), user_id)

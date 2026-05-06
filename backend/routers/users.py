@@ -4,7 +4,7 @@ Users router — profile and account endpoints.
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 import db.supabase as db
 
 router = APIRouter()
@@ -19,7 +19,7 @@ class UserProfile(BaseModel):
 @router.get("/me", response_model=UserProfile)
 def get_me(current_user: dict = Depends(get_current_user)):
     """Get the authenticated user's profile."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user = db.get_user(user_id)
     if not user:
         raise HTTPException(
@@ -35,7 +35,7 @@ def create_or_update_me(current_user: dict = Depends(get_current_user)):
     Upsert the authenticated user's record.
     Called after first sign-in to ensure user exists in DB.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     email = current_user.get("email", "")
     if not email:
         # Clerk may put email in different claim depending on template
@@ -63,7 +63,7 @@ def save_onboarding(
     current_user: dict = Depends(get_current_user),
 ):
     """Save onboarding info — company name, description, industry."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
 
     result = db.update_user_profile(user_id, {
         "company_name": body.company_name,
@@ -82,7 +82,7 @@ def save_onboarding(
 def debug_auth_chain(current_user: dict = Depends(get_current_user)):
     """Debug endpoint: trace the full auth→DB→billing chain.
     Shows exactly which JWT sub, which DB record, and which plan."""
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     email = current_user.get("email", "")
     if not email:
         email_addresses = current_user.get("email_addresses", [])

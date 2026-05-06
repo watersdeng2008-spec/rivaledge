@@ -9,7 +9,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 from rate_limit import limiter
 import db.supabase as db
 import services.ai as ai_service
@@ -46,7 +46,7 @@ def generate_digest_endpoint(request: Request, current_user: dict = Depends(get_
     - Saves to digests table
     - Returns digest_id + preview
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # 1. Get all competitors
     competitors = db.get_competitors(user_id)
@@ -142,7 +142,7 @@ def send_digest_endpoint(
     - Sends via Resend
     - Updates sent_at timestamp
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     
     # 1. Fetch digest (scoped to user)
     digest = db.get_digest(digest_id, user_id)
@@ -190,7 +190,7 @@ def battle_card_endpoint(
     Body: {"competitor_id": str}
     Returns: {"battle_card": str (markdown)}
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     competitor_id = body.get("competitor_id")
 
     if not competitor_id:
@@ -240,7 +240,7 @@ def send_welcome_endpoint(current_user: dict = Depends(get_current_user)):
     Send a welcome email to the current user.
     Used when the first competitor is added.
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     user_email = current_user.get("email")
     
     if not user_email:

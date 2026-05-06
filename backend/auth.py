@@ -62,7 +62,7 @@ def get_current_user(
 ) -> dict:
     token = credentials.credentials
     try:
-        return verify_clerk_token(token)
+        claims = verify_clerk_token(token)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -81,6 +81,36 @@ def get_current_user(
             detail=f"Auth error: {e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Resolve JWT sub → true DB ID via email lookup, so Clerk internal IDs
+    # that differ from the JWT sub don't cause duplicate/solo records.
+    email = claims.get("email", "")
+    if not email:
+        email_addresses = claims.get("email_addresses", [])
+        email = email_addresses[0].get("email_address", "") if email_addresses else ""
+
+    if email:
+        try:
+            from db.supabase import get_user_by_email
+            existing = get_user_by_email(email)
+            if existing:
+                claims["_db_id"] = existing["id"]  # resolved DB primary key
+                logger.debug("email_resolve: email=%s → db_id=%s (jwt_sub=%s)",
+                             email, existing["id"], claims.get("sub"))
+        except Exception:
+            pass  # DB resolution is best-effort; JWT sub is the fallback
+
+    return claims
+
+
+def resolve_db_id(current_user: dict) -> str:
+    """Return the authoritative DB user ID from the JWT claims.
+
+    Prefers _db_id (set by get_current_user after email lookup) over sub.
+    This ensures all endpoints use the same DB record regardless of whether
+    Clerk's JWT 'sub' matches the internal Clerk ID or a different UUID.
+    """
+    return current_user.get("_db_id") or current_user.get("sub", "")
 
 
 def get_optional_user(

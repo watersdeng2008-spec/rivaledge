@@ -10,7 +10,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from auth import get_current_user
+from auth import get_current_user, resolve_db_id
 from rate_limit import limiter
 import db.supabase as db
 from services.scraper import scrape_url
@@ -59,7 +59,7 @@ async def scrape_competitor(
     Returns:
         {"snapshot_id": str, "changes": diff_result}
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
 
     # Verify the competitor belongs to this user
     competitor = get_competitor_for_user(competitor_id, user_id)
@@ -127,7 +127,7 @@ async def scrape_all_competitors(
     Returns:
         {"scraped": int, "failed": int, "results": list}
     """
-    user_id = current_user["sub"]
+    user_id = resolve_db_id(current_user)
     competitors = get_user_competitors(user_id)
 
     if not competitors:
