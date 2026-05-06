@@ -57,6 +57,16 @@ def delete_user(user_id: str) -> bool:
 
 
 def upsert_user(user_id: str, email: str = "", plan: Optional[str] = None) -> dict:
+    # If email is provided, check for an existing record under a different ID
+    # (e.g., Clerk webhook ID vs JWT sub). Merge into existing to avoid duplicates.
+    if email:
+        existing = get_user_by_email(email)
+        if existing and existing["id"] != user_id:
+            # Preserve existing plan unless explicitly overridden
+            if plan is None:
+                plan = existing.get("plan")
+            user_id = existing["id"]
+
     payload: dict = {"id": user_id, "email": email or f"{user_id}@unknown.local"}
     if plan is not None:
         payload["plan"] = plan  # only set plan on explicit pass (first creation)
