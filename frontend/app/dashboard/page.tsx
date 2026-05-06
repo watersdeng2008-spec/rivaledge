@@ -47,11 +47,10 @@ function DashboardContent() {
     isCheckoutSuccess ? '🎉 Welcome to RivalEdge! Your plan is now active.' : null
   );
 
-  const fetchCompetitors = useCallback(async () => {
+  const fetchCompetitors = useCallback(async (tokenOverride?: string) => {
     try {
-      const token = await getToken();
+      const token = tokenOverride ?? (await getToken());
       console.log('[RivalEdge] Token:', token ? `${token.substring(0,20)}...` : 'NULL');
-      console.log('[RivalEdge] API_BASE will be: https://rivaledge-production.up.railway.app');
       const data = await apiRequest<{competitors: Competitor[]} | Competitor[]>('/api/competitors/', { token: token || undefined });
       setCompetitors(Array.isArray(data) ? data : (data as {competitors: Competitor[]}).competitors || []);
     } catch (e: unknown) {
@@ -63,13 +62,15 @@ function DashboardContent() {
     }
   }, [getToken]);
 
-  const fetchBilling = useCallback(async () => {
+  const fetchBilling = useCallback(async (tokenOverride?: string) => {
     try {
-      const token = await getToken();
+      const token = tokenOverride ?? (await getToken());
       const data = await apiRequest<BillingStatus>('/api/billing/status', { token: token || undefined });
+      console.log('[RivalEdge] Billing:', data);
       setBilling(data);
-    } catch {
-      // Non-critical — ignore silently
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Billing fetch failed';
+      console.error('[RivalEdge] fetchBilling error:', msg, e);
     } finally {
       setLoadingBilling(false);
     }
@@ -77,9 +78,16 @@ function DashboardContent() {
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
-    fetchCompetitors();
-    fetchBilling();
-  }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn]);
+    (async () => {
+      // Share one token call for both fetches
+      const token = await getToken();
+      if (!token) {
+        console.error('[RivalEdge] No Clerk token available — API calls will fail');
+      }
+      fetchCompetitors(token);
+      fetchBilling(token);
+    })();
+  }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn, getToken]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
     e.preventDefault();
