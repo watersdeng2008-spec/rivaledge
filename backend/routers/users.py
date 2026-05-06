@@ -76,3 +76,38 @@ def save_onboarding(
         raise HTTPException(status_code=500, detail="Failed to save onboarding data")
 
     return {"saved": True, "company_name": body.company_name}
+
+
+@router.get("/me/debug")
+def debug_auth_chain(current_user: dict = Depends(get_current_user)):
+    """Debug endpoint: trace the full auth→DB→billing chain.
+    Shows exactly which JWT sub, which DB record, and which plan."""
+    user_id = current_user["sub"]
+    email = current_user.get("email", "")
+    if not email:
+        email_addresses = current_user.get("email_addresses", [])
+        email = email_addresses[0].get("email_address", "") if email_addresses else ""
+
+    # What DB returns for this JWT sub
+    db_user_by_id = db.get_user(user_id)
+
+    # What DB returns for this email
+    db_user_by_email = db.get_user_by_email(email) if email else None
+
+    return {
+        "jwt_sub": user_id,
+        "jwt_email": email,
+        "db_by_id": {
+            "found": db_user_by_id is not None,
+            "id": db_user_by_id["id"] if db_user_by_id else None,
+            "plan": db_user_by_id.get("plan") if db_user_by_id else None,
+            "email": db_user_by_id.get("email") if db_user_by_id else None,
+        },
+        "db_by_email": {
+            "found": db_user_by_email is not None,
+            "id": db_user_by_email["id"] if db_user_by_email else None,
+            "plan": db_user_by_email.get("plan") if db_user_by_email else None,
+        },
+        "plan_match": (db_user_by_id.get("plan") if db_user_by_id else None) == (db_user_by_email.get("plan") if db_user_by_email else None),
+        "id_match": (db_user_by_id["id"] if db_user_by_id else None) == (db_user_by_email["id"] if db_user_by_email else None),
+    }
