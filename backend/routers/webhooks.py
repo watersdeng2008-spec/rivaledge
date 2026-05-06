@@ -83,19 +83,25 @@ async def clerk_webhook(
     event_type = data.get("type")
     event_data = data.get("data", {})
     
-    if event_type == "user.created":
-        user_id = event_data["id"]
+    if event_type in ("user.created", "user.updated"):
+        clerk_id = event_data["id"]
         email_addresses = event_data.get("email_addresses", [])
         email = email_addresses[0]["email_address"] if email_addresses else ""
-        db.upsert_user(user_id=user_id, email=email)
-        return {"status": "user created", "user_id": user_id}
-    
-    elif event_type == "user.updated":
-        user_id = event_data["id"]
-        email_addresses = event_data.get("email_addresses", [])
-        email = email_addresses[0]["email_address"] if email_addresses else ""
-        db.upsert_user(user_id=user_id, email=email)
-        return {"status": "user updated", "user_id": user_id}
+
+        # Prevent duplicate records: if a user with the same email already exists
+        # under a different ID (e.g., JWT sub != Clerk internal ID), skip — the
+        # existing record (created at sign-in) is the authoritative one.
+        if email:
+            existing = db.get_user_by_email(email)
+            if existing and existing["id"] != clerk_id:
+                logger.info(
+                    "webhook: email=%s already tracked as id=%s (plan=%s), skipping clerk_id=%s",
+                    email, existing["id"], existing.get("plan"), clerk_id
+                )
+                return {"status": "skipped_duplicate", "existing_id": existing["id"]}
+
+        db.upsert_user(user_id=clerk_id, email=email)
+        return {"status": event_type, "user_id": clerk_id}
     
     elif event_type == "user.deleted":
         # Cascade delete handled by DB foreign keys

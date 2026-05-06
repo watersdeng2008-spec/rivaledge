@@ -41,6 +41,21 @@ def get_user(user_id: str) -> Optional[dict]:
     return data[0] if isinstance(data, list) and data else None
 
 
+def get_user_by_email(email: str) -> Optional[dict]:
+    """Look up a user by email. Returns None if not found."""
+    r = httpx.get(_url(f"users?email=eq.{email}&limit=1"), headers=_headers(), timeout=10)
+    _check_response(r, "get_user_by_email")
+    data = r.json()
+    return data[0] if isinstance(data, list) and data else None
+
+
+def delete_user(user_id: str) -> bool:
+    """Delete a user by ID. Returns True if deleted, False if not found."""
+    r = httpx.delete(_url(f"users?id=eq.{user_id}"), headers=_headers(), timeout=10)
+    _check_response(r, "delete_user")
+    return r.status_code == 204 or (r.status_code == 200 and isinstance(r.json(), list) and len(r.json()) == 0)
+
+
 def upsert_user(user_id: str, email: str = "", plan: Optional[str] = None) -> dict:
     payload: dict = {"id": user_id, "email": email or f"{user_id}@unknown.local"}
     if plan is not None:
