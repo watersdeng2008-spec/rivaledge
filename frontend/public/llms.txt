@@ -1,0 +1,38 @@
+# RivalEdge.ai
+AI-powered competitive intelligence for businesses. Monitor competitors, track market changes, and get actionable insights.
+
+## Product
+- RivalEdge.ai monitors your competitors 24/7 using AI
+- Tracks pricing changes, feature updates, marketing moves, hiring signals, news, and reviews
+- Weekly AI-generated competitive intelligence reports delivered to your inbox
+- Starting at $49/month — 6x cheaper than enterprise CI tools that cost $30,000+/year
+- Track up to 5 competitors on the $49 Solo plan; Pro plan available for unlimited tracking
+
+## Key Features
+- AI competitor monitoring: Track competitors automatically with AI-powered signal detection
+- Weekly CI reports: AI-generated competitive intelligence delivered to your inbox
+- Multi-signal tracking: Pricing changes, feature updates, marketing moves, hiring signals, news, and reviews
+- Real-time alerts for critical competitor moves
+- No contracts, cancel anytime
+- Free trial available
+
+## Pricing
+- Solo: $49/month (track up to 5 competitors)
+- Pro: Custom pricing (unlimited competitors, priority support)
+- Free trial available on all plans
+
+## Comparison
+- vs rivaledge.tech ($289/month): Same core CI features at 1/6th the price
+- vs enterprise tools ($30,000/year): Accessible competitive intelligence for SMBs and startups
+- vs manual competitor tracking: Automated 24/7 monitoring replaces hours of manual research
+
+## Use Cases
+- SMBs and startups needing affordable competitor intelligence
+- Marketing teams tracking competitor campaigns and positioning
+- Sales teams monitoring competitive landscape for deal intelligence
+- Product teams tracking competitor feature releases
+- Founders and executives needing weekly competitive landscape summaries
+
+## Contact
+- Website: https://rivaledge.ai
+- Email: hello@rivaledge.ai
