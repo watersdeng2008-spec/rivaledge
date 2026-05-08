@@ -163,11 +163,23 @@ export default function PricingPage() {
         </div>
 
         {/* GEO Add-on */}
-        <div className="max-w-3xl mx-auto mt-16">
-          <div className="text-center mb-8">
-            <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
-              Add-on
-            </span>
+        <div className="max-w-4xl mx-auto mt-20">
+          <div className="border-t border-slate-800 pt-16">
+            <div className="text-center mb-4">
+              <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
+                Add-on for Pro subscribers
+              </span>
+            </div>
+            <h2 className="text-3xl font-bold text-center mb-3">
+              Know what competitors are doing.
+              <br />
+              <span className="text-purple-400">Get found when buyers ask AI about your category.</span>
+            </h2>
+            <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
+              RivalEdge CI tracks your competitors. RivalEdge GEO ensures ChatGPT, Claude, Perplexity, 
+              and Google AI cite <em>your</em> company when buyers search. Over 40% of B2B discovery 
+              now happens through AI platforms — not Google SERPs.
+            </p>
           </div>
           
           <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
