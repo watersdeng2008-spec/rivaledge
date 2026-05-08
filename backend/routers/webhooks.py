@@ -25,6 +25,10 @@ _PRICE_TO_PLAN = {
 }
 
 # GEO add-on price IDs
+_GEO_SETUP_PRICE_ID = os.environ.get(
+    "STRIPE_GEO_SETUP_PRICE_ID",
+    "price_1TUbZgLTMdu9rJFPSLE66Kpk",  # $799 one-time
+)
 _GEO_MONTHLY_PRICE_ID = os.environ.get(
     "STRIPE_GEO_MONTHLY_PRICE_ID",
     "price_1TUbZhLTMdu9rJFPXHmC8Q3e",  # $299/mo
@@ -216,7 +220,16 @@ def _handle_checkout_completed(obj: dict) -> None:
     # GEO add-on checkout — detected via metadata, not plan change
     if metadata.get("addon") == "geo":
         db.set_user_geo_addon(user_id, True)
-        logger.info("User %s added GEO add-on", user_id)
+        # Add one-time $799 setup fee to the customer's next invoice
+        try:
+            stripe.InvoiceItem.create(
+                customer=customer_id,
+                price=_GEO_SETUP_PRICE_ID,
+                description="GEO Add-on — One-Time Setup Fee",
+            )
+            logger.info("User %s added GEO add-on + setup fee", user_id)
+        except stripe.StripeError as exc:
+            logger.error("Failed to add GEO setup fee for user %s: %s", user_id, exc)
         return
 
     # Standard plan checkout
