@@ -393,6 +393,29 @@ function DashboardContent() {
               </div>
             ) : (
               <div className="space-y-3">
+                {/* GEO upsell banner — Pro users without GEO add-on */}
+                {billing?.plan === 'pro' && !billing?.has_geo_addon && (
+                  <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-purple-300">Get cited by ChatGPT, Claude &amp; AI search</p>
+                        <p className="text-slate-400 text-sm mt-0.5">Over 40% of B2B discovery happens on AI platforms. Make sure your company shows up when buyers ask about your category.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleGeoCheckout}
+                      disabled={upgradingPlan}
+                      className="flex-shrink-0 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {upgradingPlan ? 'Redirecting...' : 'Add AI Visibility'}
+                    </button>
+                  </div>
+                )}
                 {competitors.map((c) => (
                   <div
                     key={c.id}

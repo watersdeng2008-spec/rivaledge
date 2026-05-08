@@ -200,59 +200,71 @@ export default function HomePage() {
       </section>
 
       {/* GEO Add-on Teaser */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-block bg-purple-600/10 border border-purple-600/20 text-purple-400 text-sm px-3 py-1 rounded-full mb-4">
-              Beyond Competitive Intelligence
-            </div>
-            <h2 className="text-3xl font-bold mb-4">
-              Your competitors are optimizing for AI search.
-              <br />
-              <span className="text-purple-400">Are you showing up where it matters?</span>
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              ChatGPT, Claude, Perplexity, and AI Overviews now drive over 40% of B2B discovery traffic. 
-              If your company isn&apos;t cited when buyers ask these AIs about your category, 
-              you&apos;re invisible to your next 100 customers.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                title: 'llms.txt optimization',
-                desc: 'The robots.txt for AI. We build and maintain the files that tell LLMs exactly who you are, what you sell, and why you win.',
-              },
-              {
-                title: '8-platform crawl infrastructure',
-                desc: 'robots.txt configured for ChatGPT, Claude, Perplexity, Google AI, Meta, Amazon, Apple, and Anthropic crawlers.',
-              },
-              {
-                title: 'Monthly AI citation report',
-                desc: 'See exactly which AIs cite you, which cite your competitors, and what you need to publish to close the gap.',
-              },
-            ].map(({ title, desc }) => (
-              <div key={title} className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">{title}</h3>
-                <p className="text-slate-400 text-sm">{desc}</p>
+      <section className="bg-purple-600/5 border-y border-purple-600/20 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm px-4 py-1.5 rounded-full mb-6">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                </svg>
+                Premium Add-on for Pro Subscribers
               </div>
-            ))}
-          </div>
+              <h2 className="text-4xl font-bold mb-4">
+                Competitive Intelligence tells you what <span className="text-blue-400">they&apos;re</span> doing.
+              </h2>
+              <h3 className="text-3xl font-bold text-purple-400 mb-4">
+                Generative Engine Optimization makes AI search know about <span className="underline decoration-purple-400/50">you</span>.
+              </h3>
+              <p className="text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed">
+                Over 40% of B2B discovery now starts with ChatGPT, Claude, Perplexity, and Google AI — 
+                not traditional search. If your company isn&apos;t cited when buyers ask these AIs about your category, 
+                you&apos;re invisible to your next 100 customers.
+              </p>
+            </div>
 
-          <div className="text-center mt-10">
-            <Link
-              href="/pricing"
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
-            >
-              See GEO add-on pricing →
-            </Link>
-            <p className="text-slate-500 text-xs mt-3">$799 one-time setup · $299/mo monitoring · Available for Pro subscribers</p>
+            <div className="grid md:grid-cols-3 gap-5 mb-12">
+              {[
+                {
+                  title: 'AI Crawler Infrastructure',
+                  desc: 'robots.txt + llms.txt configured for 8 platforms — ChatGPT, Claude, Perplexity, Google AI, Meta, Amazon, Apple, and Anthropic.',
+                  highlight: '8 crawlers',
+                },
+                {
+                  title: 'Content Pipeline Optimization',
+                  desc: 'We structure your web presence so AI models surface your company, products, and differentiators in every relevant query.',
+                  highlight: 'Full pipeline',
+                },
+                {
+                  title: 'Monthly Citation Monitoring',
+                  desc: 'Detailed report: which AIs cite you vs competitors, trending topics in your category, and exactly what to publish next to close visibility gaps.',
+                  highlight: '$299/mo',
+                },
+              ].map(({ title, desc, highlight }) => (
+                <div key={title} className="bg-slate-900 border border-purple-500/20 rounded-xl p-6 relative overflow-hidden group hover:border-purple-500/40 transition-colors">
+                  <div className="absolute top-3 right-3 bg-purple-600/10 text-purple-400 text-xs px-2 py-0.5 rounded-full font-medium">
+                    {highlight}
+                  </div>
+                  <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
+                    <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold mb-2">{title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg shadow-purple-600/20"
+              >
+                Get found by AI search →
+              </Link>
+              <p className="text-slate-500 text-sm mt-3">$799 one-time setup · $299/mo monitoring · Available for Pro subscribers</p>
+            </div>
           </div>
         </div>
       </section>
@@ -316,7 +328,7 @@ export default function HomePage() {
             </div>
             <ul className="space-y-3 mb-8">
               {[
-                'Track up to 20 competitors',
+                'Track up to 10 competitors',
                 'Daily AI digest',
                 'Slack + email alerts',
                 'Battle card generator',

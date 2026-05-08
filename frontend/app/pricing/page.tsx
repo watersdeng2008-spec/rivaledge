@@ -137,7 +137,7 @@ export default function PricingPage() {
 
             <div className="space-y-3 mb-8">
               {[
-                ['20 competitors', true],
+                ['10 competitors', true],
                 ['Daily AI digest', true],
                 ['Email + Slack alerts', true],
                 ['Battle card generator', true],
@@ -249,9 +249,11 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {[
-                  ['Competitor tracking', '5', '20'],
+                  ['Competitor tracking', '5', '10'],
                   ['AI briefing frequency', 'Weekly', 'Daily'],
                   ['Email alerts', '✓', '✓'],
+                  ['Price checks', 'Every 2 hours', 'Every 2 hours'],
+                  ['Price move alerts', '≥2% change', '≥2% change'],
                   ['Slack alerts', '—', '✓'],
                   ['Battle cards', '✓', '✓'],
                   ['API access', '—', '✓'],
