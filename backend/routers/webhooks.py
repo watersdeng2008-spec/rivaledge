@@ -24,6 +24,12 @@ _PRICE_TO_PLAN = {
     os.environ.get("STRIPE_PRO_PRICE_ID", "price_1TEa3lLTMdu9rJFPgvechLBX"): "pro",
 }
 
+# GEO add-on price IDs
+_GEO_MONTHLY_PRICE_ID = os.environ.get(
+    "STRIPE_GEO_MONTHLY_PRICE_ID",
+    "price_1TUbZhLTMdu9rJFPXHmC8Q3e",  # $299/mo
+)
+
 router = APIRouter()
 
 
@@ -207,7 +213,13 @@ def _handle_checkout_completed(obj: dict) -> None:
     if customer_id:
         db.update_user_stripe_customer_id(user_id, customer_id)
 
-    # Determine plan from subscription price
+    # GEO add-on checkout — detected via metadata, not plan change
+    if metadata.get("addon") == "geo":
+        db.set_user_geo_addon(user_id, True)
+        logger.info("User %s added GEO add-on", user_id)
+        return
+
+    # Standard plan checkout
     subscription_id = obj.get("subscription")
     if subscription_id:
         try:
@@ -235,9 +247,17 @@ def _handle_subscription_updated(obj: dict) -> None:
 
     try:
         price_id = obj["items"]["data"][0]["price"]["id"]
-        plan = _PRICE_TO_PLAN.get(price_id, "solo")
-        db.update_user_plan(user_id, plan)
-        logger.info("User %s plan updated to '%s'", user_id, plan)
+        plan = _PRICE_TO_PLAN.get(price_id)
+        if plan:
+            # Standard plan price — update the plan
+            db.update_user_plan(user_id, plan)
+            logger.info("User %s plan updated to '%s'", user_id, plan)
+        elif price_id == _GEO_MONTHLY_PRICE_ID:
+            # GEO add-on subscription change — don't touch plan
+            db.set_user_geo_addon(user_id, True)
+            logger.info("User %s GEO add-on subscription updated (plan unchanged)", user_id)
+        else:
+            logger.warning("subscription.updated: unknown price_id %s for customer %s", price_id, customer_id)
     except (KeyError, IndexError) as exc:
         logger.error("subscription.updated: could not parse price for customer %s: %s", customer_id, exc)
 

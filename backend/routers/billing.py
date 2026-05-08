@@ -27,6 +27,16 @@ PRICE_TO_PLAN = {
 
 PLAN_TO_PRICE = {v: k for k, v in PRICE_TO_PLAN.items()}
 
+# GEO add-on price IDs
+GEO_SETUP_PRICE_ID = os.environ.get(
+    "STRIPE_GEO_SETUP_PRICE_ID",
+    "price_1TUbZgLTMdu9rJFPSLE66Kpk",  # $799 one-time
+)
+GEO_MONTHLY_PRICE_ID = os.environ.get(
+    "STRIPE_GEO_MONTHLY_PRICE_ID",
+    "price_1TUbZhLTMdu9rJFPXHmC8Q3e",  # $299/mo
+)
+
 # Competitor limits by plan
 PLAN_LIMITS = {
     "solo": 3,
@@ -37,7 +47,7 @@ PLAN_LIMITS = {
 # ── Schemas ────────────────────────────────────────────────────────────────────
 
 class CheckoutRequest(BaseModel):
-    plan: str  # "solo" | "pro"
+    plan: str  # "solo" | "pro" | "geo" (add-on)
 
 
 class CheckoutResponse(BaseModel):
@@ -51,6 +61,7 @@ class PortalResponse(BaseModel):
 class BillingStatusResponse(BaseModel):
     plan: str
     status: str  # "active" | "inactive"
+    has_geo_addon: bool = False
     competitor_limit: int
     competitor_count: int = 0
 
@@ -128,6 +139,79 @@ def create_portal(current_user: dict = Depends(get_current_user)):
         )
 
 
+@router.post("/addon-checkout", response_model=CheckoutResponse)
+@limiter.limit("5/hour")
+def create_addon_checkout(
+    request: Request,
+    body: CheckoutRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Create a Stripe Checkout Session for the GEO add-on.
+    Includes $799 one-time setup + $299/mo subscription in one session.
+    User must already be on a paid plan (Solo or Pro).
+    """
+    if body.plan not in ("solo", "pro", "geo"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid plan '{body.plan}'.",
+        )
+
+    user_id = resolve_db_id(current_user)
+    user_email = current_user.get("email", "")
+
+    # For GEO add-on, user should already be on a paid plan (check is best-effort)
+    user = db.get_user(user_id)
+    current_plan = user.get("plan") if user else None
+    if body.plan == "geo" and current_plan not in ("solo", "pro"):
+        logger.warning(
+            "GEO add-on checkout for user %s without active paid plan (plan=%s) — allowing anyway",
+            user_id, current_plan,
+        )
+        # Don't block — Stripe payment is the real gate
+
+    try:
+        if body.plan == "geo":
+            # GEO add-on: one-time setup + recurring monthly
+            session = stripe.checkout.Session.create(
+                mode="subscription",
+                payment_method_types=["card"],
+                line_items=[
+                    {"price": GEO_SETUP_PRICE_ID, "quantity": 1},    # $799 one-time
+                    {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $299/mo
+                ],
+                subscription_data={"trial_period_days": 0},
+                success_url="https://rivaledge.ai/dashboard?addon=geo_success",
+                cancel_url="https://rivaledge.ai/pricing",
+                customer_email=user_email or None,
+                metadata={
+                    "user_id": user_id,
+                    "addon": "geo",
+                },
+            )
+        else:
+            # Standard plan checkout
+            price_id = PLAN_TO_PRICE[body.plan]
+            session = stripe.checkout.Session.create(
+                mode="subscription",
+                payment_method_types=["card"],
+                line_items=[{"price": price_id, "quantity": 1}],
+                subscription_data={"trial_period_days": 14},
+                success_url="https://rivaledge.ai/dashboard?checkout=success",
+                cancel_url="https://rivaledge.ai/pricing",
+                customer_email=user_email or None,
+                metadata={"user_id": user_id},
+            )
+
+        return CheckoutResponse(checkout_url=session.url)
+    except stripe.StripeError as exc:
+        logger.error("Stripe checkout error for user %s: %s", user_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Payment provider error. Please try again.",
+        )
+
+
 @router.get("/status", response_model=BillingStatusResponse)
 def get_billing_status(current_user: dict = Depends(get_current_user)):
     """Return the current subscription plan and competitor limit for the user."""
@@ -139,8 +223,10 @@ def get_billing_status(current_user: dict = Depends(get_current_user)):
     # If user not in DB yet, default to solo plan
     if not user:
         plan = "solo"
+        has_geo = False
     else:
-        plan = user.get("plan") or "solo"  # or-operator handles null values too
+        plan = user.get("plan") or "solo"
+        has_geo = user.get("has_geo_addon", False)
     sub_status = "active"
     competitor_limit = PLAN_LIMITS.get(plan, 3)
 
@@ -151,6 +237,7 @@ def get_billing_status(current_user: dict = Depends(get_current_user)):
     return {
         "plan": plan,
         "status": sub_status,
+        "has_geo_addon": has_geo,
         "competitor_limit": competitor_limit,
         "competitor_count": competitor_count,
     }

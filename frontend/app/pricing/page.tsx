@@ -10,6 +10,7 @@ export default function PricingPage() {
   const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showGeoDetails, setShowGeoDetails] = useState(false);
 
   const handleCheckout = async (plan: 'solo' | 'pro') => {
     if (!isSignedIn) {
@@ -21,6 +22,30 @@ export default function PricingPage() {
     try {
       const token = await getToken();
       const data = await apiRequest<{ checkout_url: string }>('/api/billing/checkout', {
+        method: 'POST',
+        body: JSON.stringify({ plan }),
+        token: token || undefined,
+      });
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Checkout failed');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleAddonCheckout = async (plan: 'geo') => {
+    if (!isSignedIn) {
+      window.location.href = '/sign-up';
+      return;
+    }
+    setLoading(plan);
+    setError(null);
+    try {
+      const token = await getToken();
+      const data = await apiRequest<{ checkout_url: string }>('/api/billing/addon-checkout', {
         method: 'POST',
         body: JSON.stringify({ plan }),
         token: token || undefined,
@@ -134,6 +159,67 @@ export default function PricingPage() {
             >
               {loading === 'pro' ? 'Redirecting...' : 'Start 14-day free trial'}
             </button>
+          </div>
+        </div>
+
+        {/* GEO Add-on */}
+        <div className="max-w-3xl mx-auto mt-16">
+          <div className="text-center mb-8">
+            <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
+              Add-on
+            </span>
+          </div>
+          
+          <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-xl font-semibold">Generative Engine Optimization</h3>
+                </div>
+                <p className="text-slate-400 text-sm mb-4">Get cited by ChatGPT, Claude, Perplexity, and AI search engines</p>
+                
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-3xl font-bold">$299</span>
+                  <span className="text-slate-400 text-sm">/mo</span>
+                  <span className="text-slate-500 text-sm">+ $799 one-time setup</span>
+                </div>
+
+                <button
+                  onClick={() => setShowGeoDetails(!showGeoDetails)}
+                  className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2"
+                >
+                  {showGeoDetails ? 'Hide details' : "What's included"}
+                </button>
+              </div>
+
+              <button
+                onClick={() => handleAddonCheckout('geo')}
+                disabled={loading === 'geo'}
+                className="w-full md:w-auto bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              >
+                {loading === 'geo' ? 'Redirecting...' : 'Add AI Visibility'}
+              </button>
+            </div>
+
+            {showGeoDetails && (
+              <div className="mt-6 pt-6 border-t border-purple-500/20 grid md:grid-cols-2 gap-3">
+                {[
+                  'AI search visibility audit',
+                  'llms.txt optimization & maintenance',
+                  'robots.txt configured for 8 AI crawlers',
+                  'Monthly AI citation monitoring report',
+                  'Competitor GEO posture analysis',
+                  'Content pipeline optimization',
+                  'GitHub + YouTube distribution strategy',
+                  'Priority index refresh requests',
+                ].map((feature) => (
+                  <div key={feature} className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
+                    <span className="text-slate-300">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

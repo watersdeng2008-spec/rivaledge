@@ -233,6 +233,12 @@ def update_user_stripe_customer_id(user_id: str, customer_id: str) -> bool:
     return True
 
 
+def set_user_geo_addon(user_id: str, has_geo: bool = True) -> bool:
+    r = httpx.patch(_url(f"users?id=eq.{user_id}"), json={"has_geo_addon": has_geo}, headers=_headers(), timeout=10)
+    _check_response(r, "set_user_geo_addon")
+    return True
+
+
 # ── Sales Analytics Tables ────────────────────────────────────────────────────
 
 def get_sales_agent_logs(since: Optional[str] = None, limit: int = 100) -> list:
