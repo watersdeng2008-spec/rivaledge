@@ -206,7 +206,7 @@ export default function HomePage() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm px-4 py-1.5 rounded-full mb-6">
                 <Sparkles className="w-4 h-4" />
-                Standalone Service
+                GEO (Generative Engine Optimization) Service
               </div>
               <h2 className="text-4xl font-bold mb-4">
                 Competitive Intelligence tells you what <span className="text-blue-400">they&apos;re</span> doing.

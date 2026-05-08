@@ -172,11 +172,12 @@ def create_addon_checkout(
 
     try:
         if body.plan == "geo":
-            # GEO add-on: $299/mo subscription (setup fee added via webhook InvoiceItem)
+            # GEO add-on: $799 setup fee + $299/mo subscription
             session = stripe.checkout.Session.create(
                 mode="subscription",
                 payment_method_types=["card"],
                 line_items=[
+                    {"price": GEO_SETUP_PRICE_ID, "quantity": 1},  # $799 one-time
                     {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $299/mo
                 ],
                 subscription_data={"trial_period_days": 0},

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, Sparkles, FileText, Bot, BarChart3, Globe, RefreshCw, Shield, Youtube } from 'lucide-react';
+import { Check, Sparkles, FileText, Bot, BarChart3, Globe, RefreshCw, Shield, Film } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/api';
 
@@ -10,8 +10,13 @@ export default function GeoPage() {
   const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleGeoCheckout = async () => {
+    if (!termsAccepted) {
+      setError('Please agree to the Terms of Service before continuing.');
+      return;
+    }
     if (!isSignedIn) {
       window.location.href = '/sign-up';
       return;
@@ -127,9 +132,29 @@ export default function GeoPage() {
             </ul>
           </div>
 
+          <label className="flex items-start gap-3 text-left text-sm text-slate-300 mb-5">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(event) => setTermsAccepted(event.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-slate-600 bg-slate-900 text-purple-600 focus:ring-purple-500"
+            />
+            <span>
+              I agree to the{' '}
+              <Link href="/terms" className="text-purple-300 hover:text-purple-200 underline underline-offset-2">
+                Terms of Service
+              </Link>
+              {' '}and{' '}
+              <Link href="/privacy" className="text-purple-300 hover:text-purple-200 underline underline-offset-2">
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
+
           <button
             onClick={handleGeoCheckout}
-            disabled={loading}
+            disabled={loading || !termsAccepted}
             className="w-full bg-purple-600 hover:bg-purple-500 text-white py-4 rounded-xl font-semibold text-lg transition-colors disabled:opacity-50 shadow-lg shadow-purple-600/20"
           >
             {loading ? 'Redirecting to checkout...' : 'Get found by AI search →'}
@@ -201,7 +226,7 @@ export default function GeoPage() {
           </div>
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
-              <Youtube className="w-5 h-5 text-purple-400" />
+              <Film className="w-5 h-5 text-purple-400" />
               <h3 className="font-semibold">Distribution Blueprint</h3>
             </div>
             <p className="text-slate-400 text-sm">
@@ -238,7 +263,7 @@ export default function GeoPage() {
       <section className="max-w-xl mx-auto px-6 pb-20 text-center">
         <button
           onClick={handleGeoCheckout}
-          disabled={loading}
+          disabled={loading || !termsAccepted}
           className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-10 py-4 rounded-xl font-semibold text-lg transition-colors disabled:opacity-50 shadow-lg shadow-purple-600/20"
         >
           {loading ? 'Redirecting...' : 'Get found by AI search →'}
