@@ -10,9 +10,9 @@ const inter = Inter({ subsets: ['latin'] });
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 
 export const metadata: Metadata = {
-  title: 'RivalEdge — AI Competitor Monitoring',
-  description: 'Track your rivals. Get weekly AI briefings on what competitors changed — pricing, features, messaging. $49/month. 14-day free trial.',
-  keywords: ['competitor monitoring', 'competitive intelligence', 'AI competitor tracking', 'rival tracking', 'competitor analysis tool', 'Crayon alternative'],
+  title: 'RivalEdge — Win Visibility in Both Markets and AI',
+  description: 'Know your competition. Get cited by AI. Competitive intelligence + generative engine optimization in one platform. From $49/mo.',
+  keywords: ['competitor monitoring', 'competitive intelligence', 'AI competitor tracking', 'generative engine optimization', 'GEO', 'AI search optimization', 'LLM optimization', 'AI visibility', 'ChatGPT citations', 'Perplexity optimization', 'Crayon alternative'],
   authors: [{ name: 'RivalEdge' }],
   metadataBase: new URL('https://www.rivaledge.ai'),
   icons: {
@@ -20,17 +20,17 @@ export const metadata: Metadata = {
     apple: '/logo.jpg',
   },
   openGraph: {
-    title: 'RivalEdge — AI Competitor Monitoring',
-    description: 'Finally. Competitive intelligence that doesn\'t cost $30k/year. Track your rivals automatically. $49/mo.',
+    title: 'RivalEdge — Win Visibility in Both Markets and AI',
+    description: 'Know your competition. Get cited by AI. Competitive intelligence + generative engine optimization. From $49/mo.',
     url: 'https://www.rivaledge.ai',
     siteName: 'RivalEdge',
-    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge AI Competitor Monitoring' }],
+    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — CI + GEO Platform' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RivalEdge — AI Competitor Monitoring',
-    description: 'Track your rivals. Get weekly AI briefings. $49/month.',
+    title: 'RivalEdge — Win Visibility in Both Markets and AI',
+    description: 'Know your competition. Get cited by AI. $49/month.',
     images: ['/hero.jpg'],
     creator: '@RivalEdgeAI',
   },
