@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, Zap, Bell, Shield, Sparkles, BarChart3 } from 'lucide-react';
+import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -259,6 +259,105 @@ export default function HomePage() {
               AI discoverability — in one platform.
             </span>
           </p>
+        </div>
+      </section>
+
+      {/* The Discovery Layer Has Changed */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          The discovery layer has changed
+        </h2>
+        <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          How buyers find products has shifted. Google isn&apos;t the only front door anymore.
+        </p>
+        
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4">
+              <Search className="w-5 h-5 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Traditional Search</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              For years, SERP rankings determined who got discovered. SEO was a one-channel game. 
+              Google was the front door to every market.
+            </p>
+          </div>
+          
+          <div className="bg-slate-900 border border-purple-500/20 rounded-xl p-6">
+            <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">AI Discovery</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              ChatGPT, Claude, and Perplexity now shape B2B buyer research. 
+              AI-generated recommendations are replacing organic search results — 40%+ of discovery starts with AI.
+            </p>
+          </div>
+          
+          <div className="bg-slate-900 border border-blue-500/20 rounded-xl p-6">
+            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
+              <TrendingUp className="w-5 h-5 text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Competitive Pressure</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Competitors who optimize for AI visibility are capturing mindshare before buyers ever visit a website. 
+              If AI doesn&apos;t know you, you don&apos;t exist.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Built For */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          Built for teams that can&apos;t afford to be invisible
+        </h2>
+        <p className="text-slate-400 text-center mb-10 max-w-2xl mx-auto">
+          Whether you&apos;re defending market share or fighting to get noticed — RivalEdge gives you the intel to move faster.
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+          {[
+            { icon: '🏢', label: 'SaaS & B2B' },
+            { icon: '🛒', label: 'eCommerce & Amazon' },
+            { icon: '🤝', label: 'Agencies & Consultants' },
+            { icon: '🏥', label: 'Healthcare & Professional Services' },
+            { icon: '💰', label: 'Fintech & Financial Services' },
+            { icon: '📦', label: 'DTC & CPG Brands' },
+          ].map((u) => (
+            <div key={u.label} className="bg-slate-900 border border-slate-800 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-slate-600 transition-colors">
+              <span className="text-base">{u.icon}</span>
+              <span className="text-sm text-slate-300 font-medium">{u.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Final CTA — Urgency */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Your competitors are already optimizing for AI.
+          </h2>
+          <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
+            Every month you wait is market share lost. RivalEdge gives you the full picture — 
+            competitor movements <span className="text-blue-400">plus</span> AI visibility — starting at $49/month.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/sign-up"
+              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-semibold transition-colors text-lg"
+            >
+              Start free trial →
+            </Link>
+            <Link
+              href="/geo"
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors"
+            >
+              See GEO demo
+            </Link>
+          </div>
+          <p className="text-slate-500 text-sm mt-4">14-day free trial. No credit card required.</p>
         </div>
       </section>
 
