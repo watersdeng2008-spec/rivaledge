@@ -353,7 +353,7 @@ export default function HomePage() {
           </h2>
           <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
             Every month you wait is market share lost. RivalEdge gives you the full picture — 
-            competitor movements <span className="text-blue-400">plus</span> AI visibility — starting at $49/month.
+            competitor monitoring from $49/mo, AI visibility from $299/mo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
