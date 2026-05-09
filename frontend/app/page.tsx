@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp } from 'lucide-react';
+import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp, Play } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -12,6 +12,9 @@ export default function HomePage() {
             <span className="text-xl font-bold text-blue-400">RivalEdge</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/demo" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Live Demo
+            </Link>
             <Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">
               Pricing
             </Link>
@@ -42,6 +45,15 @@ export default function HomePage() {
           <p className="text-lg text-slate-400 max-w-xl mx-auto">
             Two products. One platform. Everything you need to win your market.
           </p>
+
+          {/* Live Demo CTA */}
+          <Link
+            href="/demo"
+            className="inline-flex items-center gap-2 mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40"
+          >
+            <Play className="w-5 h-5 flex-shrink-0" />
+            See the AI in action — interactive demo
+          </Link>
         </div>
 
         {/* Dual product cards */}
@@ -351,10 +363,11 @@ export default function HomePage() {
               Start free trial →
             </Link>
             <Link
-              href="/geo"
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors"
+              href="/demo"
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors inline-flex items-center gap-2"
             >
-              See GEO demo
+              <Play className="w-4 h-4" />
+              See interactive demo
             </Link>
           </div>
           <p className="text-slate-500 text-sm mt-4">14-day free trial. No credit card required.</p>
