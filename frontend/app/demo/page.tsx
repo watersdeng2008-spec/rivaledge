@@ -143,7 +143,7 @@ export default function DemoPage() {
         <div className="bg-gradient-to-br from-blue-600/20 to-violet-600/20 border border-blue-500/20 rounded-2xl p-10 text-center">
           <h2 className="text-3xl font-bold mb-3">Want real-time AI monitoring?</h2>
           <p className="text-slate-400 mb-6 max-w-lg mx-auto">
-            Track how ChatGPT, Claude, and Perplexity describe your company — and your competitors — every week. From $49/mo.
+            Track how ChatGPT, Claude, and Perplexity describe your company — and your competitors — every week. From $299/mo.
           </p>
           <Link
             href="/sign-up"
