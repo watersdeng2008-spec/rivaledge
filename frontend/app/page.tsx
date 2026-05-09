@@ -463,6 +463,7 @@ export default function HomePage() {
             <a href="mailto:support@rivaledge.ai" className="text-slate-500 text-sm hover:text-slate-300">Support</a>
           </div>
           <div className="flex gap-6 text-slate-500 text-sm">
+            <Link href="/demo" className="hover:text-white transition-colors">Demo</Link>
             <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/sign-in" className="hover:text-white transition-colors">Sign in</Link>
           </div>
