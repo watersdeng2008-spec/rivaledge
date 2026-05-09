@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, Zap, Bell, Shield, Sparkles } from 'lucide-react';
+import { Check, Zap, Bell, Shield, Sparkles, BarChart3 } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -7,8 +7,10 @@ export default function HomePage() {
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm mr-2 inline-block" />
-          <span className="text-xl font-bold text-blue-400">RivalEdge</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm" />
+            <span className="text-xl font-bold text-blue-400">RivalEdge</span>
+          </div>
           <div className="flex items-center gap-4">
             <Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">
               Pricing
@@ -29,49 +31,114 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div className="inline-block bg-blue-600/10 border border-blue-600/20 text-blue-400 text-sm px-3 py-1 rounded-full mb-6">
-          AI-powered competitor monitoring
+      {/* Hero — Two Products, Side by Side */}
+      <section className="max-w-6xl mx-auto px-6 pt-16 pb-12">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+            Know your competition.
+            <br />
+            <span className="text-blue-400">Get cited by AI.</span>
+          </h1>
+          <p className="text-lg text-slate-400 max-w-xl mx-auto">
+            Two products. One platform. Everything you need to win your market.
+          </p>
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-          Finally. Competitive intelligence
-          <br />
-          <span className="text-blue-400">that doesn&apos;t cost $30k/year.</span>
-        </h1>
-        <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-          Track your rivals. Get weekly AI briefings. $49/month.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/sign-up"
-            className="bg-blue-600 hover:bg-blue-500 text-white text-lg px-8 py-4 rounded-xl font-semibold transition-colors"
-          >
-            Start free trial →
-          </Link>
-          <Link
-            href="/pricing"
-            className="border border-slate-700 hover:border-slate-500 text-slate-300 text-lg px-8 py-4 rounded-xl font-semibold transition-colors"
-          >
-            See pricing
-          </Link>
+
+        {/* Dual product cards */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* CI Card */}
+          <div className="bg-slate-900 border border-blue-500/20 rounded-2xl p-7 flex flex-col">
+            <div className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-600/20 text-blue-400 text-xs px-3 py-1 rounded-full self-start mb-4">
+              <BarChart3 className="w-3.5 h-3.5" />
+              Competitive Intelligence
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              Track competitors.<br />
+              <span className="text-blue-400">Get weekly briefings.</span>
+            </h2>
+            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+              Automated monitoring of your rivals&apos; websites, pricing, and product updates.
+              AI-powered weekly digests tell you what changed and what to do about it.
+            </p>
+            <ul className="space-y-2.5 mb-6 flex-1">
+              {[
+                'Track up to 5 competitors',
+                'Weekly AI digest + email alerts',
+                'AI battle card generator',
+                '5-minute setup — just add URLs',
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="text-3xl font-bold mb-1">
+              $49<span className="text-base text-slate-400 font-normal">/mo</span>
+            </div>
+            <p className="text-slate-500 text-xs mb-5">14-day free trial. No credit card required.</p>
+            <Link
+              href="/sign-up"
+              className="block text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-semibold transition-colors"
+            >
+              Start free trial →
+            </Link>
+          </div>
+
+          {/* GEO Card */}
+          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] px-3 py-0.5 rounded-bl-lg font-semibold tracking-wide">
+              NEW
+            </div>
+            <div className="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full self-start mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              GEO Service
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              Get cited by AI.<br />
+              <span className="text-purple-400">Show up in ChatGPT, Claude &amp; more.</span>
+            </h2>
+            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+              40%+ of B2B discovery now starts with AI search. We configure your web presence
+              so ChatGPT, Claude, Perplexity, and Google AI cite your company in every relevant query.
+            </p>
+            <ul className="space-y-2.5 mb-6 flex-1">
+              {[
+                'AI crawler infra — 8 platforms configured',
+                'Content pipeline optimization',
+                'Monthly citation monitoring reports',
+                '$799 one-time setup + $299/mo',
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="text-3xl font-bold mb-1">
+              $299<span className="text-base text-slate-400 font-normal">/mo</span>
+            </div>
+            <p className="text-slate-500 text-xs mb-5">+ $799 one-time setup. Standalone — no CI subscription needed.</p>
+            <Link
+              href="/geo"
+              className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
+            >
+              Get found by AI search →
+            </Link>
+          </div>
         </div>
+
         {/* Testimonial */}
-        <div className="mt-8 max-w-xl mx-auto">
+        <div className="mt-10 max-w-xl mx-auto text-center">
           <blockquote className="text-lg text-slate-300 italic border-l-4 border-blue-500 pl-4">
             &ldquo;Finally, a tool that pays for itself the first time it prevents surprise.&rdquo;
           </blockquote>
           <p className="text-slate-400 text-sm mt-2">— SaaS Founder</p>
         </div>
-        
-        <p className="text-slate-500 text-sm mt-6">No credit card required. 14-day free trial.</p>
-        <div className="mt-12 flex justify-center">
-          <img src="/hero.jpg" alt="RivalEdge in action" className="rounded-2xl shadow-2xl max-w-2xl w-full" />
-        </div>
       </section>
 
       {/* Features */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
@@ -111,7 +178,6 @@ export default function HomePage() {
         </p>
         
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Left column */}
           <div className="space-y-8">
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -125,7 +191,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-bold text-blue-400">⚡</span>
@@ -138,7 +203,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-bold text-blue-400">🎯</span>
@@ -152,8 +216,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          
-          {/* Right column */}
           <div className="space-y-8">
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -167,7 +229,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-bold text-blue-400">🔒</span>
@@ -181,7 +242,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            
             <div className="flex gap-4">
               <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-bold text-blue-400">💡</span>
@@ -194,74 +254,6 @@ export default function HomePage() {
                   You get insights, not just alerts.
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* GEO Add-on Teaser */}
-      <section className="bg-purple-600/5 border-y border-purple-600/20 py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm px-4 py-1.5 rounded-full mb-6">
-                <Sparkles className="w-4 h-4" />
-                GEO (Generative Engine Optimization) Service
-              </div>
-              <h2 className="text-4xl font-bold mb-4">
-                Competitive Intelligence tells you what <span className="text-blue-400">they&apos;re</span> doing.
-              </h2>
-              <h3 className="text-3xl font-bold text-purple-400 mb-4">
-                Generative Engine Optimization makes AI search know about <span className="underline decoration-purple-400/50">you</span>.
-              </h3>
-              <p className="text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed">
-                Over 40% of B2B discovery now starts with ChatGPT, Claude, Perplexity, and Google AI — 
-                not traditional search. If your company isn&apos;t cited when buyers ask these AIs about your category, 
-                you&apos;re invisible to your next 100 customers.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-5 mb-12">
-              {[
-                {
-                  title: 'AI Crawler Infrastructure',
-                  desc: 'robots.txt + llms.txt configured for 8 platforms — ChatGPT, Claude, Perplexity, Google AI, Meta, Amazon, Apple, and Anthropic.',
-                  highlight: '8 crawlers',
-                },
-                {
-                  title: 'Content Pipeline Optimization',
-                  desc: 'We structure your web presence so AI models surface your company, products, and differentiators in every relevant query.',
-                  highlight: 'Full pipeline',
-                },
-                {
-                  title: 'Monthly Citation Monitoring',
-                  desc: 'Detailed report: which AIs cite you vs competitors, trending topics in your category, and exactly what to publish next to close visibility gaps.',
-                  highlight: '$299/mo',
-                },
-              ].map(({ title, desc, highlight }) => (
-                <div key={title} className="bg-slate-900 border border-purple-500/20 rounded-xl p-6 relative overflow-hidden group hover:border-purple-500/40 transition-colors">
-                  <div className="absolute top-3 right-3 bg-purple-600/10 text-purple-400 text-xs px-2 py-0.5 rounded-full font-medium">
-                    {highlight}
-                  </div>
-                  <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold mb-2">{title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <Link
-                href="/geo"
-                className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg shadow-purple-600/20"
-              >
-                Get found by AI search →
-              </Link>
-              <p className="text-slate-500 text-sm mt-3">$799 one-time setup · $299/mo monitoring · No CI subscription required</p>
             </div>
           </div>
         </div>
@@ -291,7 +283,6 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-16" id="pricing">
         <h2 className="text-3xl font-bold text-center mb-12">Simple, honest pricing</h2>
         <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          {/* Solo */}
           <div className="bg-slate-900 border border-slate-700 rounded-xl p-8">
             <h3 className="text-xl font-semibold mb-1">Solo</h3>
             <p className="text-slate-400 text-sm mb-6">For indie founders and small teams</p>
@@ -313,8 +304,6 @@ export default function HomePage() {
               Get started
             </Link>
           </div>
-
-          {/* Pro */}
           <div className="bg-blue-600/10 border border-blue-500/50 rounded-xl p-8 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
               MOST POPULAR
