@@ -173,17 +173,33 @@ def create_addon_checkout(
     try:
         if body.plan == "geo":
             # GEO add-on: $799 setup fee + $299/mo subscription
+            # Create/get Stripe customer to attach one-time setup invoice item
+            customers = stripe.Customer.list(email=user_email, limit=1)
+            if customers.data:
+                customer_id = customers.data[0].id
+            else:
+                customer = stripe.Customer.create(
+                    email=user_email,
+                    metadata={"user_id": user_id},
+                )
+                customer_id = customer.id
+
+            # Add $799 one-time setup fee as invoice item (added to first subscription invoice)
+            stripe.InvoiceItem.create(
+                customer=customer_id,
+                price=GEO_SETUP_PRICE_ID,
+            )
+
             session = stripe.checkout.Session.create(
                 mode="subscription",
                 payment_method_types=["card"],
                 line_items=[
-                    {"price": GEO_SETUP_PRICE_ID, "quantity": 1},  # $799 one-time
                     {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $299/mo
                 ],
                 subscription_data={"trial_period_days": 0},
                 success_url="https://rivaledge.ai/dashboard?addon=geo_success",
                 cancel_url="https://rivaledge.ai/pricing",
-                customer_email=user_email or None,
+                customer=customer_id,
                 metadata={
                     "user_id": user_id,
                     "addon": "geo",
