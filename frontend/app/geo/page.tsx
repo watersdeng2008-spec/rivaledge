@@ -132,6 +132,22 @@ export default function GeoPage() {
             </ul>
           </div>
 
+          {/* First billing explanation */}
+          <div className="mb-5 bg-slate-900/80 border border-purple-500/20 rounded-lg p-4">
+            <p className="text-sm text-slate-200 mb-2 font-semibold">📋 Your first billing</p>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              The <span className="text-white font-semibold">$799 setup fee</span> covers your full AI visibility audit, 
+              competitor benchmarking, and crawler infrastructure build-out — everything listed above. 
+              It&apos;s a one-time charge added to your first invoice alongside the monthly subscription.
+            </p>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-white">$1,098</span>
+              <span className="text-slate-400 text-sm">first month</span>
+              <span className="text-slate-500 text-xs">($799 setup + $299/mo)</span>
+            </div>
+            <p className="text-slate-500 text-xs mt-1">Then $299/month. Cancel anytime.</p>
+          </div>
+
           <label className="flex items-start gap-3 text-left text-sm text-slate-300 mb-5">
             <input
               type="checkbox"
