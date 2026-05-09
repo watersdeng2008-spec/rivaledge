@@ -30,11 +30,11 @@ PLAN_TO_PRICE = {v: k for k, v in PRICE_TO_PLAN.items()}
 # GEO add-on price IDs
 GEO_SETUP_PRICE_ID = os.environ.get(
     "STRIPE_GEO_SETUP_PRICE_ID",
-    "price_1TUbZgLTMdu9rJFPSLE66Kpk",  # $799 one-time
+    "price_1TUzQmLTMdu9rJFPSOGDa27a",  # $799 one-time
 )
 GEO_MONTHLY_PRICE_ID = os.environ.get(
     "STRIPE_GEO_MONTHLY_PRICE_ID",
-    "price_1TUbZhLTMdu9rJFPXHmC8Q3e",  # $299/mo
+    "price_1TUzS3LTMdu9rJFPFIND0oHm",  # $299/mo
 )
 
 # Competitor limits by plan
