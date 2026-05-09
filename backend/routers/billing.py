@@ -196,7 +196,7 @@ def create_addon_checkout(
                 line_items=[
                     {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $299/mo
                 ],
-                subscription_data={"trial_period_days": 0},
+                subscription_data={"trial_period_days": 2},
                 success_url="https://rivaledge.ai/dashboard?addon=geo_success",
                 cancel_url="https://rivaledge.ai/pricing",
                 customer=customer_id,
