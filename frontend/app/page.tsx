@@ -153,7 +153,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <h2 className="text-3xl font-bold text-center mb-4">What you get</h2>
         <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Everything you need to monitor competitors and control your AI search presence. From $49/month.
+          Competitor monitoring from $49/mo. AI search visibility from $299/mo.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
