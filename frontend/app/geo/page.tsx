@@ -75,6 +75,9 @@ export default function GeoPage() {
           not traditional search. If you&apos;re not cited when buyers ask, you&apos;re invisible.
         </p>
         <p className="text-slate-500 text-sm mb-4">Standalone service — no CI subscription required.</p>
+        <p className="text-slate-400 text-sm mb-4">
+          Read our breakdown: <a href="https://open.substack.com/pub/dengw/p/geo-is-not-seo-20?r=6qf1gl&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline underline-offset-2">GEO ≠ SEO 2.0</a>
+        </p>
 
         {error && (
           <div className="max-w-lg mx-auto mb-4 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">

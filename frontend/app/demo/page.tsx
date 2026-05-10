@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Search, TrendingUp, ArrowRight } from 'lucide-react';
+import { Sparkles, Play, ArrowRight, BookOpen, ExternalLink } from 'lucide-react';
 import { demoExamples, type DemoExample } from './data';
 
 const aiMeta = [
@@ -13,8 +13,6 @@ const aiMeta = [
 
 export default function DemoPage() {
   const [selected, setSelected] = useState<DemoExample>(demoExamples[0]);
-  const [customCompany, setCustomCompany] = useState('');
-  const [customCompetitor, setCustomCompetitor] = useState('');
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -101,40 +99,52 @@ export default function DemoPage() {
         </div>
       </section>
 
-      {/* Try Your Own (Tier 2 placeholder) */}
+      {/* Watch the Demo Video + Read the Essay */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-3">Try Your Own Comparison</h2>
-          <p className="text-slate-400 mb-6">
-            Enter any two companies and get real AI responses. Coming soon.
-          </p>
-          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
-            <input
-              type="text"
-              placeholder="Your company"
-              value={customCompany}
-              onChange={(e) => setCustomCompany(e.target.value)}
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-            />
-            <span className="hidden sm:flex items-center text-slate-500 font-medium">vs</span>
-            <input
-              type="text"
-              placeholder="Competitor"
-              value={customCompetitor}
-              onChange={(e) => setCustomCompetitor(e.target.value)}
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-            />
-            <button
-              type="submit"
-              disabled={!customCompany || !customCompetitor}
-              className="bg-slate-700 text-slate-400 px-6 py-3 rounded-xl text-sm font-medium cursor-not-allowed"
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Video Card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
+                <Play className="w-5 h-5 text-blue-400" />
+              </div>
+              <h2 className="text-xl font-bold">See it in action</h2>
+            </div>
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+              Watch a 60-second walkthrough of how RivalEdge tracks competitors
+              and monitors AI visibility — live in the app.
+            </p>
+            <a
+              href="/rivaledge-demo-v1.mp4"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
             >
-              Coming Soon
-            </button>
-          </form>
-          <p className="text-xs text-slate-500 mt-4">
-            Live multi-AI queries cost us API credits. We&apos;re making it free for trial users soon.
-          </p>
+              <Play className="w-4 h-4" />
+              Watch the demo
+            </a>
+          </div>
+
+          {/* Essay Card */}
+          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-purple-400" />
+              </div>
+              <h2 className="text-xl font-bold">GEO ≠ SEO 2.0</h2>
+            </div>
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+              Our CEO breaks down why AI discovery is a structural shift in how markets work —
+              not just "SEO with new buzzwords."
+            </p>
+            <a
+              href="https://open.substack.com/pub/dengw/p/geo-is-not-seo-20?r=6qf1gl&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            >
+              Read the essay
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </section>
 
