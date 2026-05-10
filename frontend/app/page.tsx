@@ -38,12 +38,12 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Know your competition.
+            Win visibility in your market
             <br />
-            <span className="text-blue-400">Get cited by AI.</span>
+            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">and in AI.</span>
           </h1>
           <p className="text-lg text-slate-400 max-w-xl mx-auto">
-            Two products. One platform. Everything you need to win your market.
+            AI-native market intelligence. Track competitors, win AI visibility, and move faster than your market.
           </p>
 
           {/* Live Demo CTA */}
@@ -104,22 +104,22 @@ export default function HomePage() {
             </div>
             <div className="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full self-start mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              GEO Service
+              AI Visibility (GEO)
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              Get cited by AI.<br />
-              <span className="text-purple-400">Show up in ChatGPT, Claude &amp; more.</span>
+              Get recommended by AI.<br />
+              <span className="text-purple-400">ChatGPT, Claude, Perplexity &amp; more.</span>
             </h2>
             <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              40%+ of B2B discovery now starts with AI search. We configure your web presence
-              so ChatGPT, Claude, Perplexity, and Google AI cite your company in every relevant query.
+              40%+ of B2B buyers now ask AI before they search Google.
+              We make sure your brand gets cited, positioned correctly, and recommended over competitors.
             </p>
             <ul className="space-y-2.5 mb-6 flex-1">
               {[
-                'AI crawler infra — 8 platforms configured',
-                'Content pipeline optimization',
-                'Monthly citation monitoring reports',
-                '$799 one-time setup + $299/mo',
+                'Monitor citations across 8 AI platforms',
+                'AI-optimized content & structured data',
+                'Monthly visibility & positioning reports',
+                'Competitive benchmarking in AI answers',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
                   <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
@@ -130,7 +130,7 @@ export default function HomePage() {
             <div className="text-3xl font-bold mb-1">
               $299<span className="text-base text-slate-400 font-normal">/mo</span>
             </div>
-            <p className="text-slate-500 text-xs mb-5">+ $799 one-time setup. Standalone — no CI subscription needed.</p>
+            <p className="text-slate-500 text-xs mb-5">+ $799 one-time setup. Available standalone — no CI subscription required.</p>
             <Link
               href="/geo"
               className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
@@ -198,11 +198,12 @@ export default function HomePage() {
       {/* Why They Work Better Together */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <h2 className="text-3xl font-bold text-center mb-4">
-          Why they work better together
+          One platform. Two angles on the same market.
         </h2>
-        <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-slate-400 text-center mb-12 max-w-3xl mx-auto leading-relaxed">
           Most companies track competitors. Very few understand how AI systems are
-          reshaping competitive visibility. RivalEdge gives you both.
+          reshaping competitive visibility. RivalEdge connects both — so you know
+          what your market is doing <em>and</em> how AI is positioning everyone in it.
         </p>
         
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -241,7 +242,8 @@ export default function HomePage() {
             </div>
             <p className="text-slate-300 text-sm mb-4 leading-relaxed">
               Understand how AI systems like ChatGPT, Claude, and Perplexity describe
-              and recommend your brand — and your competitors.
+              and recommend your brand — and your competitors. Monthly visibility and
+              citation tracking across every major AI platform.
             </p>
             <ul className="space-y-2">
               {[
@@ -264,11 +266,11 @@ export default function HomePage() {
           <p className="text-slate-300 text-lg leading-relaxed">
             <span className="text-blue-400 font-semibold">CI</span> tells you what
             competitors are doing.{' '}
-            <span className="text-purple-400 font-semibold">GEO</span> tells you
+            <span className="text-purple-400 font-semibold">AI Visibility</span> tells you
             how AI interprets and recommends them.{' '}
             <span className="text-white font-semibold">
               Together, they give you market movement, narrative positioning, and
-              AI discoverability — in one platform.
+              AI discoverability — one platform, one dashboard.
             </span>
           </p>
         </div>
@@ -353,7 +355,8 @@ export default function HomePage() {
           </h2>
           <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
             Every month you wait is market share lost. RivalEdge gives you the full picture — 
-            competitor monitoring from $49/mo, AI visibility from $299/mo.
+            competitor monitoring from $49/mo, AI visibility from $299/mo. Start with one, 
+            add the other when you're ready.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

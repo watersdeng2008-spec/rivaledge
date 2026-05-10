@@ -120,8 +120,8 @@ export default function GeoPage() {
               {[
                 'Monthly AI citation monitoring report',
                 'Sentiment & narrative analysis',
-                'Competitor GEO posture tracking',
-                'Content pipeline optimization',
+                'Competitor AI visibility tracking',
+                'Content optimization & structured data',
                 'Priority index refresh requests',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
@@ -225,7 +225,7 @@ export default function GeoPage() {
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <BarChart3 className="w-5 h-5 text-purple-400" />
-              <h3 className="font-semibold">Competitor GEO Analysis</h3>
+              <h3 className="font-semibold">Competitor AI Visibility Analysis</h3>
             </div>
             <p className="text-slate-400 text-sm">
               We identify exactly why competitors get recommended instead of you — and build the asset gap to close the distance.
@@ -234,7 +234,7 @@ export default function GeoPage() {
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <FileText className="w-5 h-5 text-purple-400" />
-              <h3 className="font-semibold">Content Pipeline Strategy</h3>
+              <h3 className="font-semibold">Content & Structured Data Strategy</h3>
             </div>
             <p className="text-slate-400 text-sm">
               We map high-intent AI queries to content assets — comparison pages, FAQs, entity descriptions — that drive AI citations.
