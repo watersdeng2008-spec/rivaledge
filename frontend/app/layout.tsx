@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'RivalEdge — Win Visibility in Both Markets and AI',
-    description: 'Competitor monitoring from $49/mo. AI search visibility from $999/mo. Competitive intelligence + generative engine optimization.',,
+    description: 'Competitor monitoring from $49/mo. AI search visibility from $999/mo. Competitive intelligence + generative engine optimization.',
     url: 'https://www.rivaledge.ai',
     siteName: 'RivalEdge',
     images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — CI + GEO Platform' }],
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'RivalEdge — Win Visibility in Both Markets and AI',
-    description: 'Competitor monitoring from $49/mo. AI visibility from $999/mo.',,
+    description: 'Competitor monitoring from $49/mo. AI visibility from $999/mo.',
     images: ['/hero.jpg'],
     creator: '@RivalEdgeAI',
   },
