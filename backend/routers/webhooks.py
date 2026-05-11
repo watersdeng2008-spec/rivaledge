@@ -24,14 +24,14 @@ _PRICE_TO_PLAN = {
     os.environ.get("STRIPE_PRO_PRICE_ID", "price_1TEa3lLTMdu9rJFPgvechLBX"): "pro",
 }
 
-# GEO add-on price IDs
+# GEO add-on price IDs ($3,500 setup + $999/mo — updated 2026-05-11)
 _GEO_SETUP_PRICE_ID = os.environ.get(
     "STRIPE_GEO_SETUP_PRICE_ID",
-    "price_1TUbZgLTMdu9rJFPSLE66Kpk",  # $799 one-time
+    "price_1TVug5LTMdu9rJFPoWiVN3SF",  # $3,500 one-time setup
 )
 _GEO_MONTHLY_PRICE_ID = os.environ.get(
     "STRIPE_GEO_MONTHLY_PRICE_ID",
-    "price_1TUbZhLTMdu9rJFPXHmC8Q3e",  # $299/mo
+    "price_1TVufRLTMdu9rJFPQdozoMbb",  # $999/mo subscription
 )
 
 router = APIRouter()

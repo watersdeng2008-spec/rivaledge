@@ -27,15 +27,14 @@ PRICE_TO_PLAN = {
 
 PLAN_TO_PRICE = {v: k for k, v in PRICE_TO_PLAN.items()}
 
-# GEO add-on price IDs
-# TODO: Waters — create new Stripe prices at $3,500 setup + $999/mo, then update env vars
+# GEO add-on price IDs ($3,500 setup + $999/mo — updated 2026-05-11)
 GEO_SETUP_PRICE_ID = os.environ.get(
     "STRIPE_GEO_SETUP_PRICE_ID",
-    "price_1TV0iyLTMdu9rJFPvdYHpLKT",  # $799 one-time (OLD — replace with $3,500)
+    "price_1TVug5LTMdu9rJFPoWiVN3SF",  # $3,500 one-time setup
 )
 GEO_MONTHLY_PRICE_ID = os.environ.get(
     "STRIPE_GEO_MONTHLY_PRICE_ID",
-    "price_1TV0iyLTMdu9rJFP28U5ndtk",  # $299/mo (OLD — replace with $999)
+    "price_1TVufRLTMdu9rJFPQdozoMbb",  # $999/mo subscription
 )
 
 # Competitor limits by plan
