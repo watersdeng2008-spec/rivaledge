@@ -99,52 +99,42 @@ export default function DemoPage() {
         </div>
       </section>
 
-      {/* Watch the Demo Video + Read the Essay */}
+      {/* Demo Video */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Video Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
-                <Play className="w-5 h-5 text-blue-400" />
-              </div>
-              <h2 className="text-xl font-bold">See it in action</h2>
-            </div>
-            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-              Watch a 60-second walkthrough of how RivalEdge tracks competitors
-              and monitors AI visibility — live in the app.
-            </p>
-            <a
-              href="/rivaledge-demo-v1.mp4"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-            >
-              <Play className="w-4 h-4" />
-              Watch the demo
-            </a>
-          </div>
+        <div className="bg-slate-900 border border-blue-500/20 rounded-2xl overflow-hidden">
+          <video
+            className="w-full"
+            controls
+            preload="metadata"
+            poster="/rivaledge-demo-v3-poster.jpg"
+          >
+            <source src="/rivaledge-demo-v3.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </section>
 
-          {/* Essay Card */}
-          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-purple-400" />
-              </div>
-              <h2 className="text-xl font-bold">GEO ≠ SEO 2.0</h2>
+      {/* Substack Essay */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-purple-400" />
             </div>
-            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-              Our CEO breaks down why AI discovery is a structural shift in how markets work —
-              not just "SEO with new buzzwords."
-            </p>
-            <a
-              href="https://open.substack.com/pub/dengw/p/geo-is-not-seo-20?r=6qf1gl&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-            >
-              Read the essay
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            <h2 className="text-xl font-bold">GEO ≠ SEO 2.0</h2>
           </div>
+          <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed mb-6">
+            Our CEO breaks down why AI discovery is a structural shift in how markets work —
+            not just &quot;SEO with new buzzwords.&quot;
+          </p>
+          <a
+            href="https://open.substack.com/pub/dengw/p/geo-is-not-seo-20?r=6qf1gl&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+          >
+            Read the essay
+            <ExternalLink className="w-4 h-4" />
+          </a>
         </div>
       </section>
 

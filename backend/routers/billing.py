@@ -28,13 +28,14 @@ PRICE_TO_PLAN = {
 PLAN_TO_PRICE = {v: k for k, v in PRICE_TO_PLAN.items()}
 
 # GEO add-on price IDs
+# TODO: Waters — create new Stripe prices at $3,500 setup + $999/mo, then update env vars
 GEO_SETUP_PRICE_ID = os.environ.get(
     "STRIPE_GEO_SETUP_PRICE_ID",
-    "price_1TV0iyLTMdu9rJFPvdYHpLKT",  # $799 one-time
+    "price_1TV0iyLTMdu9rJFPvdYHpLKT",  # $799 one-time (OLD — replace with $3,500)
 )
 GEO_MONTHLY_PRICE_ID = os.environ.get(
     "STRIPE_GEO_MONTHLY_PRICE_ID",
-    "price_1TV0iyLTMdu9rJFP28U5ndtk",  # $299/mo
+    "price_1TV0iyLTMdu9rJFP28U5ndtk",  # $299/mo (OLD — replace with $999)
 )
 
 # Competitor limits by plan
@@ -148,7 +149,7 @@ def create_addon_checkout(
 ):
     """
     Create a Stripe Checkout Session for the GEO add-on.
-    Includes $799 one-time setup + $299/mo subscription in one session.
+    Includes $3,500 one-time setup + $999/mo subscription in one session.
     User must already be on a paid plan (Solo or Pro).
     """
     if body.plan not in ("solo", "pro", "geo"):
@@ -172,7 +173,7 @@ def create_addon_checkout(
 
     try:
         if body.plan == "geo":
-            # GEO add-on: $799 setup fee + $299/mo subscription
+            # GEO add-on: $3,500 setup fee + $999/mo subscription
             # Create/get Stripe customer to attach one-time setup invoice item
             customers = stripe.Customer.list(email=user_email, limit=1)
             if customers.data:
@@ -184,7 +185,7 @@ def create_addon_checkout(
                 )
                 customer_id = customer.id
 
-            # Add $799 one-time setup fee as invoice item (added to first subscription invoice)
+            # Add $3,500 one-time setup fee as invoice item (added to first subscription invoice)
             stripe.InvoiceItem.create(
                 customer=customer_id,
                 price=GEO_SETUP_PRICE_ID,
@@ -194,7 +195,7 @@ def create_addon_checkout(
                 mode="subscription",
                 payment_method_types=["card"],
                 line_items=[
-                    {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $299/mo
+                    {"price": GEO_MONTHLY_PRICE_ID, "quantity": 1},  # $999/mo
                 ],
                 subscription_data={"trial_period_days": 2},
                 success_url="https://rivaledge.ai/dashboard?addon=geo_success",

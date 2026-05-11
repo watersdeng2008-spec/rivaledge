@@ -92,7 +92,7 @@ export default function GeoPage() {
           {/* Setup Fee */}
           <div className="mb-8 pb-8 border-b border-purple-500/20">
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold">$799</span>
+              <span className="text-4xl font-bold">$3,500</span>
               <span className="text-slate-400 text-sm">one-time</span>
             </div>
             <p className="text-slate-300 text-sm mb-4">Setup &amp; full visibility audit</p>
@@ -115,7 +115,7 @@ export default function GeoPage() {
           {/* Monthly */}
           <div className="mb-8">
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold">$299</span>
+              <span className="text-4xl font-bold">$999</span>
               <span className="text-slate-400 text-sm">/month</span>
             </div>
             <p className="text-slate-300 text-sm mb-4">Ongoing monitoring &amp; optimization</p>
@@ -139,16 +139,16 @@ export default function GeoPage() {
           <div className="mb-5 bg-slate-900/80 border border-purple-500/20 rounded-lg p-4">
             <p className="text-sm text-slate-200 mb-2 font-semibold">📋 Your first billing</p>
             <p className="text-sm text-slate-300 leading-relaxed">
-              The <span className="text-white font-semibold">$799 setup fee</span> covers your full AI visibility audit, 
+              The <span className="text-white font-semibold">$3,500 setup fee</span> covers your full AI visibility audit, 
               competitor benchmarking, and crawler infrastructure build-out — everything listed above. 
               It&apos;s a one-time charge added to your first invoice alongside the monthly subscription.
             </p>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-white">$1,098</span>
+              <span className="text-2xl font-bold text-white">$4,499</span>
               <span className="text-slate-400 text-sm">first month</span>
-              <span className="text-slate-500 text-xs">($799 setup + $299/mo)</span>
+              <span className="text-slate-500 text-xs">($3,500 setup + $999/mo)</span>
             </div>
-            <p className="text-slate-500 text-xs mt-1">Then $299/month. Cancel anytime.</p>
+            <p className="text-slate-500 text-xs mt-1">Then $999/month. Volume pricing available for enterprise.</p>
           </div>
 
           <label className="flex items-start gap-3 text-left text-sm text-slate-300 mb-5">
@@ -287,7 +287,7 @@ export default function GeoPage() {
         >
           {loading ? 'Redirecting...' : 'Get found by AI search →'}
         </button>
-        <p className="text-slate-500 text-sm mt-3">$799 one-time setup + $299/month monitoring</p>
+        <p className="text-slate-500 text-sm mt-3">$3,500 one-time setup + $999/month monitoring</p>
       </section>
 
       {/* Footer */}

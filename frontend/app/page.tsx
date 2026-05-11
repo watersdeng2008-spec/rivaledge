@@ -128,9 +128,9 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="text-3xl font-bold mb-1">
-              $299<span className="text-base text-slate-400 font-normal">/mo</span>
+              $999<span className="text-base text-slate-400 font-normal">/mo</span>
             </div>
-            <p className="text-slate-500 text-xs mb-5">+ $799 one-time setup. Available standalone — no CI subscription required.</p>
+            <p className="text-slate-500 text-xs mb-5">+ $3,500 one-time setup. Enterprise-grade AI visibility — available standalone.</p>
             <Link
               href="/geo"
               className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
@@ -153,7 +153,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <h2 className="text-3xl font-bold text-center mb-4">What you get</h2>
         <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Competitor monitoring from $49/mo. AI search visibility from $299/mo.
+          Competitor monitoring from $49/mo. AI visibility from $999/mo.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
@@ -355,7 +355,7 @@ export default function HomePage() {
           </h2>
           <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
             Every month you wait is market share lost. RivalEdge gives you the full picture — 
-            competitor monitoring from $49/mo, AI visibility from $299/mo. Start with one, 
+            competitor monitoring from $49/mo, AI visibility from $999/mo. Start with one, 
             add the other when you're ready.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
