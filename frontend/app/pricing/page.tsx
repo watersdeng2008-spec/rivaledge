@@ -195,9 +195,9 @@ export default function PricingPage() {
                 <p className="text-slate-400 text-sm mb-4">Get cited by ChatGPT, Claude, Perplexity, and AI search engines</p>
                 
                 <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-3xl font-bold">$299</span>
+                  <span className="text-3xl font-bold">$999</span>
                   <span className="text-slate-400 text-sm">/mo</span>
-                  <span className="text-slate-500 text-sm">+ $799 one-time setup</span>
+                  <span className="text-slate-500 text-sm">+ $3,500 one-time setup</span>
                 </div>
 
                 <button

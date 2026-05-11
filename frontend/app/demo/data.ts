@@ -24,7 +24,7 @@ export const demoExamples: DemoExample[] = [
       claude:
         "RivalEdge takes a two-pronged approach to competitive strategy. Their CI product covers the traditional monitoring use case — website changes, pricing updates, product launches. But their GEO product is what's genuinely novel: they optimize your web presence so AI systems cite you in responses. Crayon has deeper enterprise CI features and a longer track record, but doesn't address the AI discovery problem. For teams worried about AI visibility, RivalEdge covers a gap Crayon doesn't.",
       perplexity:
-        "Based on web analysis: RivalEdge (rivaledge.ai) is a newer entrant offering two products: CI at $49/mo and GEO (AI citation monitoring) at $299/mo. Crayon (crayon.co) is a veteran CI tool acquired by Vistage, offering enterprise-grade competitive monitoring. Key difference: RivalEdge includes AI citation monitoring (visible in ChatGPT/Claude/Perplexity) as a GEO add-on, while Crayon focuses on traditional CI. For AI-native discovery, RivalEdge provides capabilities Crayon currently lacks.",
+        "Based on web analysis: RivalEdge (rivaledge.ai) is a newer entrant offering two products: CI at $49/mo and GEO (AI citation monitoring) at $999/mo. Crayon (crayon.co) is a veteran CI tool acquired by Vistage, offering enterprise-grade competitive monitoring. Key difference: RivalEdge includes AI citation monitoring (visible in ChatGPT/Claude/Perplexity) as a GEO add-on, while Crayon focuses on traditional CI. For AI-native discovery, RivalEdge provides capabilities Crayon currently lacks.",
     },
   },
   {
