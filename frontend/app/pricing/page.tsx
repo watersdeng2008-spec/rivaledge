@@ -115,6 +115,12 @@ export default function PricingPage() {
               ))}
             </div>
 
+            <div className="mb-4">
+              <Link href="/demo" className="text-blue-400 hover:text-blue-300 text-sm underline underline-offset-2">
+                See sample report →
+              </Link>
+            </div>
+
             <button
               onClick={() => handleCheckout('solo')}
               disabled={loading === 'solo'}
@@ -150,6 +156,12 @@ export default function PricingPage() {
                   <span className={included ? 'text-slate-300' : 'text-slate-600'}>{String(feature)}</span>
                 </div>
               ))}
+            </div>
+
+            <div className="mb-4">
+              <Link href="/demo" className="text-blue-400 hover:text-blue-300 text-sm underline underline-offset-2">
+                See sample report →
+              </Link>
             </div>
 
             <button
@@ -197,7 +209,13 @@ export default function PricingPage() {
                 <div className="flex items-baseline gap-2 mb-4">
                   <span className="text-3xl font-bold">$999</span>
                   <span className="text-slate-400 text-sm">/mo</span>
-                  <span className="text-slate-500 text-sm">+ $3,500 one-time setup</span>
+                  <span className="text-slate-500 text-sm group relative cursor-help">
+                    + $3,500 one-time setup
+                    <span className="inline-block ml-1 text-slate-600 group-hover:text-purple-400 transition-colors">ⓘ</span>
+                    <span className="absolute bottom-full left-0 mb-2 w-64 bg-slate-800 border border-slate-600 text-slate-300 text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      Comprehensive AI citation audit, robotstxt configuration for 8 AI crawlers, llmstxt creation, and initial content optimization across ChatGPT, Claude, Perplexity, and Google AI.
+                    </span>
+                  </span>
                 </div>
 
                 <button
@@ -215,6 +233,12 @@ export default function PricingPage() {
               >
                 {loading === 'geo' ? 'Redirecting...' : 'Add AI Visibility'}
               </button>
+            </div>
+
+            <div className="mt-3">
+              <Link href="/demo" className="text-purple-400 hover:text-purple-300 text-sm underline underline-offset-2">
+                See sample GEO audit →
+              </Link>
             </div>
 
             {showGeoDetails && (
