@@ -140,12 +140,27 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Testimonial */}
-        <div className="mt-10 max-w-xl mx-auto text-center">
-          <blockquote className="text-lg text-slate-300 italic border-l-4 border-blue-500 pl-4">
-            &ldquo;Finally, a tool that pays for itself the first time it prevents surprise.&rdquo;
-          </blockquote>
-          <p className="text-slate-400 text-sm mt-2">— SaaS Founder</p>
+        </section>
+
+      {/* Product Demo Video */}
+      <section className="max-w-4xl mx-auto px-6 pb-12">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div className="px-6 pt-6 pb-3">
+            <div className="flex items-center gap-2 text-sm text-slate-400 mb-1">
+              <Play className="w-4 h-4 text-blue-400" />
+              <span>90-second product tour</span>
+            </div>
+            <h3 className="text-xl font-semibold">See RivalEdge in action</h3>
+          </div>
+          <video
+            className="w-full"
+            controls
+            preload="metadata"
+            poster="/rivaledge-demo-v2-check-homepage.png"
+          >
+            <source src="/rivaledge-demo-v3.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </section>
 
