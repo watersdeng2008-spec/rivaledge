@@ -108,7 +108,8 @@ export default function DemoPage() {
             preload="metadata"
             poster="/rivaledge-demo-v3-poster.jpg"
           >
-            <source src="/rivaledge-demo-v3.mp4" type="video/mp4" />
+            <source src="/rivaledge-demo-v3-opt.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
           </video>
         </div>
       </section>
