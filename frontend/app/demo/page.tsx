@@ -105,7 +105,7 @@ export default function DemoPage() {
           <div className="relative pt-[56.25%]">
             <iframe
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/VIDEO_ID_PLACEHOLDER?rel=0&modestbranding=1"
+              src="https://www.youtube.com/embed/v0Xxil061pQ?rel=0&modestbranding=1"
               title="RivalEdge Demo — See What AI Says About You vs Your Competitors"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
