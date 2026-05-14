@@ -102,15 +102,16 @@ export default function DemoPage() {
       {/* Demo Video */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
         <div className="bg-slate-900 border border-blue-500/20 rounded-2xl overflow-hidden">
-          <video
-            className="w-full"
-            controls
-            preload="metadata"
-            poster="/rivaledge-demo-v3-poster.jpg"
-          >
-            <source src="/rivaledge-demo-v3-opt.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-          </video>
+          <div className="relative pt-[56.25%]">
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src="https://www.youtube.com/embed/VIDEO_ID_PLACEHOLDER?rel=0&modestbranding=1"
+              title="RivalEdge Demo — See What AI Says About You vs Your Competitors"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ border: 'none' }}
+            />
+          </div>
         </div>
       </section>
 
