@@ -39,6 +39,22 @@ const posts = [
     readTime: '3 min read',
     category: 'Comparison',
   },
+  {
+    slug: 'rivaledge-vs-spyfu',
+    title: 'RivalEdge vs SpyFu: A Side-by-Side Comparison',
+    excerpt: 'SEO/PPC tracking vs full competitive intelligence. Why RivalEdge delivers broader coverage at a similar price.',
+    date: 'May 17, 2026',
+    readTime: '4 min read',
+    category: 'Comparison',
+  },
+  {
+    slug: 'rivaledge-vs-alphasense',
+    title: 'RivalEdge vs AlphaSense: A Side-by-Side Comparison',
+    excerpt: 'Enterprise market intelligence vs startup-friendly competitive intelligence. See the 100x price difference.',
+    date: 'May 17, 2026',
+    readTime: '4 min read',
+    category: 'Comparison',
+  },
 ];
 
 export default function BlogPage() {
