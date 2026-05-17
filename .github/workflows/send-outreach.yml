@@ -17,6 +17,9 @@ on:
         required: false
         default: 'Ben D'
 
+permissions:
+  contents: read
+
 jobs:
   send-email:
     runs-on: ubuntu-latest

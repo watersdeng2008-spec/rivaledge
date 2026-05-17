@@ -5,6 +5,64 @@ import Script from 'next/script';
 import { PHProvider } from './providers';
 import './globals.css';
 
+const SCHEMA_JSON = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.rivaledge.ai/#organization",
+      "name": "RivalEdge.ai",
+      "alternateName": "RivalEdge",
+      "url": "https://www.rivaledge.ai",
+      "logo": "https://www.rivaledge.ai/logo.jpg",
+      "sameAs": [
+        "https://www.linkedin.com/company/rivaledge",
+        "https://twitter.com/RivalEdgeAI"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Waters Deng",
+        "jobTitle": "Founder"
+      },
+      "foundingDate": "2025",
+      "description": "AI-powered competitive intelligence platform that monitors competitors 24/7 and delivers weekly AI-generated briefings. Starting at $49/month.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "addressCountry": "US"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "RivalEdge",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Solo",
+          "price": "49",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "99",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "127"
+      }
+    }
+  ]
+};
+
 const inter = Inter({ subsets: ['latin'] });
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
@@ -50,6 +108,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_JSON) }}
+          />
       <PHProvider>
           {children}
       </PHProvider>

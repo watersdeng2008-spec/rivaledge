@@ -8,6 +8,9 @@ on:
         required: false
         default: 'true'
 
+permissions:
+  contents: read
+
 jobs:
   send-batch:
     runs-on: ubuntu-latest

@@ -18,6 +18,9 @@ export default function HomePage() {
             <Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">
               Pricing
             </Link>
+            <Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Blog
+            </Link>
             <Link
               href="/sign-in"
               className="text-slate-400 hover:text-white text-sm transition-colors"
