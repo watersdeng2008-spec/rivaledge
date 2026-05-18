@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-27665937d9-d422_346e977e37",
+  "featureId": "feat_library_27665937d9",
+  "title": "PostHog is initialized unconditionally with a hard-coded production project key",
+  "category": "build-release",
+  "severity": "low",
+  "confidence": "medium",
+  "triage": "risk",
+  "evidence": [
+    {
+      "path": "frontend/app/providers.tsx",
+      "startLine": 8,
+      "endLine": 15,
+      "symbol": "PHProvider",
+      "quote": "posthog.init('phc_z6Ac8mrQU72kWKdxkqHqykHWWCbrUbJJywFD42kKmdwV', {"
+    },
+    {
+      "path": "frontend/package.json",
+      "startLine": 6,
+      "endLine": 9,
+      "symbol": "scripts",
+      "quote": "\"dev\": \"next dev\", \"build\": \"next build\", \"start\": \"next start\""
+    }
+  ],
+  "reasoning": "The provider always initializes PostHog when mounted and uses a literal project key/api host instead of environment-specific configuration or an enablement guard. In a Next frontend this means local development, preview, staging, and production builds all report to the same PostHog project whenever this provider is rendered. That can pollute production analytics and may capture unexpected non-production user/session metadata despite session recording and autocapture being disabled.",
+  "reproduction": null,
+  "recommendation": "Move the PostHog key and host to public environment variables and initialize only when analytics is explicitly enabled for the current deployment environment. Consider skipping initialization when the key is absent.",
+  "whyTestsDoNotAlreadyCoverThis": "No linked tests are provided for this feature, and there is no assertion around environment-specific analytics configuration or disabled development behavior.",
+  "suggestedRegressionTest": "Add a provider test that mocks posthog.init and verifies it is not called when the public key or analytics enablement flag is absent, and is called with values from environment configuration when enabled.",
+  "minimumFixScope": "Update frontend/app/providers.tsx to read PostHog configuration from environment variables and guard initialization; add a focused test for enabled/disabled initialization behavior.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-27665937d9_d42291e834",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:24.629Z",
+  "updatedAt": "2026-05-18T12:55:24.629Z"
+}

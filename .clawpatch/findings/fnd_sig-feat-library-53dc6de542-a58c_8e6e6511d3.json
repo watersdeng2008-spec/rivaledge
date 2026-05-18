@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-53dc6de542-a58c_8e6e6511d3",
+  "featureId": "feat_library_53dc6de542",
+  "title": "Admin dashboard defaults to production API when configuration is missing",
+  "category": "build-release",
+  "severity": "medium",
+  "confidence": "high",
+  "triage": "risk",
+  "evidence": [
+    {
+      "path": "frontend/app/admin/ceo/page.tsx",
+      "startLine": 6,
+      "endLine": 6,
+      "symbol": "API_URL",
+      "quote": "const API_URL = process.env.NEXT_PUBLIC_API_URL || \"https://rivaledge-production.up.railway.app\";"
+    },
+    {
+      "path": "frontend/app/admin/ceo/page.tsx",
+      "startLine": 66,
+      "endLine": 70,
+      "symbol": "fetchDashboard",
+      "quote": "const response = await fetch(`${API_URL}/ceo/dashboard`, {"
+    },
+    {
+      "path": "frontend/app/admin/ceo/page.tsx",
+      "startLine": 318,
+      "endLine": 322,
+      "symbol": "triggerSalesAgent",
+      "quote": "const response = await fetch(`${API_URL}/api/admin/sales-agent/run?target_count=3`, {"
+    }
+  ],
+  "reasoning": "If NEXT_PUBLIC_API_URL is omitted in a preview, local, or staging build, this client-side admin page silently sends dashboard reads and sales-agent mutations to the production Railway API. Because triggerSalesAgent performs a POST, a misconfigured non-production frontend can execute production admin actions rather than failing closed.",
+  "reproduction": null,
+  "recommendation": "Remove the production fallback for admin API calls. Require NEXT_PUBLIC_API_URL at build/runtime or derive the API base from a same-environment relative route, and fail visibly when it is not configured.",
+  "whyTestsDoNotAlreadyCoverThis": "No tests are linked for this feature, and there is no test asserting API base selection under missing environment configuration.",
+  "suggestedRegressionTest": "Add a test or build-time config validation that fails when NEXT_PUBLIC_API_URL is absent for the CEO admin page, and verifies sales-agent actions target the configured base URL.",
+  "minimumFixScope": "Change API_URL configuration in frontend/app/admin/ceo/page.tsx and add configuration validation for the frontend admin build.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-53dc6de542_a58cf5ed41",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:31.432Z",
+  "updatedAt": "2026-05-18T12:55:31.432Z"
+}

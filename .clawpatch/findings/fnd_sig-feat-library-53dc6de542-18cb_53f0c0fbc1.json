@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-53dc6de542-18cb_53f0c0fbc1",
+  "featureId": "feat_library_53dc6de542",
+  "title": "Admin pages render without route-level authentication",
+  "category": "security",
+  "severity": "medium",
+  "confidence": "medium",
+  "triage": "risk",
+  "evidence": [
+    {
+      "path": "frontend/app/admin/layout.tsx",
+      "startLine": 1,
+      "endLine": 7,
+      "symbol": "AdminLayout",
+      "quote": "return children;"
+    },
+    {
+      "path": "frontend/app/admin/buffer/page.tsx",
+      "startLine": 20,
+      "endLine": 24,
+      "symbol": "BufferAdminPage",
+      "quote": "const [channels, setChannels] = useState<Channel[]>([]);"
+    },
+    {
+      "path": "frontend/app/admin/ceo/page.tsx",
+      "startLine": 57,
+      "endLine": 58,
+      "symbol": "CEODashboard",
+      "quote": "const { getToken } = useAuth();"
+    }
+  ],
+  "reasoning": "The shared /admin layout does not enforce sign-in or admin authorization before rendering child pages. The CEO page only discovers authorization after rendering client code and calling the backend, while the Buffer admin page has no Clerk token or explicit authorization check at all before exposing scheduling and deletion controls. Backend APIs may still reject unauthorized mutations, but the admin UI itself is not protected at the route boundary, which is a concrete permission gap for an admin source group.",
+  "reproduction": null,
+  "recommendation": "Add a route-level guard in frontend/app/admin/layout.tsx or middleware for /admin that requires an authenticated Clerk session and verifies the user is authorized for admin access before rendering any admin child route. Keep backend authorization checks as defense in depth.",
+  "whyTestsDoNotAlreadyCoverThis": "No tests are linked for this feature, and simple-test.tsx only renders static route content without exercising authenticated or unauthenticated admin access.",
+  "suggestedRegressionTest": "Add an admin route access test that renders or navigates to /admin/buffer and /admin/ceo with no session and verifies the user is redirected or denied before admin controls are rendered.",
+  "minimumFixScope": "Protect the /admin layout or a /admin middleware matcher, and cover both owned admin pages.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-53dc6de542_18cb00b196",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:31.432Z",
+  "updatedAt": "2026-05-18T12:55:31.432Z"
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e0082bf908",
+  "title": "Node source frontend/app",
+  "summary": "Node/TypeScript source group frontend/app with 4 files.",
+  "kind": "library",
+  "source": "node-source-group",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "frontend/package.json",
+      "symbol": "frontend/app",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "frontend/app/layout.tsx",
+      "reason": "source group frontend/app"
+    },
+    {
+      "path": "frontend/app/page.tsx",
+      "reason": "source group frontend/app"
+    },
+    {
+      "path": "frontend/app/robots.ts",
+      "reason": "source group frontend/app"
+    },
+    {
+      "path": "frontend/app/sitemap.ts",
+      "reason": "source group frontend/app"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "frontend/package.json",
+      "reason": "package manifest"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "node",
+    "typescript",
+    "source-group",
+    "project:frontend",
+    "project-root:frontend"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-05-18T12:54:36.922Z",
+  "updatedAt": "2026-05-18T12:54:36.922Z"
+}

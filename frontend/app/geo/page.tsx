@@ -27,11 +27,13 @@ export default function GeoPage() {
       const token = await getToken();
       const data = await apiRequest<{ checkout_url: string }>('/api/billing/addon-checkout', {
         method: 'POST',
-        body: JSON.stringify({ plan: 'geo' }),
+        body: JSON.stringify({ plan: 'geo', terms_accepted: true }),
         token: token || undefined,
       });
-      if (data.checkout_url) {
+      if (data.checkout_url && typeof data.checkout_url === 'string' && data.checkout_url.length > 0) {
         window.location.href = data.checkout_url;
+      } else {
+        throw new Error('Checkout URL not received. Please try again or contact support.');
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Checkout failed');

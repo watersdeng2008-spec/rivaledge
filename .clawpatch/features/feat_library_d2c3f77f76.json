@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2c3f77f76",
+  "title": "Node source frontend/app/dashboard",
+  "summary": "Node/TypeScript source group frontend/app/dashboard with 4 files.",
+  "kind": "library",
+  "source": "node-source-group",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "frontend/package.json",
+      "symbol": "frontend/app/dashboard",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "frontend/app/dashboard/competitors/[id]/page.tsx",
+      "reason": "source group frontend/app/dashboard"
+    },
+    {
+      "path": "frontend/app/dashboard/feedback-button.tsx",
+      "reason": "source group frontend/app/dashboard"
+    },
+    {
+      "path": "frontend/app/dashboard/onboarding-modal.tsx",
+      "reason": "source group frontend/app/dashboard"
+    },
+    {
+      "path": "frontend/app/dashboard/page.tsx",
+      "reason": "source group frontend/app/dashboard"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "frontend/package.json",
+      "reason": "package manifest"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "node",
+    "typescript",
+    "source-group",
+    "project:frontend",
+    "project-root:frontend"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-05-18T12:54:36.922Z",
+  "updatedAt": "2026-05-18T12:54:36.922Z"
+}

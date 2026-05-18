@@ -48,6 +48,7 @@ PLAN_LIMITS = {
 
 class CheckoutRequest(BaseModel):
     plan: str  # "solo" | "pro" | "geo" (add-on)
+    terms_accepted: bool = False  # Required for GEO add-on checkout
 
 
 class CheckoutResponse(BaseModel):
@@ -155,6 +156,13 @@ def create_addon_checkout(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid plan '{body.plan}'.",
+        )
+
+    # Require terms acceptance for GEO add-on checkout
+    if body.plan == "geo" and not body.terms_accepted:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Terms of Service must be accepted before GEO checkout.",
         )
 
     user_id = resolve_db_id(current_user)

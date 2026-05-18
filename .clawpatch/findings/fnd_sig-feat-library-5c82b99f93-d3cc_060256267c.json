@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-5c82b99f93-d3cc_060256267c",
+  "featureId": "feat_library_5c82b99f93",
+  "title": "Terms acceptance is enforced only in client state before starting checkout",
+  "category": "api-contract",
+  "severity": "medium",
+  "confidence": "medium",
+  "triage": "contract-mismatch",
+  "evidence": [
+    {
+      "path": "frontend/app/geo/page.tsx",
+      "startLine": 14,
+      "endLine": 30,
+      "symbol": "handleGeoCheckout",
+      "quote": "if (!termsAccepted) { ... } ... body: JSON.stringify({ plan: 'geo' })"
+    },
+    {
+      "path": "frontend/app/geo/page.tsx",
+      "startLine": 143,
+      "endLine": 160,
+      "symbol": "GeoPage",
+      "quote": "checked={termsAccepted}"
+    }
+  ],
+  "reasoning": "The checkout flow blocks the button and handler until local React state says terms were accepted, but the API call only sends { plan: 'geo' }. A user or script can call /api/billing/addon-checkout directly without accepting terms, and the backend receives no acceptance flag, version, or timestamp from this page to enforce or record the contract. If terms acceptance is required before paid checkout, client-only gating is bypassable and creates an API contract/compliance gap.",
+  "reproduction": "Call POST /api/billing/addon-checkout with an authenticated token and body {\"plan\":\"geo\"} without interacting with the checkbox; this page provides no server-verifiable acceptance data in the request.",
+  "recommendation": "Move terms enforcement/recording to the server-side checkout endpoint, or include an explicit acceptance payload that the backend validates and persists before creating the Stripe checkout session.",
+  "whyTestsDoNotAlreadyCoverThis": "No linked tests were included for this feature, and the current page-level behavior only tests local UI state if tested at all; it would not prove the endpoint rejects direct calls without acceptance.",
+  "suggestedRegressionTest": "Add an endpoint-level test that POST /api/billing/addon-checkout for plan geo fails unless the request/user has a recorded accepted terms version, and succeeds only after acceptance is recorded.",
+  "minimumFixScope": "Backend checkout contract plus this page's checkout request shape if the server requires explicit acceptance metadata.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-5c82b99f93_d3ccb49233",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:31.684Z",
+  "updatedAt": "2026-05-18T12:55:31.684Z"
+}

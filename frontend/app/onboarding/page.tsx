@@ -43,6 +43,7 @@ export default function OnboardingPage() {
   ];
 
   const handleNext = async () => {
+    if (loading) return;
     // Get Clerk session token
     const token = await getToken();
     const headers: HeadersInit = {

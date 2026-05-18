@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "projectId": "prj_https-github-com-watersdeng2008-_e8c9de2a14",
+  "name": "rivaledge",
+  "rootPath": "/Users/openclaw/.openclaw/workspace/rivaledge-source",
+  "git": {
+    "remoteUrl": "https://github.com/watersdeng2008-spec/rivaledge.git",
+    "defaultBranch": "main",
+    "currentBranch": "main",
+    "headSha": "49e43ba95e54e57718c34fbb4b51111525adcf9d"
+  },
+  "detected": {
+    "languages": [
+      "python"
+    ],
+    "frameworks": [],
+    "packageManagers": [
+      "python"
+    ],
+    "commands": {
+      "typecheck": null,
+      "lint": null,
+      "format": null,
+      "test": "pytest"
+    }
+  },
+  "createdAt": "2026-05-18T12:54:31.089Z",
+  "updatedAt": "2026-05-18T12:54:31.089Z"
+}

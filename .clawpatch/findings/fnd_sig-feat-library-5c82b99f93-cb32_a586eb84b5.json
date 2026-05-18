@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-5c82b99f93-cb32_a586eb84b5",
+  "featureId": "feat_library_5c82b99f93",
+  "title": "Checkout silently does nothing when the API response lacks a checkout URL",
+  "category": "bug",
+  "severity": "low",
+  "confidence": "high",
+  "triage": "confirmed-bug",
+  "evidence": [
+    {
+      "path": "frontend/app/geo/page.tsx",
+      "startLine": 24,
+      "endLine": 37,
+      "symbol": "handleGeoCheckout",
+      "quote": "if (data.checkout_url) { window.location.href = data.checkout_url; }"
+    }
+  ],
+  "reasoning": "The handler only redirects when checkout_url is truthy. If the endpoint returns a successful response with a missing, null, or malformed checkout_url, no error is shown; the finally block clears loading and the user is left on the page with no explanation. The typed generic does not validate the runtime response shape.",
+  "reproduction": "Mock apiRequest to resolve to {} or { checkout_url: '' } and click the checkout button after accepting terms; loading stops and no error is displayed.",
+  "recommendation": "Validate that checkout_url is a non-empty string before redirecting and throw or set a user-facing error when it is absent.",
+  "whyTestsDoNotAlreadyCoverThis": "No linked tests were provided for malformed checkout responses or checkout error states.",
+  "suggestedRegressionTest": "Add a component/unit test that mocks apiRequest returning an object without checkout_url and asserts that an error message is rendered.",
+  "minimumFixScope": "handleGeoCheckout response validation and error message handling in frontend/app/geo/page.tsx.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-5c82b99f93_cb32566153",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:31.684Z",
+  "updatedAt": "2026-05-18T12:55:31.684Z"
+}

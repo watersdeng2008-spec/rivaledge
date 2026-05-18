@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "findingId": "fnd_sig-feat-library-6e2f59f09b-907c_6ae2cddc6d",
+  "featureId": "feat_library_6e2f59f09b",
+  "title": "Loading state starts after token retrieval, allowing duplicate onboarding submissions",
+  "category": "bug",
+  "severity": "medium",
+  "confidence": "medium",
+  "triage": "risk",
+  "evidence": [
+    {
+      "path": "frontend/app/onboarding/page.tsx",
+      "startLine": 43,
+      "endLine": 44,
+      "symbol": "handleNext",
+      "quote": "const token = await getToken();"
+    },
+    {
+      "path": "frontend/app/onboarding/page.tsx",
+      "startLine": 51,
+      "endLine": 52,
+      "symbol": "handleNext",
+      "quote": "if (step === 1) {\n      setLoading(true);"
+    },
+    {
+      "path": "frontend/app/onboarding/page.tsx",
+      "startLine": 253,
+      "endLine": 254,
+      "symbol": null,
+      "quote": "disabled={loading || (step === 1 && !companyName) || (step === 2 && trackingPrefs.length === 0)}"
+    }
+  ],
+  "reasoning": "The button remains enabled while getToken() is pending because loading is not set until after token retrieval. Multiple rapid clicks can enter handleNext before loading flips true, causing duplicate POSTs to /api/onboarding/step/1 or /api/onboarding/step/2. That can create duplicate onboarding side effects or conflicting saved state depending on backend behavior.",
+  "reproduction": "On step 1 or 2, click Next repeatedly before Clerk token resolution completes. Multiple handler invocations can pass the disabled guard and send repeated POST requests for the same step.",
+  "recommendation": "Set loading true before awaiting getToken for submitting steps, or guard at the start of handleNext with if (loading) return. Limit the guard to steps that submit network requests if desired.",
+  "whyTestsDoNotAlreadyCoverThis": "No linked tests exercise rapid repeated clicks or assert that each onboarding step submits at most once.",
+  "suggestedRegressionTest": "Add a component test that mocks getToken as a delayed promise, rapidly clicks Next twice on step 1, resolves the promise, and asserts fetch was called once.",
+  "minimumFixScope": "Update handleNext in frontend/app/onboarding/page.tsx to set or check loading before any awaited work for steps 1 and 2.",
+  "status": "open",
+  "history": [],
+  "signature": "sig_feat-library-6e2f59f09b_907c6a6ed1",
+  "linkedPatchAttemptIds": [],
+  "createdByRunId": "20260518T125444-19c20b",
+  "createdAt": "2026-05-18T12:55:27.264Z",
+  "updatedAt": "2026-05-18T12:55:27.264Z"
+}

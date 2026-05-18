@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b9410a1d9a",
+  "title": "Node package frontend",
+  "summary": "Node package frontend with package metadata and review context rooted at frontend.",
+  "kind": "library",
+  "source": "node-package",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "frontend/package.json",
+      "symbol": "frontend",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "frontend/package.json",
+      "reason": "package manifest"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "reason": "typescript configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "frontend/README.md",
+      "reason": "package context"
+    },
+    {
+      "path": "frontend/AGENTS.md",
+      "reason": "package context"
+    },
+    {
+      "path": "frontend/next.config.ts",
+      "reason": "project context"
+    },
+    {
+      "path": "frontend/lib/api.ts",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/admin/buffer/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/admin/ceo/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/admin/ceo/simple-test.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/admin/layout.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/geo-vs-seo/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-alphasense/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-crayon/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-klue/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-spyfu/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-visualping/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/dashboard/competitors/[id]/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/dashboard/feedback-button.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/dashboard/onboarding-modal.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/dashboard/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/demo/data.ts",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/demo/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/geo/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/layout.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/onboarding/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/pricing/page.tsx",
+      "reason": "package source overview"
+    },
+    {
+      "path": "frontend/app/privacy/page.tsx",
+      "reason": "package source overview"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "node",
+    "package",
+    "project:frontend",
+    "project-root:frontend",
+    "workspace"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-05-18T12:54:36.922Z",
+  "updatedAt": "2026-05-18T12:54:36.922Z"
+}

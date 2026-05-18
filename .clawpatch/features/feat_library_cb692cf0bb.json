@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cb692cf0bb",
+  "title": "Node source frontend/app/blog",
+  "summary": "Node/TypeScript source group frontend/app/blog with 7 files.",
+  "kind": "library",
+  "source": "node-source-group",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "frontend/package.json",
+      "symbol": "frontend/app/blog",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "frontend/app/blog/geo-vs-seo/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-alphasense/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-crayon/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-klue/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-spyfu/page.tsx",
+      "reason": "source group frontend/app/blog"
+    },
+    {
+      "path": "frontend/app/blog/rivaledge-vs-visualping/page.tsx",
+      "reason": "source group frontend/app/blog"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "frontend/package.json",
+      "reason": "package manifest"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "node",
+    "typescript",
+    "source-group",
+    "project:frontend",
+    "project-root:frontend"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-05-18T12:54:36.922Z",
+  "updatedAt": "2026-05-18T12:54:36.922Z"
+}
