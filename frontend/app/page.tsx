@@ -59,8 +59,8 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Dual product cards */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Triple product cards */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* CI Card */}
           <div className="bg-slate-900 border border-blue-500/20 rounded-2xl p-7 flex flex-col">
             <div className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-600/20 text-blue-400 text-xs px-3 py-1 rounded-full self-start mb-4">
@@ -100,8 +100,8 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* GEO Card */}
-          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
+          {/* GEO Self-Service Card */}
+          <div className="bg-slate-900 border border-purple-500/30 rounded-2xl p-7 flex flex-col relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] px-3 py-0.5 rounded-bl-lg font-semibold tracking-wide">
               NEW
             </div>
@@ -110,19 +110,58 @@ export default function HomePage() {
               AI Visibility (GEO)
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              Get recommended by AI.<br />
-              <span className="text-purple-400">ChatGPT, Claude, Perplexity &amp; more.</span>
+              Get found by AI.<br />
+              <span className="text-purple-400">Self-service tools.</span>
             </h2>
             <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              40%+ of B2B buyers now ask AI before they search Google.
-              We make sure your brand gets cited, positioned correctly, and recommended over competitors.
+              Same AI visibility tools as Enterprise — llms.txt generator, robots.txt config, citation monitoring — but self-serve.
             </p>
             <ul className="space-y-2.5 mb-6 flex-1">
               {[
-                'Monitor citations across 8 AI platforms',
-                'AI-optimized content & structured data',
-                'Monthly visibility & positioning reports',
-                'Competitive benchmarking in AI answers',
+                '10 competitors tracked (Pro CI bundled)',
+                'llms.txt auto-generator',
+                'robots.txt for 8 AI crawlers',
+                'Monthly AI visibility scorecard',
+                'Competitor GEO comparison',
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="text-3xl font-bold mb-1">
+              $299<span className="text-base text-slate-400 font-normal">/mo</span>
+            </div>
+            <p className="text-slate-500 text-xs mb-5">No setup fee. Includes Pro-level competitor tracking.</p>
+            <Link
+              href="/pricing"
+              className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
+            >
+              Get GEO Self-Service →
+            </Link>
+          </div>
+
+          {/* GEO Enterprise Card */}
+          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
+            <div className="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full self-start mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Visibility (GEO)
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              Get recommended by AI.<br />
+              <span className="text-purple-400">White-glove service.</span>
+            </h2>
+            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+              Full-service GEO with hands-on content optimization, dedicated account manager, and Slack integration.
+            </p>
+            <ul className="space-y-2.5 mb-6 flex-1">
+              {[
+                '20 competitors tracked (CI bundled)',
+                'Hands-on content optimization',
+                'Dedicated account manager',
+                'Slack integration',
+                'Priority support',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
                   <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
@@ -133,12 +172,12 @@ export default function HomePage() {
             <div className="text-3xl font-bold mb-1">
               $999<span className="text-base text-slate-400 font-normal">/mo</span>
             </div>
-            <p className="text-slate-500 text-xs mb-5">+ $3,500 one-time setup. Enterprise-grade AI visibility — available standalone.</p>
+            <p className="text-slate-500 text-xs mb-5">+ $3,500 one-time setup. Enterprise-grade AI visibility.</p>
             <Link
               href="/geo"
-              className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
+              className="block text-center bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-xl font-semibold transition-colors"
             >
-              Get found by AI search →
+              Contact Sales →
             </Link>
           </div>
         </div>
@@ -171,7 +210,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <h2 className="text-3xl font-bold text-center mb-4">What you get</h2>
         <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Competitor monitoring from $49/mo. AI visibility from $999/mo.
+          Competitor monitoring from $49/mo. AI visibility from $299/mo.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
