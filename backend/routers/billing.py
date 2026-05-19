@@ -96,16 +96,20 @@ def create_checkout(
     # GEO Self-Service does not get a trial — it's a premium tier
     trial_days = 0 if body.plan == "geo_selfservice" else 14
 
+    session_kwargs = {}
+    if trial_days > 0:
+        session_kwargs["subscription_data"] = {"trial_period_days": trial_days}
+
     try:
         session = stripe.checkout.Session.create(
             mode="subscription",
             payment_method_types=["card"],
             line_items=[{"price": price_id, "quantity": 1}],
-            subscription_data={"trial_period_days": trial_days},
             success_url="https://rivaledge.ai/dashboard?checkout=success",
             cancel_url="https://rivaledge.ai/pricing",
             customer_email=user_email or None,
             metadata={"user_id": user_id},
+            **session_kwargs,
         )
         return CheckoutResponse(checkout_url=session.url)
     except stripe.StripeError as exc:
@@ -163,6 +167,9 @@ def create_addon_checkout(
             detail=f"Invalid plan '{body.plan}'.",
         )
 
+    user_id = resolve_db_id(current_user)
+    user_email = current_user.get("email", "")
+
     # Require terms acceptance for GEO add-on checkout (server-side enforcement)
     if body.plan == "geo" and not body.terms_accepted:
         raise HTTPException(
@@ -173,9 +180,6 @@ def create_addon_checkout(
     # Record terms acceptance timestamp for compliance
     if body.plan == "geo" and body.terms_accepted:
         db.update_user_profile(user_id, {"terms_accepted_at": "now()", "terms_accepted_version": "1.0"})
-
-    user_id = resolve_db_id(current_user)
-    user_email = current_user.get("email", "")
 
     # For GEO add-on, user should already be on a paid plan (check is best-effort)
     user = db.get_user(user_id)

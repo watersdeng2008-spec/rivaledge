@@ -21,6 +21,7 @@ os.environ.setdefault("STRIPE_PRO_PRICE_ID", "price_1TEa3lLTMdu9rJFPgvechLBX")
 
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.modules.setdefault("posthog", MagicMock())
 
 MOCK_USER_PAYLOAD = {
     "sub": "user_test123",
@@ -81,7 +82,8 @@ class TestCheckoutEndpoint:
     def test_checkout_invalid_plan_returns_400(self):
         """POST /api/billing/checkout returns 400 for invalid plan name."""
         with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
-             patch("db.supabase.get_user", return_value=MOCK_USER_DB):
+             patch("db.supabase.get_user", return_value=MOCK_USER_DB), \
+             patch("db.supabase.get_competitors", return_value=[]):
             from main import app
             client = TestClient(app, raise_server_exceptions=False)
             resp = client.post(
@@ -108,6 +110,48 @@ class TestCheckoutEndpoint:
             )
         assert resp.status_code == 200
         assert "checkout_url" in resp.json()
+
+    def test_geo_selfservice_checkout_omits_zero_day_trial(self):
+        """Stripe rejects trial_period_days=0, so premium GEO checkout omits it."""
+        mock_session = MagicMock()
+        mock_session.url = "https://checkout.stripe.com/pay/cs_test_geo"
+
+        with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
+             patch("db.supabase.get_user", return_value=MOCK_USER_DB), \
+             patch("stripe.checkout.Session.create", return_value=mock_session) as mock_create:
+            from main import app
+            client = TestClient(app, raise_server_exceptions=False)
+            resp = client.post(
+                "/api/billing/checkout",
+                headers={"Authorization": "Bearer fake-token"},
+                json={"plan": "geo_selfservice"},
+            )
+        assert resp.status_code == 200
+        assert "subscription_data" not in mock_create.call_args.kwargs
+
+    def test_geo_addon_checkout_records_terms_after_user_resolution(self):
+        """GEO add-on checkout records terms acceptance without referencing user_id too early."""
+        mock_session = MagicMock()
+        mock_session.url = "https://checkout.stripe.com/pay/cs_test_geo_addon"
+        mock_customer = MagicMock()
+        mock_customer.id = "cus_geo"
+
+        with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
+             patch("db.supabase.get_user", return_value=MOCK_USER_DB_PRO), \
+             patch("db.supabase.update_user_profile", return_value=True) as mock_update_profile, \
+             patch("stripe.Customer.list", return_value=MagicMock(data=[])), \
+             patch("stripe.Customer.create", return_value=mock_customer), \
+             patch("stripe.InvoiceItem.create", return_value=MagicMock()), \
+             patch("stripe.checkout.Session.create", return_value=mock_session):
+            from main import app
+            client = TestClient(app, raise_server_exceptions=False)
+            resp = client.post(
+                "/api/billing/addon-checkout",
+                headers={"Authorization": "Bearer fake-token"},
+                json={"plan": "geo", "terms_accepted": True},
+            )
+        assert resp.status_code == 200
+        mock_update_profile.assert_called_once()
 
 
 # ── Portal Tests ───────────────────────────────────────────────────────────────
@@ -160,7 +204,8 @@ class TestBillingStatusEndpoint:
     def test_billing_status_returns_plan(self):
         """GET /api/billing/status returns current plan and limits."""
         with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
-             patch("db.supabase.get_user", return_value=MOCK_USER_DB):
+             patch("db.supabase.get_user", return_value=MOCK_USER_DB), \
+             patch("db.supabase.get_competitors", return_value=[]):
             from main import app
             client = TestClient(app, raise_server_exceptions=False)
             resp = client.get(
@@ -177,7 +222,8 @@ class TestBillingStatusEndpoint:
     def test_billing_status_pro_returns_10_limit(self):
         """GET /api/billing/status returns 10 competitor limit for pro plan."""
         with patch("auth.verify_clerk_token", return_value=MOCK_USER_PAYLOAD), \
-             patch("db.supabase.get_user", return_value=MOCK_USER_DB_PRO):
+             patch("db.supabase.get_user", return_value=MOCK_USER_DB_PRO), \
+             patch("db.supabase.get_competitors", return_value=[]):
             from main import app
             client = TestClient(app, raise_server_exceptions=False)
             resp = client.get(
