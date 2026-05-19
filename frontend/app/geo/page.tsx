@@ -21,6 +21,8 @@ export default function GeoPage() {
       window.location.href = '/sign-up';
       return;
     }
+    // Prevent duplicate clicks while token is resolving
+    if (loading) return;
     setLoading(true);
     setError(null);
     try {
@@ -30,13 +32,13 @@ export default function GeoPage() {
         body: JSON.stringify({ plan: 'geo', terms_accepted: true }),
         token: token || undefined,
       });
-      if (data.checkout_url && typeof data.checkout_url === 'string' && data.checkout_url.length > 0) {
+      if (data.checkout_url && typeof data.checkout_url === 'string' && data.checkout_url.startsWith('https://')) {
         window.location.href = data.checkout_url;
       } else {
         throw new Error('Checkout URL not received. Please try again or contact support.');
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Checkout failed');
+      setError(e instanceof Error ? e.message : 'Checkout failed. Please try again or contact support.');
     } finally {
       setLoading(false);
     }

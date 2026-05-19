@@ -44,6 +44,12 @@ export default function OnboardingPage() {
 
   const handleNext = async () => {
     if (loading) return;
+    
+    // Set loading BEFORE any async work to prevent duplicate submissions
+    if (step === 1 || step === 2) {
+      setLoading(true);
+    }
+    
     // Get Clerk session token
     const token = await getToken();
     const headers: HeadersInit = {
@@ -54,7 +60,6 @@ export default function OnboardingPage() {
     }
 
     if (step === 1) {
-      setLoading(true);
       try {
         const response = await fetch("/api/onboarding/step/1", {
           method: "POST",
@@ -72,7 +77,6 @@ export default function OnboardingPage() {
         }
       } finally { setLoading(false); }
     } else if (step === 2) {
-      setLoading(true);
       try {
         const response = await fetch("/api/onboarding/step/2", {
           method: "POST",

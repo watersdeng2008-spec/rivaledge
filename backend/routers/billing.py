@@ -163,12 +163,16 @@ def create_addon_checkout(
             detail=f"Invalid plan '{body.plan}'.",
         )
 
-    # Require terms acceptance for GEO add-on checkout
+    # Require terms acceptance for GEO add-on checkout (server-side enforcement)
     if body.plan == "geo" and not body.terms_accepted:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Terms of Service must be accepted before GEO checkout.",
         )
+    
+    # Record terms acceptance timestamp for compliance
+    if body.plan == "geo" and body.terms_accepted:
+        db.update_user_profile(user_id, {"terms_accepted_at": "now()", "terms_accepted_version": "1.0"})
 
     user_id = resolve_db_id(current_user)
     user_email = current_user.get("email", "")
