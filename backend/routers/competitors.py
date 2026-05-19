@@ -62,11 +62,11 @@ def add_competitor(
         db.upsert_user(user_id, user_email)  # Don't force plan — keep existing on merge
         user = db.get_user(user_id)  # re-fetch for plan field
     
-    # Plan limits: solo = 3 competitors, pro = 10
+    # Plan limits: solo = 3, pro = 10, geo_selfservice = 10, enterprise = 20
     existing = db.get_competitors(user_id)
     plan = (user.get("plan") or "solo") if user else "solo"
     
-    limits = {"solo": 3, "pro": 10}
+    limits = {"solo": 3, "pro": 10, "geo_selfservice": 10}
     limit = limits.get(plan, 3)
     
     if len(existing) >= limit:

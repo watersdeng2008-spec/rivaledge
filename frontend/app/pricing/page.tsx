@@ -12,7 +12,7 @@ export default function PricingPage() {
   const [error, setError] = useState<string | null>(null);
   const [showGeoDetails, setShowGeoDetails] = useState(false);
 
-  const handleCheckout = async (plan: 'solo' | 'pro') => {
+  const handleCheckout = async (plan: 'solo' | 'pro' | 'geo_selfservice') => {
     if (!isSignedIn) {
       window.location.href = '/sign-up';
       return;
@@ -89,7 +89,7 @@ export default function PricingPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Solo */}
           <div className="bg-slate-900 border border-slate-700 rounded-xl p-8">
             <h3 className="text-xl font-semibold mb-1">Solo</h3>
@@ -100,7 +100,7 @@ export default function PricingPage() {
 
             <div className="space-y-3 mb-8">
               {[
-                ['5 competitors', true],
+                ['3 competitors', true],
                 ['Weekly AI digest', true],
                 ['Email alerts', true],
                 ['Battle card generator', true],
@@ -174,12 +174,12 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* GEO Add-on */}
-        <div className="max-w-4xl mx-auto mt-20">
+        {/* GEO Self-Service */}
+        <div className="max-w-5xl mx-auto mt-20">
           <div className="border-t border-slate-800 pt-16">
             <div className="text-center mb-4">
               <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
-                Also available standalone
+                AI Visibility
               </span>
             </div>
             <h2 className="text-3xl font-bold text-center mb-3">
@@ -191,58 +191,109 @@ export default function PricingPage() {
               Already tracking competitors? Add GEO to ensure ChatGPT, Claude, Perplexity, 
               and Google AI cite <em>your</em> company when buyers search. Over 40% of B2B discovery 
               now happens through AI platforms — not Google SERPs.
-              <br />
-              <Link href="/geo" className="text-purple-400 hover:text-purple-300 underline underline-offset-2 text-sm">
-                Don&apos;t need CI? Get GEO standalone →
-              </Link>
             </p>
           </div>
           
-          <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-xl font-semibold">Generative Engine Optimization</h3>
-                </div>
-                <p className="text-slate-400 text-sm mb-4">Get cited by ChatGPT, Claude, Perplexity, and AI search engines</p>
-                
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-3xl font-bold">$999</span>
-                  <span className="text-slate-400 text-sm">/mo</span>
-                  <span className="text-slate-500 text-sm group relative cursor-help">
-                    + $3,500 one-time setup
-                    <span className="inline-block ml-1 text-slate-600 group-hover:text-purple-400 transition-colors">ⓘ</span>
-                    <span className="absolute bottom-full left-0 mb-2 w-64 bg-slate-800 border border-slate-600 text-slate-300 text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                      Comprehensive AI citation audit, robotstxt configuration for 8 AI crawlers, llmstxt creation, and initial content optimization across ChatGPT, Claude, Perplexity, and Google AI.
-                    </span>
-                  </span>
-                </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* GEO Self-Service */}
+            <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-xl font-semibold">GEO Self-Service</h3>
+              </div>
+              <p className="text-slate-400 text-sm mb-4">Self-service AI visibility tools + Pro-level CI reports</p>
+              
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-3xl font-bold">$299</span>
+                <span className="text-slate-400 text-sm">/mo</span>
+              </div>
 
-                <button
-                  onClick={() => setShowGeoDetails(!showGeoDetails)}
-                  className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2"
-                >
-                  {showGeoDetails ? 'Hide details' : "What's included"}
-                </button>
+              <div className="space-y-3 mb-6">
+                {[
+                  '10 competitors tracked (Pro CI)',
+                  'Daily AI digest + email alerts',
+                  'llms.txt auto-generator',
+                  'robots.txt for 8 AI crawlers',
+                  'Monthly AI visibility scorecard',
+                  'Competitor GEO comparison',
+                  'Quarterly strategy refresh',
+                  'API access',
+                ].map((feature) => (
+                  <div key={feature} className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
+                    <span className="text-slate-300">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => handleCheckout('geo_selfservice')}
+                disabled={loading === 'geo_selfservice'}
+                className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              >
+                {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get GEO Self-Service'}
+              </button>
+            </div>
+
+            {/* Enterprise GEO */}
+            <div className="bg-purple-600/10 border border-purple-500/50 rounded-xl p-8 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                WHITE-GLOVE
+              </div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-xl font-semibold">Enterprise GEO</h3>
+              </div>
+              <p className="text-slate-400 text-sm mb-4">Full-service GEO with bundled CI + Slack integration</p>
+              
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-3xl font-bold">$999</span>
+                <span className="text-slate-400 text-sm">/mo</span>
+                <span className="text-slate-500 text-sm group relative cursor-help">
+                  + $3,500 one-time setup
+                  <span className="inline-block ml-1 text-slate-600 group-hover:text-purple-400 transition-colors">ⓘ</span>
+                  <span className="absolute bottom-full left-0 mb-2 w-64 bg-slate-800 border border-slate-600 text-slate-300 text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Comprehensive AI citation audit, robotstxt configuration for 8 AI crawlers, llmstxt creation, and initial content optimization across ChatGPT, Claude, Perplexity, and Google AI.
+                  </span>
+                </span>
+              </div>
+
+              <button
+                onClick={() => setShowGeoDetails(!showGeoDetails)}
+                className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2 mb-6 block"
+              >
+                {showGeoDetails ? 'Hide details' : "What's included"}
+              </button>
+
+              <div className="space-y-3 mb-6">
+                {[
+                  '20 competitors tracked (CI bundled)',
+                  'Daily + custom AI digests',
+                  'Slack integration',
+                  'Everything in Self-Service',
+                  'Hands-on content optimization',
+                  'Dedicated account manager',
+                  'Priority support',
+                ].map((feature) => (
+                  <div key={feature} className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
+                    <span className="text-slate-300">{feature}</span>
+                  </div>
+                ))}
               </div>
 
               <button
                 onClick={() => handleAddonCheckout('geo')}
                 disabled={loading === 'geo'}
-                className="w-full md:w-auto bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+                className="w-full bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
               >
-                {loading === 'geo' ? 'Redirecting...' : 'Add AI Visibility'}
+                {loading === 'geo' ? 'Redirecting...' : 'Get Enterprise GEO'}
               </button>
             </div>
+          </div>
 
-            <div className="mt-3">
-              <Link href="/demo" className="text-purple-400 hover:text-purple-300 text-sm underline underline-offset-2">
-                See sample GEO audit →
-              </Link>
-            </div>
-
-            {showGeoDetails && (
-              <div className="mt-6 pt-6 border-t border-purple-500/20 grid md:grid-cols-2 gap-3">
+          {showGeoDetails && (
+            <div className="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-8">
+              <h4 className="font-semibold mb-4">Enterprise GEO Full Details</h4>
+              <div className="grid md:grid-cols-2 gap-3">
                 {[
                   'AI search visibility audit',
                   'llms.txt optimization & maintenance',
@@ -259,12 +310,12 @@ export default function PricingPage() {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Feature comparison */}
-        <div className="max-w-3xl mx-auto mt-20">
+        <div className="max-w-4xl mx-auto mt-20">
           <h2 className="text-2xl font-bold text-center mb-8">Everything included</h2>
           <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
@@ -273,24 +324,31 @@ export default function PricingPage() {
                   <th className="text-left px-6 py-4 text-slate-400 font-medium">Feature</th>
                   <th className="text-center px-6 py-4 text-slate-400 font-medium">Solo</th>
                   <th className="text-center px-6 py-4 text-slate-400 font-medium">Pro</th>
+                  <th className="text-center px-6 py-4 text-purple-400 font-medium">GEO Self-Service</th>
+                  <th className="text-center px-6 py-4 text-purple-400 font-medium">Enterprise</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  ['Competitor tracking', '5', '10'],
-                  ['AI briefing frequency', 'Weekly', 'Daily'],
-                  ['Email alerts', '✓', '✓'],
-                  ['Price checks', 'Every 2 hours', 'Every 2 hours'],
-                  ['Price move alerts', '≥2% change', '≥2% change'],
-                  ['Slack alerts', '—', '✓'],
-                  ['Battle cards', '✓', '✓'],
-                  ['API access', '—', '✓'],
-                  ['Priority support', '—', '✓'],
-                ].map(([feature, solo, pro]) => (
+                  ['Competitor tracking', '3', '10', '10', '20'],
+                  ['AI briefing frequency', 'Weekly', 'Daily', 'Daily', 'Daily + custom'],
+                  ['Email alerts', '✓', '✓', '✓', '✓'],
+                  ['Slack alerts', '—', '—', '—', '✓'],
+                  ['Battle cards', '✓', '✓', '✓', '✓'],
+                  ['API access', '—', '✓', '✓', '✓'],
+                  ['Priority support', '—', '✓', '✓', '✓'],
+                  ['GEO tools', '—', '—', '✓', '✓'],
+                  ['llms.txt generator', '—', '—', '✓', '✓'],
+                  ['AI citation audit', '—', '—', 'Automated', 'Full-service'],
+                  ['Content optimization', '—', '—', '—', '✓'],
+                  ['Account manager', '—', '—', '—', '✓'],
+                ].map(([feature, solo, pro, geo, ent]) => (
                   <tr key={feature} className="border-b border-slate-800/50 last:border-0">
                     <td className="px-6 py-3 text-slate-300">{feature}</td>
                     <td className="px-6 py-3 text-center text-slate-400">{solo}</td>
                     <td className="px-6 py-3 text-center text-blue-400 font-medium">{pro}</td>
+                    <td className="px-6 py-3 text-center text-purple-400 font-medium">{geo}</td>
+                    <td className="px-6 py-3 text-center text-purple-400 font-medium">{ent}</td>
                   </tr>
                 ))}
               </tbody>

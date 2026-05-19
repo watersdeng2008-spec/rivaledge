@@ -64,9 +64,11 @@ def upsert_user(user_id: str, email: str = "", plan: Optional[str] = None) -> di
         if existing and existing["id"] != user_id:
             existing_plan = existing.get("plan")
             # Preserve existing premium plan — never downgrade a paying user
+            # Plan hierarchy: solo < pro < geo_selfservice
+            PREMIUM_PLANS = {"pro", "geo_selfservice"}
             if plan is None:
                 plan = existing_plan
-            elif existing_plan and existing_plan != "solo" and plan == "solo":
+            elif existing_plan in PREMIUM_PLANS and plan == "solo":
                 # Caller tried to set solo but user already has a premium plan
                 plan = existing_plan
             user_id = existing["id"]

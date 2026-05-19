@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 _PRICE_TO_PLAN = {
     os.environ.get("STRIPE_SOLO_PRICE_ID", "price_1TEYfGLTMdu9rJFPT4iwohw9"): "solo",
     os.environ.get("STRIPE_PRO_PRICE_ID", "price_1TEa3lLTMdu9rJFPgvechLBX"): "pro",
+    os.environ.get("STRIPE_GEO_SELF_SERVICE_PRICE_ID", "price_1TYpRfLTMdu9rJFPyl69oqrk"): "geo_selfservice",
 }
 
 # GEO add-on price IDs ($3,500 setup + $999/mo — updated 2026-05-11)

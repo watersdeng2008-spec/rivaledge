@@ -23,6 +23,7 @@ stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
 PRICE_TO_PLAN = {
     os.environ.get("STRIPE_SOLO_PRICE_ID", "price_1TEYfGLTMdu9rJFPT4iwohw9"): "solo",
     os.environ.get("STRIPE_PRO_PRICE_ID", "price_1TEa3lLTMdu9rJFPgvechLBX"): "pro",
+    os.environ.get("STRIPE_GEO_SELF_SERVICE_PRICE_ID", "price_1TYpRfLTMdu9rJFPyl69oqrk"): "geo_selfservice",
 }
 
 PLAN_TO_PRICE = {v: k for k, v in PRICE_TO_PLAN.items()}
@@ -41,6 +42,7 @@ GEO_MONTHLY_PRICE_ID = os.environ.get(
 PLAN_LIMITS = {
     "solo": 3,
     "pro": 10,
+    "geo_selfservice": 10,
 }
 
 
@@ -90,13 +92,16 @@ def create_checkout(
     user_email = current_user.get("email", "")
 
     price_id = PLAN_TO_PRICE[body.plan]
+    
+    # GEO Self-Service does not get a trial — it's a premium tier
+    trial_days = 0 if body.plan == "geo_selfservice" else 14
 
     try:
         session = stripe.checkout.Session.create(
             mode="subscription",
             payment_method_types=["card"],
             line_items=[{"price": price_id, "quantity": 1}],
-            subscription_data={"trial_period_days": 14},
+            subscription_data={"trial_period_days": trial_days},
             success_url="https://rivaledge.ai/dashboard?checkout=success",
             cancel_url="https://rivaledge.ai/pricing",
             customer_email=user_email or None,
