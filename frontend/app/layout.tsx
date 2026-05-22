@@ -65,7 +65,10 @@ const SCHEMA_JSON = {
 
 const inter = Inter({ subsets: ['latin'] });
 
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18049491672';
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
+const GOOGLE_TAG_IDS = Array.from(new Set([GOOGLE_ADS_ID, GA_ID].filter(Boolean)));
+const PRIMARY_GOOGLE_TAG_ID = GOOGLE_TAG_IDS[0] || '';
 
 export const metadata: Metadata = {
   title: 'RivalEdge — Win Visibility in Both Markets and AI',
@@ -116,11 +119,25 @@ export default function RootLayout({
           {children}
       </PHProvider>
 
-          {/* Google Analytics — lazyOnload to avoid appendChild crash */}
-          {GA_ID && (
+          {/* Google tag for Google Ads and Analytics */}
+          {PRIMARY_GOOGLE_TAG_ID && (
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="lazyOnload"
+              src={`https://www.googletagmanager.com/gtag/js?id=${PRIMARY_GOOGLE_TAG_ID}`}
+              strategy="afterInteractive"
+            />
+          )}
+          {PRIMARY_GOOGLE_TAG_ID && (
+            <Script
+              id="google-tag"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  ${GOOGLE_TAG_IDS.map((id) => `gtag('config', '${id}');`).join('\n                  ')}
+                `,
+              }}
             />
           )}
         </body>
