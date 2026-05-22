@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/api';
+import LeadCaptureForm from '../components/LeadCaptureForm';
 
 export default function PricingPage() {
   const { getToken, isSignedIn } = useAuth();
@@ -82,6 +83,17 @@ export default function PricingPage() {
         <h1 className="text-4xl font-bold text-center mb-4">Simple, honest pricing</h1>
         <p className="text-slate-400 text-center mb-2">No hidden fees. No enterprise quotes. Cancel anytime.</p>
         <p className="text-blue-400 text-center font-medium mb-16">✨ 14-day free trial — no credit card required</p>
+
+        {/* Lead Capture — Free Competitor Snapshot */}
+        <div className="max-w-xl mx-auto mb-16">
+          <LeadCaptureForm
+            source="pricing"
+            variant="inline"
+            title="Not ready to commit?"
+            subtitle="Get a free snapshot of any competitor — see what RivalEdge tracks before you buy"
+            buttonText="Get free competitor snapshot"
+          />
+        </div>
 
         {error && (
           <div className="max-w-lg mx-auto mb-8 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm text-center">

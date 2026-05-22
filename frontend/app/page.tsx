@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp, Play } from 'lucide-react';
+import LeadCaptureForm from './components/LeadCaptureForm';
 
 export default function HomePage() {
   return (
@@ -57,6 +58,17 @@ export default function HomePage() {
             <Play className="w-5 h-5 flex-shrink-0" />
             See the AI in action — interactive demo
           </Link>
+        </div>
+
+        {/* Lead Capture Form */}
+        <div className="max-w-2xl mx-auto mb-16">
+          <LeadCaptureForm
+            source="homepage"
+            variant="hero"
+            title="See what your competitors are doing"
+            subtitle="Enter any competitor URL and get a free snapshot of their latest moves"
+            buttonText="Get my free competitor snapshot"
+          />
         </div>
 
         {/* Triple product cards */}
