@@ -7,15 +7,5 @@
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
     }
-  },
-  "rewrites": [
-    { "source": "/vs/:path*", "destination": "/vs/:path*" },
-    { "source": "/audit", "destination": "/audit" }
-  ],
-  "experimentalServices": {
-    "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/"
-    }
   }
 }
