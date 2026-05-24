@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: "RivalEdge vs. Rival Radar: AI-Native CI Comparison",
   description: "Compare RivalEdge vs. Rival Radar. RivalEdge adds AI search visibility (GEO) to competitive intelligence — same price, 3x the value.",

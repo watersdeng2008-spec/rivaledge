@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+export const dynamic = 'force-static';
+
 export default function FreeAuditPage() {
   const [brandName, setBrandName] = useState("");
   const [category, setCategory] = useState("");

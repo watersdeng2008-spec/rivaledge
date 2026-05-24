@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: "RivalEdge vs. Crayon: Competitive Intelligence Comparison",
   description: "Compare RivalEdge vs. Crayon for competitive intelligence. See why teams choose RivalEdge for AI-native CI + GEO at a fraction of the cost.",
