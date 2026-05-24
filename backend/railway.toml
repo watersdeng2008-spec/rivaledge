@@ -25,3 +25,8 @@ command = "python cron/automated_emails.py"
 name = "posthog-monitor"
 schedule = "0 */4 * * *"  # Every 4 hours
 command = "python -m cron.posthog_monitor"
+
+[[cron]]
+name = "weekly-newsletter"
+schedule = "0 13 * * 2"  # Tuesdays 8:00 AM CDT
+command = "python cron/newsletter_generator.py"

@@ -234,7 +234,7 @@ function DashboardContent() {
               </Link>
             )}
             <Link href="/onboarding" className="text-slate-400 hover:text-white text-sm transition-colors">Onboarding</Link>
-            <Link href="/admin/buffer" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/admin/social" className="text-slate-400 hover:text-white text-sm transition-colors">
               Social Media
             </Link>
             <span className="text-slate-400 text-sm">{user?.primaryEmailAddress?.emailAddress}</span>

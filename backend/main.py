@@ -18,7 +18,6 @@ from routers import digest
 from routers import billing
 from routers import outreach
 from routers import feedback
-from routers import buffer as buffer_router
 try:
     from routers import sales as sales_router
     SALES_ROUTER_AVAILABLE = True
@@ -34,6 +33,15 @@ from routers import test_email
 from routers import analytics
 from routers import price_tracking
 from routers import leads
+
+try:
+    from routers import ars
+    ARS_ROUTER_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"ARS router not available: {e}")
+    ARS_ROUTER_AVAILABLE = False
+    ars = None
 
 # Optional routers — log errors but don't crash if they fail
 try:
@@ -88,7 +96,7 @@ async def lifespan(app: FastAPI):
         "OPENROUTER_API_KEY",
         "RESEND_API_KEY",
         "BRAVE_SEARCH_API_KEY",
-        "BUFFER_API_KEY",
+    
     ]
     missing = [v for v in warn_if_missing if not os.getenv(v)]
     if missing:
@@ -172,7 +180,7 @@ app.include_router(digest.router, prefix="/api/digest", tags=["digest"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(outreach.router, prefix="/api/outreach", tags=["outreach"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
-app.include_router(buffer_router.router, prefix="/api/buffer", tags=["buffer"])
+
 if AI_MONITOR_AVAILABLE and ai_monitor:
     app.include_router(ai_monitor.router, prefix="/api/ai", tags=["ai_monitor"])
 if SALES_ROUTER_AVAILABLE and sales_router:
@@ -183,6 +191,32 @@ app.include_router(test_email.router, prefix="/test", tags=["test"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(price_tracking.router, prefix="/api", tags=["price_tracking"])
 app.include_router(leads.router, prefix="/api/leads", tags=["leads"])
+if ARS_ROUTER_AVAILABLE and ars:
+    app.include_router(ars.router, prefix="/api/ars", tags=["ars"])
+
+try:
+    from routers import slack
+    SLACK_ROUTER_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"Slack router not available: {e}")
+    SLACK_ROUTER_AVAILABLE = False
+    slack = None
+
+if SLACK_ROUTER_AVAILABLE and slack:
+    app.include_router(slack.router, prefix="/api/slack", tags=["slack"])
+
+try:
+    from routers import partners
+    PARTNERS_ROUTER_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.warning(f"Partners router not available: {e}")
+    PARTNERS_ROUTER_AVAILABLE = False
+    partners = None
+
+if PARTNERS_ROUTER_AVAILABLE and partners:
+    app.include_router(partners.router, prefix="/api/partners", tags=["partners"])
 # Include optional routers only if available
 if CEO_DASHBOARD_AVAILABLE and ceo_dashboard:
     app.include_router(ceo_dashboard.router, prefix="/api", tags=["ceo_dashboard"])
@@ -201,6 +235,9 @@ async def debug_routers():
     return {
         "ceo_dashboard_available": CEO_DASHBOARD_AVAILABLE,
         "sales_agent_available": SALES_AGENT_AVAILABLE,
+        "ars_router_available": ARS_ROUTER_AVAILABLE,
+        "slack_router_available": SLACK_ROUTER_AVAILABLE,
+        "partners_router_available": PARTNERS_ROUTER_AVAILABLE,
         "version": "1.0.8",
     }
 
@@ -217,7 +254,7 @@ async def health():
     return {
         "status": "ok",
         "version": "1.4.0",
-        "buffer_configured": bool(os.environ.get("BUFFER_API_KEY")),
+        "buffer_configured": False,
         "ai_models": get_model_info() if get_model_info is not None else None,
         "service": "rivaledge-api",
         "ai_cache": get_cache_stats() if get_cache_stats is not None else None,

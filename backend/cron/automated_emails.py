@@ -95,12 +95,14 @@ def send_scheduled_emails():
     """Main function to send all scheduled emails"""
     logger.info("Starting automated email job...")
     
-    # Send welcome emails to new users    new_users = get_users_needing_welcome()
+    # Send welcome emails to new users
+    new_users = get_users_needing_welcome()
     logger.info(f"Found {len(new_users)} new users needing welcome emails")
     
     for user in new_users:
         try:
-            email = user.get('email')name = email.split('@')[0] if email else 'User'
+            email = user.get('email')
+            name = email.split('@')[0] if email else 'User'
             company = user.get('company_name', 'Your Company')
             
             result = send_welcome_email(email, name, company)
