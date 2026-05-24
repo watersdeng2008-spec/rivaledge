@@ -18,9 +18,48 @@ import httpx
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from services.ai import _call_ai
-from services.email_service import send_email
+from services.ai import generate_daily_briefing
+from services.email_service import send_competitive_intelligence_report as send_email
 import db.supabase as db
+
+# Simple AI call helper for newsletter generation
+def _call_ai(prompt: str, max_tokens: int = 2000, model: str = None) -> str:
+    """Call AI via OpenRouter for newsletter content generation."""
+    import os
+    import httpx
+    
+    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not api_key:
+        logger.error("OPENROUTER_API_KEY not set")
+        return ""
+    
+    default_model = model or "openrouter/deepseek/deepseek-v4-pro"
+    
+    try:
+        with httpx.Client(timeout=60.0) as client:
+            response = client.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://rivaledge.ai",
+                    "X-Title": "RivalEdge Newsletter",
+                },
+                json={
+                    "model": default_model,
+                    "messages": [
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": max_tokens,
+                    "temperature": 0.7,
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        logger.error(f"AI call failed: {e}")
+        return ""
 
 logger = logging.getLogger(__name__)
 
