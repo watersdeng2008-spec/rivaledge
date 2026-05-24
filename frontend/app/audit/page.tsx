@@ -275,6 +275,56 @@ export default function FreeAuditPage() {
           </div>
         )}
 
+        {/* Newsletter Signup */}
+        {!result && (
+          <div className="mt-12 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-8 border border-blue-700/30">
+            <div className="text-center">
+              <h3 className="text-xl font-bold mb-2">Get Weekly AI Visibility Intel</h3>
+              <p className="text-slate-400 mb-6 max-w-xl mx-auto">
+                One email every Tuesday. AI search shifts, competitive moves, and GEO tips 
+                for B2B founders. No spam, unsubscribe anytime.
+              </p>
+              <form 
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.target as HTMLFormElement;
+                  const email = (form.elements.namedItem('newsletter-email') as HTMLInputElement).value;
+                  try {
+                    const res = await fetch('/api/leads/newsletter', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email, source: 'audit_page' }),
+                    });
+                    if (res.ok) {
+                      alert('Thanks! You\'re subscribed to GEO + CI Insights.');
+                      form.reset();
+                    } else {
+                      alert('Something went wrong. Please try again.');
+                    }
+                  } catch {
+                    alert('Something went wrong. Please try again.');
+                  }
+                }}
+                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+              >
+                <input
+                  name="newsletter-email"
+                  type="email"
+                  placeholder="you@company.com"
+                  required
+                  className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap"
+                >
+                  Subscribe →
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Trust Signals */}
         {!result && (
           <div className="mt-12 grid md:grid-cols-3 gap-6 text-center">

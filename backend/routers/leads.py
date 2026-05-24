@@ -213,6 +213,60 @@ async def capture_lead(
     )
 
 
+class NewsletterSignupRequest(BaseModel):
+    email: str = Field(..., min_length=1, max_length=255)
+    source: str = Field(default="website", max_length=100)
+
+
+@router.post("/newsletter")
+async def newsletter_signup(body: NewsletterSignupRequest):
+    """Subscribe to the GEO + CI Insights newsletter."""
+    supabase_url = os.environ.get("SUPABASE_URL", "")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    
+    if not supabase_url or not supabase_key:
+        return {"success": False, "error": "Supabase not configured"}
+    
+    try:
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates,return=representation",
+        }
+        payload = {
+            "email": body.email,
+            "source": body.source,
+            "is_active": True,
+            "subscribed_at": datetime.now().isoformat(),
+        }
+        
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.post(
+                f"{supabase_url}/rest/v1/newsletter_subscribers",
+                json=payload,
+                headers=headers,
+            )
+            
+            if response.status_code in (200, 201):
+                logger.info("Newsletter signup: %s from %s", body.email, body.source)
+                return {"success": True, "message": "Subscribed successfully"}
+            elif response.status_code == 409:
+                # Already exists — update to active
+                await client.patch(
+                    f"{supabase_url}/rest/v1/newsletter_subscribers?email=eq.{body.email}",
+                    json={"is_active": True},
+                    headers={"apikey": supabase_key, "Authorization": f"Bearer {supabase_key}", "Content-Type": "application/json"},
+                )
+                return {"success": True, "message": "Already subscribed — reactivated"}
+            else:
+                logger.error("Newsletter signup failed: %s", response.text)
+                return {"success": False, "error": "Failed to subscribe"}
+    except Exception as e:
+        logger.error("Newsletter signup error: %s", e)
+        return {"success": False, "error": str(e)}
+
+
 @router.get("/capture/stats")
 async def get_lead_stats():
     """Get lead capture statistics (admin endpoint)."""
