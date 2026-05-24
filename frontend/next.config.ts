@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Ensure static pages are generated for /vs/* and /audit routes
+  async generateStaticParams() {
+    return [];
+  },
 };
 
 export default nextConfig;
