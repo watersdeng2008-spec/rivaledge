@@ -64,10 +64,7 @@ export default function WatersDengAuthorPage() {
             <h1 className="text-4xl font-bold mb-3">Waters Deng</h1>
             <p className="text-lg text-slate-300 mb-5">Founder, RivalEdge.ai</p>
             <p className="text-slate-400 leading-relaxed mb-4">
-              Waters Deng is the founder of RivalEdge.ai, an AI-native competitive intelligence and generative engine optimization platform. He writes about competitive strategy, AI search visibility, and how companies can become easier for both buyers and AI systems to understand.
-            </p>
-            <p className="text-slate-400 leading-relaxed mb-6">
-              His work focuses on helping lean teams monitor competitors, sharpen positioning, and win citations in emerging AI discovery channels.
+              Founder of RivalEdge.ai. Building AI-native competitive intelligence and GEO tools for modern brands.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
