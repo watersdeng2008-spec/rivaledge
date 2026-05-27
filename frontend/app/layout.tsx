@@ -76,6 +76,9 @@ export const metadata: Metadata = {
   keywords: ['competitor monitoring', 'competitive intelligence', 'AI competitor tracking', 'generative engine optimization', 'GEO', 'AI search optimization', 'LLM optimization', 'AI visibility', 'ChatGPT citations', 'Perplexity optimization', 'Crayon alternative'],
   authors: [{ name: 'RivalEdge' }],
   metadataBase: new URL('https://www.rivaledge.ai'),
+  other: {
+    'msvalidate.01': '52069F992AB64725EFBBDF0DC42CC5ED',
+  },
   icons: {
     icon: '/logo.jpg',
     apple: '/logo.jpg',
