@@ -38,6 +38,13 @@ export default function ComparisonPage() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-6">RivalEdge vs Crayon: A Side-by-Side Comparison</h1>
+        <p className="text-sm text-slate-500 mb-6">
+          By{' '}
+          <Link href="/blog/authors/waters-deng" className="text-slate-300 hover:text-white underline underline-offset-2">
+            Waters Deng
+          </Link>
+          , Founder of RivalEdge.ai
+        </p>
         <p className="text-lg text-slate-400 mb-8">Why pay $20K+/year when you can get 80% of the value for $49/month?</p>
 
         {/* At a Glance */}

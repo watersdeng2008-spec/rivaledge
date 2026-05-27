@@ -7,6 +7,45 @@ import { useAuth } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/api';
 import LeadCaptureForm from '../components/LeadCaptureForm';
 
+const PRICING_FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Does RivalEdge have a free trial?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. RivalEdge offers a 14-day free trial with no credit card required.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is included in RivalEdge Solo?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Solo costs $49 per month and includes tracking for up to 3 competitors, weekly AI digests, email alerts, and battle card generation.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is included in RivalEdge Pro?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Pro costs $99 per month and includes tracking for up to 10 competitors, daily AI digests, email and Slack alerts, API access, priority support, and battle card generation.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is Enterprise GEO?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Enterprise GEO is a full-service AI visibility plan at $999 per month plus a $3,500 one-time setup fee. It includes dedicated account management, content optimization, Slack integration, citation monitoring, and competitor GEO analysis.',
+      },
+    },
+  ],
+};
+
 export default function PricingPage() {
   const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
@@ -63,6 +102,10 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRICING_FAQ_SCHEMA) }}
+      />
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">

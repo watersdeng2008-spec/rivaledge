@@ -14,9 +14,79 @@ export const metadata = {
   },
 };
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is GEO replacing SEO?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. GEO complements SEO. You need both. SEO captures traditional search. GEO captures AI search.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long does GEO take to work?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Initial visibility improvements in 1-3 months. Full optimization takes 6-12 months.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I do GEO myself?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Yes, but it's time-consuming. RivalEdge GEO automates monitoring and provides actionable recommendations.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does GEO work for B2B companies?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Absolutely. B2B buyers increasingly use AI for vendor research. GEO ensures you're in the conversation.",
+      },
+    },
+  ],
+};
+
+const ARTICLE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'GEO vs SEO: Why Generative Engine Optimization Is the New Must-Have for 2026',
+  description: 'SEO got you found on Google. GEO gets you recommended by AI. Learn the key differences and how to start optimizing for ChatGPT, Claude, and Perplexity.',
+  datePublished: '2026-05-17',
+  dateModified: '2026-05-17',
+  author: {
+    '@type': 'Person',
+    name: 'Waters Deng',
+    url: 'https://www.rivaledge.ai/blog/authors/waters-deng',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'RivalEdge.ai',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://www.rivaledge.ai/logo.jpg',
+    },
+  },
+  mainEntityOfPage: 'https://www.rivaledge.ai/blog/geo-vs-seo',
+};
+
 export default function GeoVsSeoPost() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+      />
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -62,6 +132,14 @@ export default function GeoVsSeoPost() {
             6 min read
           </span>
         </div>
+
+        <p className="text-sm text-slate-500 mb-6">
+          By{' '}
+          <Link href="/blog/authors/waters-deng" className="text-slate-300 hover:text-white underline underline-offset-2">
+            Waters Deng
+          </Link>
+          , Founder of RivalEdge.ai
+        </p>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
           GEO vs SEO: Why Generative Engine Optimization Is the New Must-Have for 2026

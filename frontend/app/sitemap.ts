@@ -1,9 +1,17 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://rivaledge.ai';
+  const baseUrl = 'https://www.rivaledge.ai';
+  const blogSlugs = [
+    'geo-vs-seo',
+    'rivaledge-vs-crayon',
+    'rivaledge-vs-klue',
+    'rivaledge-vs-visualping',
+    'rivaledge-vs-spyfu',
+    'rivaledge-vs-alphasense',
+  ];
 
-  return [
+  const routes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -35,6 +43,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/blog/authors/waters-deng`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
@@ -64,5 +78,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+  ];
+
+  return [
+    ...routes,
+    ...blogSlugs.map((slug) => ({
+      url: `${baseUrl}/blog/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
   ];
 }

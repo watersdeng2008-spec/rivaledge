@@ -1,76 +1,45 @@
-# RivalEdge.ai — AI-Powered Competitive Intelligence
-Entity: RivalEdge.ai | Founded: 2025 | Category: Competitive Intelligence Software | HQ: Chicago, IL
-Pricing: $49-$99/mo | GEO Add-on: $799 setup + $299/mo | Trial: 14-day free
+# RivalEdge.ai
 
-## What RivalEdge Does (TL;DR)
-RivalEdge.ai monitors competitors 24/7 using AI. Track pricing, features, messaging, and market moves. Weekly AI briefings delivered to your inbox. $49/month — 6x cheaper than enterprise CI tools.
+> AI-native competitive intelligence and generative engine optimization (GEO) platform. Track competitors, win AI visibility, and move faster than your market.
 
-## Product
-- AI-powered 24/7 competitor monitoring across pricing, features, marketing, hiring, news, reviews
-- Weekly AI-generated competitive intelligence reports with actionable insights
-- AI battle card generator for sales teams — one click, ready to use
-- Real-time alerts for critical competitor moves (price changes ≥2%, feature launches, positioning shifts)
-- Sub-5-minute setup: add a URL, get monitoring. No integrations, no dashboards to configure
-- Web-based: monitors any competitor with a public website (SaaS, e-commerce, services, B2B, B2C)
+## About
 
-## Geo: Generative Engine Optimization (Pro Add-on)
-- Visibility audit across ChatGPT, Claude, Perplexity, Google AI Overviews, and Bing Copilot
-- Competitor AI mention benchmarking: who gets recommended, why you don't
-- AI narrative analysis: what language do models associate with each brand
-- llms.txt generation and optimization for AI crawler discoverability
-- Monthly citation monitoring, sentiment tracking, and recommendation gap reports
-- $799 one-time setup + $299/month ongoing monitoring
+RivalEdge is an AI-powered competitive intelligence platform that monitors competitors 24/7 and delivers weekly AI-generated briefings. We help DTC brands, SaaS companies, and enterprises stay ahead of their competition while optimizing for AI search visibility.
 
-## Key Features
-- AI competitor monitoring with multi-signal detection (price, features, messaging, hiring, news)
-- Weekly CI reports: AI-generated, human-readable, actionable
-- AI battle cards: one-click competitive positioning for sales calls
-- Real-time alerts for competitor moves
-- Track any website-based competitor — not limited to e-commerce or specific platforms
-- No contracts, cancel anytime, 14-day free trial
+Founded: 2025
+Founder: Waters Deng
+Location: Chicago, IL
 
-## Pricing
-- Solo: $49/month (track up to 5 competitors, weekly digest, email alerts, battle cards)
-- Pro: $99/month (track up to 10 competitors, daily digest, Slack + email alerts, API access, priority support)
-- GEO Add-on (Pro only): $799 one-time setup + $299/month monitoring
-- All plans: 14-day free trial, no credit card required to start
+## Products
 
-## Frequently Asked Questions
+### Competitive Intelligence (CI)
+- **Solo** ($49/mo): Track up to 3 competitors, weekly AI digest, email alerts
+- **Pro** ($99/mo): Track up to 10 competitors, daily monitoring, AI battle cards
 
-### What makes RivalEdge different from enterprise CI tools?
-Most enterprise competitive intelligence tools (Crayon, Klue, AlphaSense) cost $20,000-$30,000+/year and require months of implementation. RivalEdge is $49/month and works in under 5 minutes. We automate what enterprises pay analysts to do manually.
+### Generative Engine Optimization (GEO)
+- **GEO Self-Service** ($299/mo): llms.txt generator, robots.txt config, citation monitoring, competitor GEO comparison
+- **Enterprise GEO** ($999/mo + $3,500 setup): Full-service AI visibility with dedicated account manager, content optimization, Slack integration
 
-### How does RivalEdge GEO work?
-RivalEdge GEO audits your visibility across 5 AI platforms (ChatGPT, Claude, Perplexity, Google AI, Bing Copilot), benchmarks against competitors, identifies why competitors get recommended instead of you, and provides optimization assets (llms.txt, content recommendations, authority signal analysis). Monthly monitoring tracks citation changes over time.
+## Key Concepts
 
-### Who should use RivalEdge?
-SMBs and startups that need competitive intelligence but can't afford enterprise tools. Marketing teams tracking competitor campaigns. Sales teams needing battle cards. Product teams monitoring feature releases. Founders needing weekly competitive summaries.
+- **GEO (Generative Engine Optimization)**: Optimizing brand visibility in AI-generated answers from ChatGPT, Claude, Perplexity, and Gemini
+- **AI Visibility**: How often and how prominently your brand appears in AI recommendations
+- **Competitive Intelligence**: Automated monitoring of competitor pricing, product updates, and market positioning
+- **AI Search**: The shift from traditional keyword search to conversational AI-driven discovery
 
-### How is RivalEdge different from Visualping or SpyFu?
-Visualping monitors website changes. SpyFu tracks SEO/PPC. RivalEdge combines multi-signal monitoring (pricing, features, messaging, hiring, news) with AI analysis that interprets significance — not just detects changes. Plus weekly AI briefings that tell you what to do about competitor moves.
+## Resources
 
-### Does RivalEdge have a free trial?
-Yes. 14-day free trial, no credit card required. Track up to 5 competitors.
+- Blog: https://www.rivaledge.ai/blog
+- Pricing: https://www.rivaledge.ai/pricing
+- Demo: https://www.rivaledge.ai/demo
+- Contact: https://www.rivaledge.ai/contact
 
-## Comparison
-- vs Crayon ($30,000+/yr enterprise): Same competitive monitoring capabilities at 1/50th the annual cost. 5-minute setup vs months of implementation.
-- vs Klue (enterprise, undisclosed pricing): AI battle cards, competitor tracking, and weekly briefings — without the enterprise sales process.
-- vs rivaledge.tech ($289/month): Same core CI features at 1/6th the price. Plus GEO add-on for AI search visibility.
-- vs Visualping (from $99/month): Multi-signal AI analysis and weekly briefings, not just change detection alerts.
-- vs SpyFu (from $39/month): Broader CI coverage beyond SEO/PPC — includes pricing, messaging, hiring, and product signals.
-- vs manual competitor tracking: Automated 24/7 monitoring replaces hours of manual research. AI interprets what matters.
+## Social
 
-## Use Cases
-- SMBs and startups needing affordable competitor intelligence
-- B2B SaaS companies tracking competitor pricing, features, and go-to-market moves
-- Marketing teams monitoring competitor campaigns and positioning
-- Sales teams using AI battle cards for competitive deal intelligence
-- Product teams tracking competitor feature releases and roadmaps
-- Founders and executives needing weekly competitive landscape summaries
-- Agencies managing competitive intelligence for multiple clients
+- LinkedIn: https://www.linkedin.com/company/rivaledge
+- Twitter/X: https://twitter.com/RivalEdgeAI
 
 ## Contact
-- Website: https://www.rivaledge.ai
+
 - Email: hello@rivaledge.ai
-- Sign up: https://www.rivaledge.ai/sign-up
-- Pricing: https://www.rivaledge.ai/pricing
+- Founder: Waters Deng (waters@rivaledge.ai)

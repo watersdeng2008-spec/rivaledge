@@ -37,6 +37,13 @@ export default function ComparisonPage() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-6">RivalEdge vs AlphaSense: A Side-by-Side Comparison</h1>
+        <p className="text-sm text-slate-500 mb-6">
+          By{' '}
+          <Link href="/blog/authors/waters-deng" className="text-slate-300 hover:text-white underline underline-offset-2">
+            Waters Deng
+          </Link>
+          , Founder of RivalEdge.ai
+        </p>
         <p className="text-lg text-slate-400 mb-8">Enterprise market intelligence vs startup-friendly competitive intelligence. See the 100x price difference.</p>
 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8">

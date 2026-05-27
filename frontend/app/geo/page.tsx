@@ -6,6 +6,45 @@ import { Check, Sparkles, FileText, Bot, BarChart3, Globe, RefreshCw, Shield, Fi
 import { useAuth } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/api';
 
+const GEO_FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is Generative Engine Optimization?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Generative Engine Optimization is the practice of improving how often and how accurately a brand appears in AI-generated answers from systems like ChatGPT, Claude, Perplexity, Google AI, and Bing Copilot.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does RivalEdge GEO include?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'RivalEdge GEO includes an AI search visibility audit, competitor mention benchmarking, llms.txt and robots.txt optimization, content and structured data strategy, distribution planning, and monthly citation monitoring.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much does RivalEdge GEO cost?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'RivalEdge Enterprise GEO costs $3,500 for one-time setup and $999 per month for ongoing monitoring and optimization.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which AI platforms does RivalEdge GEO monitor?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'RivalEdge GEO monitors visibility across ChatGPT, Claude, Perplexity, Google AI Overviews, and Bing Copilot.',
+      },
+    },
+  ],
+};
+
 export default function GeoPage() {
   const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -46,6 +85,10 @@ export default function GeoPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(GEO_FAQ_SCHEMA) }}
+      />
       {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">

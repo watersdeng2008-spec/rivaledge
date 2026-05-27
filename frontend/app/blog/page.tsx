@@ -14,6 +14,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '6 min read',
     category: 'GEO',
+    author: 'Waters Deng',
   },
   {
     slug: 'rivaledge-vs-crayon',
@@ -22,6 +23,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '5 min read',
     category: 'Comparison',
+    author: 'Waters Deng',
   },
   {
     slug: 'rivaledge-vs-klue',
@@ -30,6 +32,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '4 min read',
     category: 'Comparison',
+    author: 'Waters Deng',
   },
   {
     slug: 'rivaledge-vs-visualping',
@@ -38,6 +41,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '3 min read',
     category: 'Comparison',
+    author: 'Waters Deng',
   },
   {
     slug: 'rivaledge-vs-spyfu',
@@ -46,6 +50,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '4 min read',
     category: 'Comparison',
+    author: 'Waters Deng',
   },
   {
     slug: 'rivaledge-vs-alphasense',
@@ -54,6 +59,7 @@ const posts = [
     date: 'May 17, 2026',
     readTime: '4 min read',
     category: 'Comparison',
+    author: 'Waters Deng',
   },
 ];
 
@@ -118,6 +124,12 @@ export default function BlogPage() {
               </h2>
               <p className="text-slate-400 text-sm leading-relaxed">
                 {post.excerpt}
+              </p>
+              <p className="text-slate-500 text-sm mt-3">
+                By{' '}
+                <Link href="/blog/authors/waters-deng" className="text-slate-300 hover:text-white underline underline-offset-2">
+                  {post.author}
+                </Link>
               </p>
               <Link 
                 href={`/blog/${post.slug}`}
