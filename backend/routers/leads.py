@@ -20,7 +20,7 @@ class LeadCaptureRequest(BaseModel):
     company_name: Optional[str] = Field(None, max_length=255)
     company_url: Optional[str] = Field(None, max_length=500)
     competitor_url: Optional[str] = Field(None, max_length=500)
-    capture_source: str = Field(..., pattern="^(homepage|pricing|exit_intent|demo)$")
+    capture_source: str = Field(..., pattern="^(homepage|pricing|exit_intent|demo|geo_audit)$")
 
 
 class LeadCaptureResponse(BaseModel):
