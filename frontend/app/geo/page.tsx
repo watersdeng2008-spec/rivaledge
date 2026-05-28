@@ -34,7 +34,7 @@ function GeoAuditForm() {
           company_name: formData.companyName || null,
           company_url: formData.companyUrl || null,
           competitor_url: null,
-          capture_source: 'demo',
+          capture_source: 'geo_audit',
         }),
       });
 
