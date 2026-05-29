@@ -25,7 +25,7 @@ const SCHEMA_JSON = {
         "jobTitle": "Founder"
       },
       "foundingDate": "2025",
-      "description": "AI-powered competitive intelligence platform that monitors competitors 24/7 and delivers weekly AI-generated briefings. Starting at $49/month.",
+      "description": "AI-native competitive intelligence and GEO platform. Track competitors, win AI visibility, and move faster than your market. Starting at $49/month.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Chicago",
@@ -50,6 +50,20 @@ const SCHEMA_JSON = {
           "@type": "Offer",
           "name": "Pro",
           "price": "99",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        {
+          "@type": "Offer",
+          "name": "GEO Self-Service",
+          "price": "299",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        {
+          "@type": "Offer",
+          "name": "GEO Managed",
+          "price": "999",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         }

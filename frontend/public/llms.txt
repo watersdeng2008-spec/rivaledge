@@ -1,45 +1,55 @@
-# RivalEdge.ai
+# RivalEdge
 
-> AI-native competitive intelligence and generative engine optimization (GEO) platform. Track competitors, win AI visibility, and move faster than your market.
+RivalEdge is an AI-native competitive intelligence and market visibility platform. We help B2B companies track competitors, monitor AI citations, and optimize for Generative Engine Optimization (GEO).
 
-## About
+## Product
 
-RivalEdge is an AI-powered competitive intelligence platform that monitors competitors 24/7 and delivers weekly AI-generated briefings. We help DTC brands, SaaS companies, and enterprises stay ahead of their competition while optimizing for AI search visibility.
+RivalEdge combines two core capabilities:
 
-Founded: 2025
-Founder: Waters Deng
-Location: Chicago, IL
+1. **Competitive Intelligence (CI)** — Automated monitoring of competitor websites, pricing pages, and product updates. Weekly AI-powered briefings tell you what changed and what to do about it.
 
-## Products
+2. **Generative Engine Optimization (GEO)** — AI visibility tools and services that help brands get cited by ChatGPT, Claude, Perplexity, and Google AI. Includes llms.txt generation, robots.txt optimization, schema markup, and monthly citation tracking.
 
-### Competitive Intelligence (CI)
-- **Solo** ($49/mo): Track up to 3 competitors, weekly AI digest, email alerts
-- **Pro** ($99/mo): Track up to 10 competitors, daily monitoring, AI battle cards
+## Key Features
 
-### Generative Engine Optimization (GEO)
-- **GEO Self-Service** ($299/mo): llms.txt generator, robots.txt config, citation monitoring, competitor GEO comparison
-- **Enterprise GEO** ($999/mo + $3,500 setup): Full-service AI visibility with dedicated account manager, content optimization, Slack integration
+- Competitor tracking (up to 20 competitors)
+- Weekly/daily AI digest emails
+- Battle card generator for sales teams
+- GEO audit and scoring (100-point system)
+- AI citation monitoring across 5 platforms
+- llms.txt and robots.txt auto-generation
+- Schema markup implementation
+- Slack integration
+- API access
 
-## Key Concepts
+## Pricing
 
-- **GEO (Generative Engine Optimization)**: Optimizing brand visibility in AI-generated answers from ChatGPT, Claude, Perplexity, and Gemini
-- **AI Visibility**: How often and how prominently your brand appears in AI recommendations
-- **Competitive Intelligence**: Automated monitoring of competitor pricing, product updates, and market positioning
-- **AI Search**: The shift from traditional keyword search to conversational AI-driven discovery
+| Tier | Price | Best For |
+|------|-------|----------|
+| Solo | $49/mo | Indie founders, small teams |
+| Pro | $99/mo | Growing teams and agencies |
+| GEO Self-Service | $299/mo | DIY GEO optimization |
+| GEO Managed | $999/mo | Done-for-you GEO services |
+| AI Intelligence Partner | Custom ($2,500+/mo) | Full competitive intelligence + strategy |
 
-## Resources
+## Use Cases
 
-- Blog: https://www.rivaledge.ai/blog
-- Pricing: https://www.rivaledge.ai/pricing
-- Demo: https://www.rivaledge.ai/demo
-- Contact: https://www.rivaledge.ai/contact
+- SaaS & B2B companies tracking competitor moves
+- eCommerce brands monitoring pricing changes
+- Agencies managing competitive intel for clients
+- Healthcare & professional services
+- Fintech & financial services
+- DTC & CPG brands
 
-## Social
+## Comparison
 
-- LinkedIn: https://www.linkedin.com/company/rivaledge
-- Twitter/X: https://twitter.com/RivalEdgeAI
+Unlike traditional SEO tools, RivalEdge focuses on:
+- AI-native competitive intelligence (not just rankings)
+- Generative Engine Optimization (not just search optimization)
+- Real-time competitor monitoring (not just periodic audits)
 
 ## Contact
 
-- Email: hello@rivaledge.ai
-- Founder: Waters Deng (waters@rivaledge.ai)
+- Website: https://www.rivaledge.ai
+- Email: ben.d@rivaledge.ai
+- Demo: https://www.rivaledge.ai/demo

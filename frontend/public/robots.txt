@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
 
 User-agent: GPTBot
 Allow: /
@@ -22,4 +25,10 @@ Allow: /
 User-agent: Bytespider
 Allow: /
 
-Sitemap: https://rivaledge.ai/sitemap.xml
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://www.rivaledge.ai/sitemap.xml
