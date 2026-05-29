@@ -18,6 +18,12 @@ from typing import List, Dict
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# New model routing (DeepSeek direct)
+try:
+    from utils.model_router import get_model_for_task
+except ImportError:
+    get_model_for_task = None
+
 from services.sales_agent.orchestrator import get_orchestrator
 
 # Configuration

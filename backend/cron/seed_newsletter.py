@@ -17,7 +17,7 @@ import httpx
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from services.email_service import send_competitive_intelligence_report as send_email
+import resend
 import db.supabase as db
 
 logger = logging.getLogger(__name__)
@@ -27,10 +27,21 @@ NEWSLETTER_FROM = "ben.d@rivaledge.ai"
 
 def get_all_leads() -> list:
     """Get all leads from the database."""
+    supabase_url = os.environ.get("SUPABASE_URL", "")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    
+    if not supabase_url or not supabase_key:
+        logger.error("Supabase not configured")
+        return []
+    
     try:
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+        }
         r = httpx.get(
-            db._url("leads?select=email,company_name,source,created_at&order=created_at.desc"),
-            headers=db._headers(),
+            f"{supabase_url}/rest/v1/leads?select=email,source,created_at&order=created_at.desc",
+            headers=headers,
             timeout=30,
         )
         if r.status_code >= 400:
@@ -45,6 +56,13 @@ def get_all_leads() -> list:
 
 def import_leads_as_subscribers(leads: list) -> dict:
     """Import leads as newsletter subscribers (opted-in by default for existing relationship)."""
+    supabase_url = os.environ.get("SUPABASE_URL", "")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    
+    if not supabase_url or not supabase_key:
+        logger.error("Supabase not configured")
+        return {"imported": 0, "skipped": 0}
+    
     imported = 0
     skipped = 0
     
@@ -61,9 +79,14 @@ def import_leads_as_subscribers(leads: list) -> dict:
         }
         
         try:
-            headers = {**db._headers(), "Prefer": "resolution=merge-duplicates,return=representation"}
+            headers = {
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}",
+                "Content-Type": "application/json",
+                "Prefer": "resolution=merge-duplicates,return=representation",
+            }
             r = httpx.post(
-                db._url("newsletter_subscribers"),
+                f"{supabase_url}/rest/v1/newsletter_subscribers",
                 json=payload,
                 headers=headers,
                 timeout=10,
@@ -218,13 +241,20 @@ def create_value_drop_html(content: str) -> str:
 
 def send_value_drop(subscribers: list, test_mode: bool = False) -> dict:
     """Send the one-time value drop to subscribers."""
+    resend_key = os.environ.get("RESEND_API_KEY", "") or os.environ.get("RESEND_KEY", "")
+    if not resend_key:
+        logger.error("RESEND_API_KEY not set")
+        return {"sent": 0, "failed": len(subscribers)}
+    
+    resend.api_key = resend_key
+    
     content = generate_value_drop_content()
     html = create_value_drop_html(content)
     
     if test_mode:
-        # Send to first 5 only
-        subscribers = subscribers[:5]
-        logger.info(f"TEST MODE: Sending to {len(subscribers)} subscribers")
+        # Send to first 1 only (as requested by Waters)
+        subscribers = subscribers[:1]
+        logger.info(f"TEST MODE: Sending to {len(subscribers)} subscriber")
     
     sent_count = 0
     failed_count = 0
@@ -238,14 +268,15 @@ def send_value_drop(subscribers: list, test_mode: bool = False) -> dict:
         personalized_html = html.replace("{{email}}", email)
         
         try:
-            send_email(
-                to_email=email,
-                subject="AI Visibility Report: What changed this week in AI search",
-                html_content=personalized_html,
-                from_email=NEWSLETTER_FROM,
-            )
+            response = resend.Emails.send({
+                "from": f"Ben D - RivalEdge AI <{NEWSLETTER_FROM}>",
+                "to": [email],
+                "subject": "AI Visibility Report: What changed this week in AI search",
+                "html": personalized_html,
+                "reply_to": NEWSLETTER_FROM,
+            })
             sent_count += 1
-            logger.info(f"Value drop sent to {email}")
+            logger.info(f"Value drop sent to {email}, ID: {response.get('id')}")
         except Exception as e:
             failed_count += 1
             logger.error(f"Failed to send to {email}: {e}")
@@ -274,9 +305,15 @@ def main(test_mode: bool = False):
     # Step 3: Get all subscribers
     logger.info("Step 3: Fetching subscribers...")
     try:
+        supabase_url = os.environ.get("SUPABASE_URL", "")
+        supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+        }
         r = httpx.get(
-            db._url("newsletter_subscribers?is_active=eq.true&select=email"),
-            headers=db._headers(),
+            f"{supabase_url}/rest/v1/newsletter_subscribers?is_active=eq.true&select=email",
+            headers=headers,
             timeout=10,
         )
         subscribers = r.json() if r.status_code < 400 else []

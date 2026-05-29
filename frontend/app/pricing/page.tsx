@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/api';
 import LeadCaptureForm from '../components/LeadCaptureForm';
@@ -16,7 +16,7 @@ const PRICING_FAQ_SCHEMA = {
       name: 'Does RivalEdge have a free trial?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. RivalEdge offers a 14-day free trial with no credit card required.',
+        text: 'Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. GEO Self-Service and Enterprise do not include a trial.',
       },
     },
     {
@@ -37,10 +37,34 @@ const PRICING_FAQ_SCHEMA = {
     },
     {
       '@type': 'Question',
-      name: 'What is Enterprise GEO?',
+      name: 'What is GEO Self-Service?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Enterprise GEO is a full-service AI visibility plan at $999 per month plus a $3,500 one-time setup fee. It includes dedicated account management, content optimization, Slack integration, citation monitoring, and competitor GEO analysis.',
+        text: 'GEO Self-Service costs $299 per month and includes Pro-level CI plus self-service AI visibility tools: llms.txt generator, robots.txt for 8 AI crawlers, monthly AI visibility scorecard, and competitor GEO comparison.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is GEO Managed?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'GEO Managed is our done-for-you service at $999 per month. We create and deploy llms.txt, robots.txt, schema markup, and sitemap optimization for you. Includes monthly GEO audits, score tracking, content intelligence briefs, and a 30-minute strategy call.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the AI Competitive Intelligence Partner tier?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Our AI Competitive Intelligence Partner tier is custom pricing starting at $2,500 per month. It includes everything in GEO Managed plus full competitive intelligence (pricing changes, product launches, messaging shifts), AI recommendation share tracking, monthly strategic reports, category intelligence, and priority Slack support with quarterly business reviews.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the difference between SEO and GEO?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'SEO optimizes for Google search rankings. GEO (Generative Engine Optimization) optimizes for AI model citations — when ChatGPT, Claude, or Perplexity recommend brands in response to user questions. Different signals, different strategies.',
       },
     },
   ],
@@ -76,7 +100,7 @@ export default function PricingPage() {
     }
   };
 
-  const handleAddonCheckout = async (plan: 'geo') => {
+  const handleAddonCheckout = async (plan: 'geo' | 'geo_managed') => {
     if (!isSignedIn) {
       window.location.href = '/sign-up';
       return;
@@ -122,10 +146,11 @@ export default function PricingPage() {
         </div>
       </nav>
 
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-12">
         <h1 className="text-4xl font-bold text-center mb-4">Simple, honest pricing</h1>
         <p className="text-slate-400 text-center mb-2">No hidden fees. No enterprise quotes. Cancel anytime.</p>
-        <p className="text-blue-400 text-center font-medium mb-16">✨ 14-day free trial — no credit card required</p>
+        <p className="text-blue-400 text-center font-medium mb-16">✨ 14-day free trial on Solo & Pro — no credit card required</p>
 
         {/* Lead Capture — Free Competitor Snapshot */}
         <div className="max-w-xl mx-auto mb-16">
@@ -144,7 +169,8 @@ export default function PricingPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* CI + GEO Tiers */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {/* Solo */}
           <div className="bg-slate-900 border border-slate-700 rounded-xl p-8">
             <h3 className="text-xl font-semibold mb-1">Solo</h3>
@@ -227,188 +253,224 @@ export default function PricingPage() {
               {loading === 'pro' ? 'Redirecting...' : 'Start 14-day free trial'}
             </button>
           </div>
-        </div>
 
-        {/* GEO Self-Service */}
-        <div className="max-w-5xl mx-auto mt-20">
-          <div className="border-t border-slate-800 pt-16">
-            <div className="text-center mb-4">
-              <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
-                AI Visibility
-              </span>
+          {/* GEO Self-Service */}
+          <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+              AI VISIBILITY
             </div>
-            <h2 className="text-3xl font-bold text-center mb-3">
-              Know what competitors are doing.
-              <br />
-              <span className="text-purple-400">Get found when buyers ask AI about your category.</span>
-            </h2>
-            <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
-              Already tracking competitors? Add GEO to ensure ChatGPT, Claude, Perplexity, 
-              and Google AI cite <em>your</em> company when buyers search. Over 40% of B2B discovery 
-              now happens through AI platforms — not Google SERPs.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* GEO Self-Service */}
-            <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-semibold">GEO Self-Service</h3>
-              </div>
-              <p className="text-slate-400 text-sm mb-4">Self-service AI visibility tools + Pro-level CI reports</p>
-              
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-3xl font-bold">$299</span>
-                <span className="text-slate-400 text-sm">/mo</span>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {[
-                  '10 competitors tracked (Pro CI)',
-                  'Daily AI digest + email alerts',
-                  'llms.txt auto-generator',
-                  'robots.txt for 8 AI crawlers',
-                  'Monthly AI visibility scorecard',
-                  'Competitor GEO comparison',
-                  'Quarterly strategy refresh',
-                  'API access',
-                ].map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
-                    <span className="text-slate-300">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={() => handleCheckout('geo_selfservice')}
-                disabled={loading === 'geo_selfservice'}
-                className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              >
-                {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get GEO Self-Service'}
-              </button>
+            <h3 className="text-xl font-semibold mb-1">GEO Self-Service</h3>
+            <p className="text-slate-400 text-sm mb-6">AI visibility tools + Pro-level CI</p>
+            <div className="text-4xl font-bold mb-8">
+              $299<span className="text-lg text-slate-400 font-normal">/mo</span>
             </div>
 
-            {/* Enterprise GEO */}
-            <div className="bg-purple-600/10 border border-purple-500/50 rounded-xl p-8 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                WHITE-GLOVE
-              </div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-semibold">Enterprise GEO</h3>
-              </div>
-              <p className="text-slate-400 text-sm mb-4">Full-service GEO with bundled CI + Slack integration</p>
-              
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-bold">$999</span>
-                <span className="text-slate-400 text-sm">/mo</span>
-                <span className="text-slate-500 text-sm group relative cursor-help">
-                  + $3,500 one-time setup
-                  <span className="inline-block ml-1 text-slate-600 group-hover:text-purple-400 transition-colors">ⓘ</span>
-                  <span className="absolute bottom-full left-0 mb-2 w-64 bg-slate-800 border border-slate-600 text-slate-300 text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Comprehensive AI citation audit, robotstxt configuration for 8 AI crawlers, llmstxt creation, and initial content optimization across ChatGPT, Claude, Perplexity, and Google AI.
-                  </span>
-                </span>
-              </div>
-
-              <button
-                onClick={() => setShowGeoDetails(!showGeoDetails)}
-                className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2 mb-6 block"
-              >
-                {showGeoDetails ? 'Hide details' : "What's included"}
-              </button>
-
-              <div className="space-y-3 mb-6">
-                {[
-                  '20 competitors tracked (CI bundled)',
-                  'Daily + custom AI digests',
-                  'Slack integration',
-                  'Everything in Self-Service',
-                  'Hands-on content optimization',
-                  'Dedicated account manager',
-                  'Priority support',
-                ].map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
-                    <span className="text-slate-300">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={() => handleAddonCheckout('geo')}
-                disabled={loading === 'geo'}
-                className="w-full bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              >
-                {loading === 'geo' ? 'Redirecting...' : 'Get Enterprise GEO'}
-              </button>
+            <div className="space-y-3 mb-8">
+              {[
+                ['10 competitors tracked', true],
+                ['Daily AI digest + email alerts', true],
+                ['llms.txt auto-generator', true],
+                ['robots.txt for 8 AI crawlers', true],
+                ['Monthly AI visibility scorecard', true],
+                ['Competitor GEO comparison', true],
+                ['API access', true],
+              ].map(([feature, included]) => (
+                <div key={String(feature)} className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 flex-shrink-0 ${included ? 'text-purple-400' : 'text-slate-700'}`} />
+                  <span className={included ? 'text-slate-300' : 'text-slate-600'}>{String(feature)}</span>
+                </div>
+              ))}
             </div>
+
+            <button
+              onClick={() => handleCheckout('geo_selfservice')}
+              disabled={loading === 'geo_selfservice'}
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            >
+              {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get GEO Self-Service'}
+            </button>
           </div>
 
-          {showGeoDetails && (
-            <div className="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-8">
-              <h4 className="font-semibold mb-4">Enterprise GEO Full Details</h4>
-              <div className="grid md:grid-cols-2 gap-3">
-                {[
-                  'AI search visibility audit',
-                  'llms.txt optimization & maintenance',
-                  'robots.txt configured for 8 AI crawlers',
-                  'Monthly AI citation monitoring report',
-                  'Competitor GEO posture analysis',
-                  'Content pipeline optimization',
-                  'GitHub + YouTube distribution strategy',
-                  'Priority index refresh requests',
-                ].map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
-                    <span className="text-slate-300">{feature}</span>
-                  </div>
-                ))}
-              </div>
+          {/* GEO Managed */}
+          <div className="bg-emerald-600/5 border border-emerald-500/30 rounded-xl p-8 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+              DONE-FOR-YOU
             </div>
-          )}
-        </div>
+            <h3 className="text-xl font-semibold mb-1">GEO Managed</h3>
+            <p className="text-slate-400 text-sm mb-6">We deploy GEO assets + monitor monthly</p>
+            <div className="text-4xl font-bold mb-8">
+              $999<span className="text-lg text-slate-400 font-normal">/mo</span>
+            </div>
 
-        {/* Feature comparison */}
-        <div className="max-w-4xl mx-auto mt-20">
-          <h2 className="text-2xl font-bold text-center mb-8">Everything included</h2>
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800">
-                  <th className="text-left px-6 py-4 text-slate-400 font-medium">Feature</th>
-                  <th className="text-center px-6 py-4 text-slate-400 font-medium">Solo</th>
-                  <th className="text-center px-6 py-4 text-slate-400 font-medium">Pro</th>
-                  <th className="text-center px-6 py-4 text-purple-400 font-medium">GEO Self-Service</th>
-                  <th className="text-center px-6 py-4 text-purple-400 font-medium">Enterprise</th>
+            <div className="space-y-3 mb-8">
+              {[
+                ['Everything in Self-Service', true],
+                ['We create & deploy llms.txt', true],
+                ['We create & deploy robots.txt', true],
+                ['Schema markup implementation', true],
+                ['Sitemap optimization', true],
+                ['Monthly GEO audit + score tracking', true],
+                ['Monthly 30-min strategy call', true],
+                ['Content intelligence briefs', true],
+                ['5 competitor GEO tracking', true],
+              ].map(([feature, included]) => (
+                <div key={String(feature)} className="flex items-center gap-2 text-sm">
+                  <Check className={`w-4 h-4 flex-shrink-0 ${included ? 'text-emerald-400' : 'text-slate-700'}`} />
+                  <span className={included ? 'text-slate-300' : 'text-slate-600'}>{String(feature)}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handleAddonCheckout('geo_managed')}
+              disabled={loading === 'geo_managed'}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            >
+              {loading === 'geo_managed' ? 'Redirecting...' : 'Get GEO Managed'}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* GEO Section */}
+      <section className="max-w-5xl mx-auto px-6 py-16 border-t border-slate-800">
+        <div className="text-center mb-4">
+          <span className="bg-purple-600/20 text-purple-400 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wide">
+            White-Glove Service
+          </span>
+        </div>
+        <h2 className="text-3xl font-bold text-center mb-3">
+          Get cited by ChatGPT, Claude, Perplexity & Google AI
+        </h2>
+        <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
+          Over 40% of B2B discovery now happens through AI platforms — not Google SERPs.
+          If AI models don't know you exist, you're losing deals before buyers even hit search.
+        </p>
+
+        <div className="bg-amber-600/10 border border-amber-500/50 rounded-xl p-8 md:p-10 max-w-3xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <Sparkles className="w-6 h-6 text-amber-400" />
+            <h3 className="text-2xl font-semibold">AI Competitive Intelligence Partner</h3>
+          </div>
+          <p className="text-slate-400 mb-6">Full intelligence + strategy + execution. Custom pricing.</p>
+
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="text-4xl font-bold">Custom</span>
+            <span className="text-slate-400">starting at $2,500/mo</span>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-3 mb-8">
+            {[
+              'Everything in GEO Managed',
+              'Full competitive intelligence (CI + GEO)',
+              'Competitor pricing + launch monitoring',
+              'AI recommendation share tracking',
+              'Monthly "State of Your Market" report',
+              'Positioning analysis + recommendations',
+              'Category intelligence + trends',
+              'Priority Slack support',
+              'Monthly 60-min strategy call',
+              'Quarterly business reviews',
+            ].map((feature) => (
+              <div key={feature} className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 flex-shrink-0 text-amber-400" />
+                <span className="text-slate-300">{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => window.location.href = '/contact?tier=intelligence'}
+            className="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Contact for Custom Pricing
+          </button>
+        </div>
+      </section>
+
+      {/* Feature comparison */}
+      <section className="max-w-5xl mx-auto px-6 py-16 border-t border-slate-800">
+        <h2 className="text-2xl font-bold text-center mb-8">Compare all plans</h2>
+        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-800">
+                <th className="text-left px-6 py-4 text-slate-400 font-medium">Feature</th>
+                <th className="text-center px-6 py-4 text-slate-400 font-medium">Solo</th>
+                <th className="text-center px-6 py-4 text-slate-400 font-medium">Pro</th>
+                <th className="text-center px-6 py-4 text-purple-400 font-medium">GEO Self-Service</th>
+                <th className="text-center px-6 py-4 text-emerald-400 font-medium">GEO Managed</th>
+                <th className="text-center px-6 py-4 text-amber-400 font-medium">Intelligence Partner</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Competitor tracking', '3', '10', '10', '10', '20'],
+                ['AI briefing frequency', 'Weekly', 'Daily', 'Daily', 'Daily', 'Daily + custom'],
+                ['Email alerts', '✓', '✓', '✓', '✓', '✓'],
+                ['Slack alerts', '—', '—', '—', '—', '✓'],
+                ['Battle cards', '✓', '✓', '✓', '✓', '✓'],
+                ['API access', '—', '✓', '✓', '✓', '✓'],
+                ['Priority support', '—', '✓', '✓', '✓', '✓'],
+                ['GEO tools', '—', '—', '✓', '✓', '✓'],
+                ['llms.txt generator', '—', '—', '✓', '✓', '✓'],
+                ['AI citation audit', '—', '—', 'Automated', 'Automated', 'Full-service'],
+                ['GEO asset deployment', '—', '—', '—', '✓', '✓'],
+                ['Monthly strategy call', '—', '—', '—', '30 min', '60 min'],
+                ['Content intelligence', '—', '—', '—', '✓', '✓'],
+                ['Competitor CI monitoring', '—', '—', '—', '—', '✓'],
+                ['Category intelligence', '—', '—', '—', '—', '✓'],
+                ['Account manager', '—', '—', '—', '—', '✓'],
+              ].map(([feature, solo, pro, geo, managed, partner]) => (
+                <tr key={feature} className="border-b border-slate-800/50 last:border-0">
+                  <td className="px-6 py-3 text-slate-300">{feature}</td>
+                  <td className="px-6 py-3 text-center text-slate-400">{solo}</td>
+                  <td className="px-6 py-3 text-center text-blue-400 font-medium">{pro}</td>
+                  <td className="px-6 py-3 text-center text-purple-400 font-medium">{geo}</td>
+                  <td className="px-6 py-3 text-center text-emerald-400 font-medium">{managed}</td>
+                  <td className="px-6 py-3 text-center text-amber-400 font-medium">{partner}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Competitor tracking', '3', '10', '10', '20'],
-                  ['AI briefing frequency', 'Weekly', 'Daily', 'Daily', 'Daily + custom'],
-                  ['Email alerts', '✓', '✓', '✓', '✓'],
-                  ['Slack alerts', '—', '—', '—', '✓'],
-                  ['Battle cards', '✓', '✓', '✓', '✓'],
-                  ['API access', '—', '✓', '✓', '✓'],
-                  ['Priority support', '—', '✓', '✓', '✓'],
-                  ['GEO tools', '—', '—', '✓', '✓'],
-                  ['llms.txt generator', '—', '—', '✓', '✓'],
-                  ['AI citation audit', '—', '—', 'Automated', 'Full-service'],
-                  ['Content optimization', '—', '—', '—', '✓'],
-                  ['Account manager', '—', '—', '—', '✓'],
-                ].map(([feature, solo, pro, geo, ent]) => (
-                  <tr key={feature} className="border-b border-slate-800/50 last:border-0">
-                    <td className="px-6 py-3 text-slate-300">{feature}</td>
-                    <td className="px-6 py-3 text-center text-slate-400">{solo}</td>
-                    <td className="px-6 py-3 text-center text-blue-400 font-medium">{pro}</td>
-                    <td className="px-6 py-3 text-center text-purple-400 font-medium">{geo}</td>
-                    <td className="px-6 py-3 text-center text-purple-400 font-medium">{ent}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-3xl mx-auto px-6 py-16 border-t border-slate-800">
+        <h2 className="text-2xl font-bold text-center mb-8">Frequently asked questions</h2>
+        <div className="space-y-6">
+          {[
+            {
+              q: 'What is the difference between SEO and GEO?',
+              a: 'SEO optimizes for Google search rankings. GEO (Generative Engine Optimization) optimizes for AI model citations — when ChatGPT, Claude, or Perplexity recommend brands in response to user questions. Different signals, different strategies.',
+            },
+            {
+              q: 'How long until we see results?',
+              a: 'Technical fixes (llms.txt, robots.txt, schema) show impact in 2-4 weeks. Content and authority signals take 60-90 days. We track monthly so you can see progress.',
+            },
+            {
+              q: 'Do we need to change our website platform?',
+              a: 'No. Our fixes work on any platform — Next.js, WordPress, Webflow, custom. We provide copy-paste code snippets.',
+            },
+            {
+              q: "What's the difference between GEO Managed and Self-Service?",
+              a: 'GEO Self-Service ($299/mo) gives you tools to generate llms.txt, robots.txt, and track AI visibility yourself. GEO Managed ($999/mo) means we create and deploy all GEO assets for you, monitor monthly, and provide strategy calls. You get the same results without doing the work.',
+            },
+            {
+              q: "What's the setup fee for?",
+              a: 'The one-time setup fee covers: comprehensive AI visibility audit, competitor benchmarking, llms.txt creation, robots.txt optimization, schema markup implementation, and initial content strategy. This is included in GEO Managed and Intelligence Partner tiers.',
+            },
+            {
+              q: 'Can we start with Self-Service and upgrade to Managed or Intelligence Partner?',
+              a: 'Yes. Self-Service credits apply toward Managed or Intelligence Partner setup.',
+            },
+          ].map(({ q, a }) => (
+            <div key={q}>
+              <h3 className="font-semibold text-white mb-2">{q}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">{a}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>
