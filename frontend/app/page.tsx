@@ -71,8 +71,8 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Triple product cards */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {/* Product cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {/* CI Card */}
           <div className="bg-slate-900 border border-blue-500/20 rounded-2xl p-7 flex flex-col">
             <div className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-600/20 text-blue-400 text-xs px-3 py-1 rounded-full self-start mb-4">
@@ -126,7 +126,7 @@ export default function HomePage() {
               <span className="text-purple-400">Self-service tools.</span>
             </h2>
             <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              Same AI visibility tools as Enterprise — llms.txt generator, robots.txt config, citation monitoring — but self-serve.
+              AI visibility tools — llms.txt generator, robots.txt config, citation monitoring — self-serve.
             </p>
             <ul className="space-y-2.5 mb-6 flex-1">
               {[
@@ -154,29 +154,33 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* GEO Enterprise Card */}
-          <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
-            <div className="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full self-start mb-4">
+          {/* GEO Managed Card */}
+          <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-7 flex flex-col relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] px-3 py-0.5 rounded-bl-lg font-semibold tracking-wide">
+              DONE-FOR-YOU
+            </div>
+            <div className="inline-flex items-center gap-2 bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full self-start mb-4">
               <Sparkles className="w-3.5 h-3.5" />
               AI Visibility (GEO)
             </div>
             <h2 className="text-2xl font-bold mb-2">
               Get recommended by AI.<br />
-              <span className="text-purple-400">White-glove service.</span>
+              <span className="text-emerald-400">We do the work.</span>
             </h2>
             <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              Full-service GEO with hands-on content optimization, dedicated account manager, and Slack integration.
+              We create and deploy llms.txt, robots.txt, schema markup, and monitor monthly.
             </p>
             <ul className="space-y-2.5 mb-6 flex-1">
               {[
-                '20 competitors tracked (CI bundled)',
-                'Hands-on content optimization',
-                'Dedicated account manager',
-                'Slack integration',
-                'Priority support',
+                'Everything in Self-Service',
+                'We create & deploy llms.txt',
+                'We create & deploy robots.txt',
+                'Schema markup implementation',
+                'Monthly GEO audit + score tracking',
+                'Monthly 30-min strategy call',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                   {f}
                 </li>
               ))}
@@ -184,12 +188,52 @@ export default function HomePage() {
             <div className="text-3xl font-bold mb-1">
               $999<span className="text-base text-slate-400 font-normal">/mo</span>
             </div>
-            <p className="text-slate-500 text-xs mb-5">+ $3,500 one-time setup. Enterprise-grade AI visibility.</p>
+            <p className="text-slate-500 text-xs mb-5">We handle everything. Monthly monitoring included.</p>
             <Link
-              href="/geo"
-              className="block text-center bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-xl font-semibold transition-colors"
+              href="/pricing"
+              className="block text-center bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-semibold transition-colors"
             >
-              Contact Sales →
+              Get GEO Managed →
+            </Link>
+          </div>
+
+          {/* AI Intelligence Partner Card */}
+          <div className="bg-slate-900 border border-amber-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
+            <div className="inline-flex items-center gap-2 bg-amber-600/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full self-start mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Intelligence
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              Full intelligence.<br />
+              <span className="text-amber-400">Strategic partner.</span>
+            </h2>
+            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+              Competitive intelligence + GEO + strategy. Custom pricing for serious companies.
+            </p>
+            <ul className="space-y-2.5 mb-6 flex-1">
+              {[
+                'Everything in GEO Managed',
+                'Competitor pricing + launch monitoring',
+                'AI recommendation share tracking',
+                'Monthly "State of Your Market" report',
+                'Category intelligence + trends',
+                'Priority Slack support',
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <div className="text-3xl font-bold mb-1">
+              Custom<span className="text-base text-slate-400 font-normal"></span>
+            </div>
+            <p className="text-slate-500 text-xs mb-5">Starting at $2,500/mo. Intelligence + strategy + execution.</p>
+            <Link
+              href="/contact?tier=intelligence"
+              className="block text-center bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-semibold transition-colors"
+            >
+              Contact for Pricing →
             </Link>
           </div>
         </div>
