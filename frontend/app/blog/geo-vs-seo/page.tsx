@@ -58,8 +58,8 @@ const ARTICLE_SCHEMA = {
   '@type': 'Article',
   headline: 'GEO vs SEO: Why Generative Engine Optimization Is the New Must-Have for 2026',
   description: 'SEO got you found on Google. GEO gets you recommended by AI. Learn the key differences and how to start optimizing for ChatGPT, Claude, and Perplexity.',
-  datePublished: '2026-05-17',
-  dateModified: '2026-05-17',
+  datePublished: '2026-05-29',
+  dateModified: '2026-05-29',
   author: {
     '@type': 'Person',
     name: 'Waters Deng',
@@ -125,11 +125,11 @@ export default function GeoVsSeoPost() {
           </span>
           <span className="flex items-center gap-1 text-slate-500 text-sm">
             <Calendar className="w-3.5 h-3.5" />
-            May 17, 2026
+            May 29, 2026
           </span>
           <span className="flex items-center gap-1 text-slate-500 text-sm">
             <Clock className="w-3.5 h-3.5" />
-            6 min read
+            12 min read
           </span>
         </div>
 
