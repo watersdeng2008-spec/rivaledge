@@ -449,7 +449,7 @@ export default function GeoPage() {
           Start with Self-Service tools or let us execute everything white-glove.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* GEO Self-Service */}
           <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
             <div className="flex items-center gap-2 mb-1">
@@ -487,47 +487,89 @@ export default function GeoPage() {
             </Link>
           </div>
 
-          {/* Enterprise GEO */}
-          <div className="bg-purple-600/10 border border-purple-500/50 rounded-xl p-8 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-              WHITE-GLOVE
+          {/* GEO Managed */}
+          <div className="bg-emerald-600/5 border border-emerald-500/30 rounded-xl p-8 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+              DONE-FOR-YOU
             </div>
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-xl font-semibold">Enterprise GEO</h3>
+              <h3 className="text-xl font-semibold">GEO Managed</h3>
             </div>
-            <p className="text-slate-400 text-sm mb-4">We do everything. Full-service.</p>
+            <p className="text-slate-400 text-sm mb-4">We deploy GEO assets + monitor monthly.</p>
             
             <div className="flex items-baseline gap-2 mb-6">
               <span className="text-3xl font-bold">$999</span>
               <span className="text-slate-400 text-sm">/mo</span>
-              <span className="text-slate-500 text-sm">+ $3,500 setup</span>
             </div>
 
             <div className="space-y-3 mb-6">
               {[
                 'Everything in Self-Service',
-                'We execute the full roadmap',
-                'Hands-on content optimization',
-                'Monthly citation monitoring (5 platforms)',
-                '20 competitors tracked (CI bundled)',
-                'Slack integration',
-                'Dedicated account manager',
-                'Priority support (24h response)',
+                'We create & deploy llms.txt',
+                'We create & deploy robots.txt',
+                'Schema markup implementation',
+                'Sitemap optimization',
+                'Monthly GEO audit + score tracking',
+                'Monthly 30-min strategy call',
+                'Content intelligence briefs',
+                '5 competitor GEO tracking',
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
+                  <Check className="w-4 h-4 flex-shrink-0 text-emerald-400" />
                   <span className="text-slate-300">{feature}</span>
                 </div>
               ))}
             </div>
 
-            <button
-              onClick={handleGeoCheckout}
-              disabled={loading || !termsAccepted}
-              className="w-full bg-purple-700 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            <Link
+              href="/pricing"
+              className="block w-full text-center bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-semibold transition-colors"
             >
-              {loading ? 'Redirecting...' : 'Get Enterprise GEO'}
-            </button>
+              Get GEO Managed
+            </Link>
+          </div>
+
+          {/* AI Intelligence Partner */}
+          <div className="bg-amber-600/5 border border-amber-500/30 rounded-xl p-8 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+              STRATEGIC PARTNER
+            </div>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-xl font-semibold">AI Intelligence Partner</h3>
+            </div>
+            <p className="text-slate-400 text-sm mb-4">Full intelligence + strategy + execution.</p>
+            
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="text-3xl font-bold">Custom</span>
+              <span className="text-slate-400 text-sm">from $2,500/mo</span>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {[
+                'Everything in GEO Managed',
+                'Full competitive intelligence (CI + GEO)',
+                'Competitor pricing + launch monitoring',
+                'AI recommendation share tracking',
+                'Monthly "State of Your Market" report',
+                'Positioning analysis + recommendations',
+                'Category intelligence + trends',
+                'Priority Slack support',
+                'Monthly 60-min strategy call',
+                'Quarterly business reviews',
+              ].map((feature) => (
+                <div key={feature} className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 flex-shrink-0 text-amber-400" />
+                  <span className="text-slate-300">{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/contact?tier=intelligence"
+              className="block w-full text-center bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-lg font-semibold transition-colors"
+            >
+              Contact for Pricing
+            </Link>
           </div>
         </div>
 
