@@ -9,6 +9,16 @@ const SCHEMA_JSON = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebSite",
+      "@id": "https://www.rivaledge.ai/#website",
+      "url": "https://www.rivaledge.ai",
+      "name": "RivalEdge",
+      "description": "AI-native competitive intelligence and GEO platform",
+      "publisher": {
+        "@id": "https://www.rivaledge.ai/#organization"
+      }
+    },
+    {
       "@type": "Organization",
       "@id": "https://www.rivaledge.ai/#organization",
       "name": "RivalEdge.ai",
@@ -73,6 +83,52 @@ const SCHEMA_JSON = {
         "ratingValue": "4.8",
         "reviewCount": "127"
       }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.rivaledge.ai/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is RivalEdge?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RivalEdge is an AI-native competitive intelligence and market visibility platform. We help B2B companies track competitors, monitor AI citations, and optimize for Generative Engine Optimization (GEO)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between SEO and GEO?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SEO optimizes for Google search rankings. GEO (Generative Engine Optimization) optimizes for AI model citations — when ChatGPT, Claude, or Perplexity recommend brands in response to user questions. Different signals, different strategies."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does RivalEdge cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RivalEdge Solo starts at $49/month for up to 3 competitors with weekly AI digests. Pro is $99/month for up to 10 competitors with daily digests. GEO Self-Service is $299/month and includes AI visibility tools. GEO Managed is $999/month with done-for-you GEO services."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does RivalEdge have a free trial?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. GEO Self-Service and Enterprise do not include a trial."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Generative Engine Optimization (GEO)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "GEO is the practice of optimizing your brand's visibility in AI-generated responses. It includes creating llms.txt files, optimizing robots.txt for AI crawlers, implementing schema markup, and monitoring how often ChatGPT, Claude, and Perplexity cite your brand."
+          }
+        }
+      ]
     }
   ]
 };
