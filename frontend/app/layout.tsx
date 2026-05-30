@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import Script from 'next/script';
 import { PHProvider } from './providers';
+import PostHogPageLeave from '@/components/PostHogPageLeave';
 import './globals.css';
 
 const SCHEMA_JSON = {
@@ -189,6 +190,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_JSON) }}
           />
       <PHProvider>
+          <PostHogPageLeave />
           {children}
       </PHProvider>
 

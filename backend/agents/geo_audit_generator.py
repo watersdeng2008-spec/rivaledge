@@ -132,12 +132,12 @@ async def check_robots_txt(url: str) -> Dict[str, Any]:
         issues = []
         
         for crawler in AI_CRAWLERS:
-            # Check if crawler is mentioned
+            # Check if crawler is mentioned (case-insensitive User-agent)
             if crawler in content:
                 # Check if allowed or disallowed
                 lines = content.split('\n')
                 for i, line in enumerate(lines):
-                    if f"User-agent: {crawler}" in line:
+                    if f"User-agent: {crawler}" in line or f"User-Agent: {crawler}" in line:
                         # Check next lines for Allow/Disallow
                         for j in range(i+1, min(i+5, len(lines))):
                             if lines[j].startswith("Allow:"):
@@ -147,6 +147,12 @@ async def check_robots_txt(url: str) -> Dict[str, Any]:
                                 crawler_rules[crawler] = "disallowed"
                                 issues.append(f"{crawler} is explicitly disallowed")
                                 break
+                        else:
+                            # If no Allow/Disallow found after User-agent, check if it falls under general Allow
+                            crawler_rules[crawler] = "allowed"
+                        break
+                else:
+                    crawler_rules[crawler] = "allowed"  # Mentioned with general allow
             else:
                 crawler_rules[crawler] = "not mentioned"
         
@@ -299,24 +305,44 @@ async def check_schema_markup(url: str) -> Dict[str, Any]:
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Look for JSON-LD schema
-        scripts = soup.find_all('script', type='application/ld+json')
+        # Look for JSON-LD schema (including in Next.js streaming data)
         types_found = []
         
+        # Method 1: Standard script tags
+        scripts = soup.find_all('script', type='application/ld+json')
         for script in scripts:
             try:
-                data = json.loads(script.string)
-                if isinstance(data, dict):
-                    schema_type = data.get('@type', '')
-                    if schema_type:
-                        types_found.append(schema_type)
-                elif isinstance(data, list):
-                    for item in data:
-                        schema_type = item.get('@type', '')
+                if script.string:
+                    data = json.loads(script.string)
+                    if isinstance(data, dict):
+                        schema_type = data.get('@type', '')
                         if schema_type:
                             types_found.append(schema_type)
+                        # Check @graph array
+                        if '@graph' in data:
+                            for item in data['@graph']:
+                                schema_type = item.get('@type', '')
+                                if schema_type:
+                                    types_found.append(schema_type)
+                    elif isinstance(data, list):
+                        for item in data:
+                            schema_type = item.get('@type', '')
+                            if schema_type:
+                                types_found.append(schema_type)
             except:
                 continue
+        
+        # Method 2: Search raw HTML for schema.org types (for Next.js inline scripts)
+        if not types_found:
+            html_text = response.text
+            # Look for @type declarations in the HTML
+            type_matches = re.findall(r'"@type"\s*:\s*"([^"]+)"', html_text)
+            types_found.extend(type_matches)
+            # Look for @type in @graph
+            graph_matches = re.findall(r'"@type"\s*:\s*"([^"]+)"', html_text)
+            for match in graph_matches:
+                if match not in types_found:
+                    types_found.append(match)
         
         types_missing = [t for t in SCHEMA_TYPES if t not in types_found]
         issues = []

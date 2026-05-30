@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Play, ArrowRight, BookOpen, ExternalLink } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen, ExternalLink } from 'lucide-react';
+import posthog from 'posthog-js';
 import { demoExamples, type DemoExample } from './data';
 
 const aiMeta = [
@@ -149,6 +150,12 @@ export default function DemoPage() {
           </p>
           <Link
             href="/sign-up"
+            onClick={() => {
+              posthog.capture('demo_cta_clicked', {
+                cta_location: 'demo_page_bottom',
+                destination: '/sign-up',
+              });
+            }}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-lg font-semibold transition-colors shadow-lg shadow-blue-500/20"
           >
             Start free trial <ArrowRight className="w-5 h-5" />

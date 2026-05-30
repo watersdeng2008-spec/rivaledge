@@ -1,18 +1,18 @@
 import Link from 'next/link';
-import { ArrowLeft, Check, X, Minus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export const metadata = {
-  title: 'RivalEdge vs Crayon: Which Competitive Intelligence Tool Wins in 2026?',
-  description: 'Compare RivalEdge vs Crayon on pricing, features, AI capabilities, and GEO optimization. See why teams are switching to RivalEdge.',
-  keywords: ['RivalEdge vs Crayon', 'Crayon alternative', 'competitive intelligence comparison', 'GEO optimization'],
+  title: 'RivalEdge vs Klue: AI-Powered CI vs Traditional Battlecards',
+  description: 'Compare RivalEdge vs Klue on pricing, AI features, and ease of use. See which competitive intelligence platform fits your team.',
+  keywords: ['RivalEdge vs Klue', 'Klue alternative', 'competitive intelligence', 'AI battlecards'],
 };
 
 const COMPARISON_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'ComparisonPage',
-  name: 'RivalEdge vs Crayon Comparison',
-  description: 'Detailed comparison of RivalEdge and Crayon competitive intelligence platforms',
-  url: 'https://www.rivaledge.ai/vs/crayon',
+  name: 'RivalEdge vs Klue Comparison',
+  description: 'Detailed comparison of RivalEdge and Klue competitive intelligence platforms',
+  url: 'https://www.rivaledge.ai/vs/klue',
   itemCompared: [
     {
       '@type': 'SoftwareApplication',
@@ -27,24 +27,24 @@ const COMPARISON_SCHEMA = {
     },
     {
       '@type': 'SoftwareApplication',
-      name: 'Crayon',
+      name: 'Klue',
       applicationCategory: 'BusinessApplication',
     },
   ],
 };
 
-export default function VsCrayonPage() {
+export default function VsKluePage() {
   const features = [
-    { name: 'Starting Price', rivaledge: '$49/mo', crayon: '$10,000+/yr', winner: 'rivaledge' },
-    { name: 'Free Trial', rivaledge: '14 days', crayon: 'Demo only', winner: 'rivaledge' },
-    { name: 'AI-Powered Insights', rivaledge: '✅ Native', crayon: '❌ Limited', winner: 'rivaledge' },
-    { name: 'GEO Optimization', rivaledge: '✅ Built-in', crayon: '❌ None', winner: 'rivaledge' },
-    { name: 'Real-Time Price Tracking', rivaledge: '✅ Yes', crayon: '✅ Yes', winner: 'tie' },
-    { name: 'Battlecards', rivaledge: '✅ Auto-generated', crayon: '✅ Manual', winner: 'rivaledge' },
-    { name: 'Slack Integration', rivaledge: '✅ Yes', crayon: '✅ Yes', winner: 'tie' },
-    { name: 'Competitor Limit (Starter)', rivaledge: '3 competitors', crayon: 'Unlimited', winner: 'crayon' },
-    { name: 'Setup Time', rivaledge: '< 5 minutes', crayon: '2-4 weeks', winner: 'rivaledge' },
-    { name: 'Self-Service', rivaledge: '✅ Full', crayon: '❌ Sales-led', winner: 'rivaledge' },
+    { name: 'Starting Price', rivaledge: '$49/mo', klue: 'Custom (enterprise)', winner: 'rivaledge' },
+    { name: 'Free Trial', rivaledge: '14 days', klue: 'Demo only', winner: 'rivaledge' },
+    { name: 'AI-Generated Insights', rivaledge: '✅ Native', klue: '⚠️ Limited', winner: 'rivaledge' },
+    { name: 'GEO Optimization', rivaledge: '✅ Built-in', klue: '❌ None', winner: 'rivaledge' },
+    { name: 'Battlecards', rivaledge: '✅ Auto-generated', klue: '✅ Manual + templates', winner: 'rivaledge' },
+    { name: 'Price Tracking', rivaledge: '✅ Real-time', klue: '✅ Yes', winner: 'tie' },
+    { name: 'Salesforce Integration', rivaledge: '✅ Yes', klue: '✅ Deep native', winner: 'klue' },
+    { name: 'Setup Time', rivaledge: '< 5 minutes', klue: '1-2 weeks', winner: 'rivaledge' },
+    { name: 'Self-Service', rivaledge: '✅ Full', klue: '❌ Sales-led', winner: 'rivaledge' },
+    { name: 'Slack Integration', rivaledge: '✅ Yes', klue: '✅ Yes', winner: 'tie' },
   ];
 
   return (
@@ -54,7 +54,6 @@ export default function VsCrayonPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(COMPARISON_SCHEMA) }}
       />
       
-      {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -70,7 +69,6 @@ export default function VsCrayonPage() {
         </div>
       </nav>
 
-      {/* Content */}
       <div className="max-w-4xl mx-auto px-6 pt-12 pb-20">
         <Link href="/blog" className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" />
@@ -78,31 +76,29 @@ export default function VsCrayonPage() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-          RivalEdge vs Crayon
+          RivalEdge vs Klue
         </h1>
         <p className="text-lg text-slate-400 mb-8">
-          The most detailed comparison of RivalEdge and Crayon for competitive intelligence in 2026.
+          AI-powered competitive intelligence vs traditional battlecard platforms. Which fits your team?
         </p>
 
-        {/* Quick Verdict */}
         <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-6 mb-12">
           <h2 className="text-xl font-bold mb-3">Quick Verdict</h2>
           <p className="text-slate-300 mb-4">
-            <strong>Choose RivalEdge if:</strong> You want AI-powered insights, GEO optimization, and affordable pricing with instant setup.
+            <strong>Choose RivalEdge if:</strong> You want AI-generated insights, instant setup, and affordable pricing with built-in GEO optimization.
           </p>
           <p className="text-slate-300">
-            <strong>Choose Crayon if:</strong> You need unlimited competitors and have enterprise budget for sales-led onboarding.
+            <strong>Choose Klue if:</strong> You need deep Salesforce integration and have enterprise budget for sales-led onboarding.
           </p>
         </div>
 
-        {/* Comparison Table */}
         <div className="overflow-x-auto mb-12">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-700">
                 <th className="text-left py-4 pr-4 text-slate-400 font-medium">Feature</th>
                 <th className="text-center py-4 pr-4 text-blue-400 font-bold">RivalEdge</th>
-                <th className="text-center py-4 text-slate-400 font-medium">Crayon</th>
+                <th className="text-center py-4 text-slate-400 font-medium">Klue</th>
               </tr>
             </thead>
             <tbody>
@@ -112,8 +108,8 @@ export default function VsCrayonPage() {
                   <td className={`py-4 pr-4 text-center ${feature.winner === 'rivaledge' ? 'text-green-400 font-semibold' : 'text-slate-300'}`}>
                     {feature.rivaledge}
                   </td>
-                  <td className={`py-4 text-center ${feature.winner === 'crayon' ? 'text-green-400 font-semibold' : 'text-slate-300'}`}>
-                    {feature.crayon}
+                  <td className={`py-4 text-center ${feature.winner === 'klue' ? 'text-green-400 font-semibold' : 'text-slate-300'}`}>
+                    {feature.klue}
                   </td>
                 </tr>
               ))}
@@ -121,57 +117,55 @@ export default function VsCrayonPage() {
           </table>
         </div>
 
-        {/* Detailed Sections */}
         <div className="space-y-12">
           <section>
-            <h2 className="text-2xl font-bold mb-4">Pricing: RivalEdge is 17x More Affordable</h2>
+            <h2 className="text-2xl font-bold mb-4">Pricing: RivalEdge is Transparent, Klue is Enterprise-Only</h2>
             <p className="text-slate-300 mb-4">
-              RivalEdge starts at <strong>$49/month</strong> with a 14-day free trial. Crayon requires annual contracts starting at <strong>$10,000/year</strong> with no self-service option.
+              RivalEdge starts at <strong>$49/month</strong> with clear, self-serve pricing. Klue requires <strong>custom enterprise quotes</strong> with no public pricing.
             </p>
             <p className="text-slate-300">
-              For startups and small teams, RivalEdge delivers 80% of Crayon's functionality at <strong>1/17th the price</strong>.
+              For teams that want to get started today without a sales call, RivalEdge is the clear choice.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">AI & GEO: RivalEdge's Unique Advantage</h2>
+            <h2 className="text-2xl font-bold mb-4">AI Battlecards: RivalEdge Generates, Klue Templates</h2>
             <p className="text-slate-300 mb-4">
-              RivalEdge is the <strong>only competitive intelligence platform with built-in GEO optimization</strong>. While Crayon tracks competitors, RivalEdge ensures your own brand is discoverable by AI models like ChatGPT and Claude.
+              RivalEdge uses AI to <strong>auto-generate battlecards</strong> from competitor data. Klue provides templates that your team fills in manually.
             </p>
             <p className="text-slate-300">
-              In 2026, <strong>50% of product research starts with AI</strong>. If AI models don't know you exist, you're invisible to half your buyers. RivalEdge fixes that.
+              For teams that want insights <strong>now</strong>, not after hours of manual work, RivalEdge delivers.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">Setup Time: Minutes vs Weeks</h2>
+            <h2 className="text-2xl font-bold mb-4">GEO: RivalEdge's Exclusive Feature</h2>
             <p className="text-slate-300 mb-4">
-              RivalEdge is fully self-service. Sign up, add competitors, and get insights in <strong>under 5 minutes</strong>.
+              RivalEdge is the <strong>only CI platform with built-in GEO optimization</strong>. While Klue helps you track competitors, RivalEdge also ensures <strong>your own brand is discoverable by AI</strong>.
             </p>
             <p className="text-slate-300">
-              Crayon requires a <strong>2-4 week implementation</strong> with dedicated onboarding specialists. For teams that need insights now, this is a dealbreaker.
+              In 2026, if ChatGPT doesn't know you exist, you're invisible to 50% of buyers. RivalEdge fixes that.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">When to Choose Crayon</h2>
+            <h2 className="text-2xl font-bold mb-4">When to Choose Klue</h2>
             <p className="text-slate-300 mb-4">
-              Crayon makes sense for <strong>enterprise teams</strong> that:
+              Klue makes sense for <strong>enterprise sales teams</strong> that:
             </p>
             <ul className="list-disc list-inside text-slate-300 space-y-2">
-              <li>Need to track 50+ competitors simultaneously</li>
-              <li>Have dedicated competitive intelligence teams</li>
-              <li>Require custom integrations and dedicated support</li>
-              <li>Budget $10K+/year for CI tools</li>
+              <li>Need deep Salesforce CRM integration</li>
+              <li>Have dedicated competitive intelligence analysts</li>
+              <li>Require custom battlecard workflows</li>
+              <li>Budget for enterprise software ($10K+/year)</li>
             </ul>
           </section>
         </div>
 
-        {/* CTA */}
         <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-8 mt-12 text-center">
           <h3 className="text-2xl font-bold mb-3">Try RivalEdge Free for 14 Days</h3>
           <p className="text-slate-300 mb-6">
-            See why teams are switching from Crayon to RivalEdge. No credit card required.
+            See why teams are choosing RivalEdge over Klue. No credit card required.
           </p>
           <Link 
             href="/sign-up"

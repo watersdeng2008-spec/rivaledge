@@ -11,8 +11,8 @@ const posts = [
     slug: 'geo-vs-seo',
     title: 'GEO vs SEO: Why Generative Engine Optimization Is the New Must-Have for 2026',
     excerpt: 'SEO got you found on Google. GEO gets you recommended by AI. Learn the key differences and how to start optimizing for ChatGPT, Claude, and Perplexity.',
-    date: 'May 17, 2026',
-    readTime: '6 min read',
+    date: 'May 29, 2026',
+    readTime: '12 min read',
     category: 'GEO',
     author: 'Waters Deng',
   },
@@ -97,6 +97,19 @@ export default function BlogPage() {
         <p className="text-lg text-slate-400">
           Insights on competitive intelligence, GEO, and winning in AI search.
         </p>
+
+        {/* Comparison Pages */}
+        <div className="mt-8 p-4 bg-slate-900 border border-slate-800 rounded-xl">
+          <h2 className="text-sm font-semibold text-slate-300 mb-3">Detailed Comparisons</h2>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/vs/crayon" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+              vs Crayon →
+            </Link>
+            <Link href="/vs/klue" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+              vs Klue →
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Posts */}

@@ -6,9 +6,9 @@ import { useEffect } from 'react'
 
 export function PHProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
-    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com'
-    const enabled = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true'
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_z6Ac8mrQU72kWKdxkqHqykHWWCbrUbJJywFD42kKmdwV'
+    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com'
+    const enabled = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED !== 'false'
 
     if (!enabled || !key) {
       return

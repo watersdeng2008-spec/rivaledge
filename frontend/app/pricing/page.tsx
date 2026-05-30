@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Check, Sparkles } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
+import posthog from 'posthog-js';
 import { apiRequest } from '@/lib/api';
 import LeadCaptureForm from '../components/LeadCaptureForm';
 
@@ -74,7 +75,6 @@ export default function PricingPage() {
   const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showGeoDetails, setShowGeoDetails] = useState(false);
 
   const handleCheckout = async (plan: 'solo' | 'pro' | 'geo_selfservice') => {
     if (!isSignedIn) {
@@ -83,6 +83,13 @@ export default function PricingPage() {
     }
     setLoading(plan);
     setError(null);
+    posthog.capture('checkout_started', {
+      plan,
+      plan_name: plan === 'solo' ? 'Solo' : plan === 'pro' ? 'Pro' : 'GEO Self-Service',
+      price: plan === 'solo' ? 49 : plan === 'pro' ? 99 : 299,
+      source: document.referrer || 'direct',
+    });
+
     try {
       const token = await getToken();
       const data = await apiRequest<{ checkout_url: string }>('/api/billing/checkout', {
@@ -107,6 +114,13 @@ export default function PricingPage() {
     }
     setLoading(plan);
     setError(null);
+    posthog.capture('checkout_started', {
+      plan,
+      plan_name: plan === 'geo' ? 'GEO Add-on' : 'GEO Managed',
+      price: plan === 'geo' ? 299 : 999,
+      source: document.referrer || 'direct',
+    });
+
     try {
       const token = await getToken();
       const data = await apiRequest<{ checkout_url: string }>('/api/billing/addon-checkout', {
@@ -344,7 +358,7 @@ export default function PricingPage() {
         </h2>
         <p className="text-slate-400 text-center max-w-2xl mx-auto mb-10">
           Over 40% of B2B discovery now happens through AI platforms — not Google SERPs.
-          If AI models don't know you exist, you're losing deals before buyers even hit search.
+          If AI models don&apos;t know you exist, you&apos;re losing deals before buyers even hit search.
         </p>
 
         <div className="bg-amber-600/10 border border-amber-500/50 rounded-xl p-8 md:p-10 max-w-3xl mx-auto">

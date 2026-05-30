@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { Plus, Zap, RefreshCw, Crown, Loader2, X } from 'lucide-react';
+import posthog from 'posthog-js';
 import { apiRequest, ApiError } from '@/lib/api';
 import { FeedbackButton } from './feedback-button';
 import { OnboardingModal } from './onboarding-modal';
@@ -89,6 +90,21 @@ function DashboardContent() {
       fetchBilling(token ?? undefined);
     })();
   }, [fetchCompetitors, fetchBilling, isLoaded, isSignedIn, getToken]);
+
+  useEffect(() => {
+    if (!isSignedIn || !user?.id) return;
+
+    const storageKey = `dashboard_visited_${user.id}`;
+    const hasVisited = localStorage.getItem(storageKey);
+
+    if (!hasVisited) {
+      posthog.capture('sign_up_completed', {
+        user_id: user.id,
+        source: document.referrer || 'direct',
+      });
+      localStorage.setItem(storageKey, 'true');
+    }
+  }, [isSignedIn, user?.id]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -537,7 +553,7 @@ function DashboardContent() {
                   dangerouslySetInnerHTML={{ __html: latestDigest.content.replace(/<!--[\s\S]*?-->/g, '').replace(/<style[\s\S]*?<\/style>/g, '') }}
                 />
               ) : (
-                <p className="text-slate-400 text-sm">Digest generated successfully. Check your email for the full version, or click "Send Digest" to receive it now.</p>
+                <p className="text-slate-400 text-sm">Digest generated successfully. Check your email for the full version, or click &quot;Send Digest&quot; to receive it now.</p>
               )}
             </div>
           </div>
