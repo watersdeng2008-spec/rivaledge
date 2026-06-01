@@ -14,7 +14,7 @@ const SCHEMA_JSON = {
       "@id": "https://www.rivaledge.ai/#website",
       "url": "https://www.rivaledge.ai",
       "name": "RivalEdge",
-      "description": "AI-native competitive intelligence and GEO platform",
+      "description": "AI-native market intelligence platform — track competitors, monitor AI visibility, and spot market threats before they impact your business",
       "publisher": {
         "@id": "https://www.rivaledge.ai/#organization"
       }
@@ -36,7 +36,7 @@ const SCHEMA_JSON = {
         "jobTitle": "Founder"
       },
       "foundingDate": "2025",
-      "description": "AI-native competitive intelligence and GEO platform. Track competitors, win AI visibility, and move faster than your market. Starting at $49/month.",
+      "description": "AI-native market intelligence platform. Track competitors, monitor AI visibility, and spot market threats before they impact your business. Starting at $49/month.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Chicago",
@@ -94,7 +94,7 @@ const SCHEMA_JSON = {
           "name": "What is RivalEdge?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "RivalEdge is an AI-native competitive intelligence and market visibility platform. We help B2B companies track competitors, monitor AI citations, and optimize for Generative Engine Optimization (GEO)."
+            "text": "RivalEdge is an AI-native market intelligence platform. We help companies track competitors, monitor AI visibility, and spot market threats and opportunities before they impact the business."
           }
         },
         {
@@ -142,9 +142,9 @@ const GOOGLE_TAG_IDS = Array.from(new Set([GOOGLE_ADS_ID, GA_ID].filter(Boolean)
 const PRIMARY_GOOGLE_TAG_ID = GOOGLE_TAG_IDS[0] || '';
 
 export const metadata: Metadata = {
-  title: 'RivalEdge — Win Visibility in Both Markets and AI',
-  description: 'Competitor monitoring from $49/mo. AI search visibility from $999/mo. Competitive intelligence + generative engine optimization in one platform.',
-  keywords: ['competitor monitoring', 'competitive intelligence', 'AI competitor tracking', 'generative engine optimization', 'GEO', 'AI search optimization', 'LLM optimization', 'AI visibility', 'ChatGPT citations', 'Perplexity optimization', 'Crayon alternative'],
+  title: 'RivalEdge — Market Intelligence for the AI Era',
+  description: 'Know who is winning your market before everyone else does. Track competitors, monitor AI visibility, and spot threats and opportunities earlier. Starting at $49/mo.',
+  keywords: ['market intelligence', 'AI market intelligence', 'competitive intelligence', 'AI competitor tracking', 'generative engine optimization', 'GEO', 'AI search optimization', 'AI visibility', 'competitor monitoring', 'market analysis', 'business intelligence', 'Crayon alternative', 'Klue alternative'],
   authors: [{ name: 'RivalEdge' }],
   metadataBase: new URL('https://www.rivaledge.ai'),
   other: {
@@ -155,17 +155,17 @@ export const metadata: Metadata = {
     apple: '/logo.jpg',
   },
   openGraph: {
-    title: 'RivalEdge — Win Visibility in Both Markets and AI',
-    description: 'Competitor monitoring from $49/mo. AI search visibility from $999/mo. Competitive intelligence + generative engine optimization.',
+    title: 'RivalEdge — Market Intelligence for the AI Era',
+    description: 'Know who is winning your market before everyone else does. Track competitors, monitor AI visibility, and spot threats and opportunities earlier.',
     url: 'https://www.rivaledge.ai',
     siteName: 'RivalEdge',
-    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — CI + GEO Platform' }],
+    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — AI-Native Market Intelligence Platform' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RivalEdge — Win Visibility in Both Markets and AI',
-    description: 'Competitor monitoring from $49/mo. AI visibility from $999/mo.',
+    title: 'RivalEdge — Market Intelligence for the AI Era',
+    description: 'Know who is winning your market before everyone else does. Starting at $49/mo.',
     images: ['/hero.jpg'],
     creator: '@RivalEdgeAI',
   },
