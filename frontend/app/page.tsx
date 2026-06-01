@@ -38,16 +38,16 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero — Two Products, Side by Side */}
+      {/* Hero — Market Intelligence for the AI Era */}
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Win visibility in your market
+            Know who is winning your market
             <br />
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">and in AI.</span>
+            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">before everyone else does.</span>
           </h1>
-          <p className="text-lg text-slate-400 max-w-xl mx-auto">
-            AI-native market intelligence. Track competitors, win AI visibility, and move faster than your market.
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            RivalEdge continuously monitors competitors, customer sentiment, pricing, product launches, hiring activity, and AI search visibility — so you can spot threats and opportunities earlier.
           </p>
 
           {/* Live Demo CTA */}
@@ -264,27 +264,27 @@ export default function HomePage() {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">What you get</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">How RivalEdge works</h2>
         <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Competitor monitoring from $49/mo. AI visibility from $299/mo.
+          We collect signals from across your market — competitors, AI systems, customers, and trends — so you see the full picture.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
               <Zap className="w-5 h-5 text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Automated scraping</h3>
+            <h3 className="text-lg font-semibold mb-2">Competitor monitoring</h3>
             <p className="text-slate-400 text-sm">
-              We monitor your competitors&apos; websites, pricing pages, and product updates automatically — no manual work.
+              Track rivals&apos; pricing, product launches, messaging shifts, and market moves — automatically, in real time.
             </p>
           </div>
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
               <Bell className="w-5 h-5 text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Weekly AI briefings</h3>
+            <h3 className="text-lg font-semibold mb-2">Weekly market briefings</h3>
             <p className="text-slate-400 text-sm">
-              Get a concise digest every week summarizing what changed, what matters, and what to do about it.
+              Get a concise digest every week on what changed in your market, what matters, and what to do about it.
             </p>
           </div>
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
@@ -293,16 +293,16 @@ export default function HomePage() {
             </div>
             <h3 className="text-lg font-semibold mb-2">Battle cards</h3>
             <p className="text-slate-400 text-sm">
-              Generate AI-powered battle cards for any competitor — perfect for sales calls and competitive positioning.
+              Generate AI-powered competitive briefings for any rival — perfect for sales calls and strategic positioning.
             </p>
           </div>
           <div className="bg-slate-900 border border-purple-500/20 rounded-xl p-6">
             <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
               <Sparkles className="w-5 h-5 text-purple-400" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">AI search visibility</h3>
+            <h3 className="text-lg font-semibold mb-2">AI visibility tracking</h3>
             <p className="text-slate-400 text-sm">
-              See how ChatGPT, Claude, and Perplexity describe your brand — and your competitors. Monthly citation tracking.
+              See how ChatGPT, Claude, and Perplexity describe and recommend your brand — and your competitors. Monthly AI visibility scorecard.
             </p>
           </div>
         </div>
@@ -437,10 +437,10 @@ export default function HomePage() {
       {/* Built For */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <h2 className="text-3xl font-bold text-center mb-4">
-          Built for teams that can&apos;t afford to be invisible
+          Built for teams that move fast
         </h2>
         <p className="text-slate-400 text-center mb-10 max-w-2xl mx-auto">
-          Whether you&apos;re defending market share or fighting to get noticed — RivalEdge gives you the intel to move faster.
+          Whether you&apos;re defending market share or fighting to get noticed — RivalEdge gives you the intelligence to act before competitors do.
         </p>
         
         <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
@@ -460,16 +460,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Final CTA — Urgency */}
+      {/* Final CTA — Outcome focused */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Your competitors are already optimizing for AI.
+            See your market clearly. Act before competitors do.
           </h2>
           <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
-            Every month you wait is market share lost. RivalEdge gives you the full picture — 
-            competitor monitoring from $49/mo, AI visibility from $299/mo. Start with one, 
-            add the other when you're ready.
+            RivalEdge gives you the full picture — competitor moves, AI visibility shifts, pricing changes, and emerging threats. Start with one angle, add the other when you're ready.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
