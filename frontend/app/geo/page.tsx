@@ -160,7 +160,7 @@ const GEO_FAQ_SCHEMA = {
       name: 'How much does RivalEdge GEO cost?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'RivalEdge Enterprise GEO costs $3,500 for one-time setup and $999 per month for ongoing monitoring and optimization. GEO Self-Service is $299 per month.',
+        text: 'RivalEdge Enterprise GEO costs $3,500 for one-time setup and $999 per month for ongoing monitoring and optimization. Pro AI is $299 per month.',
       },
     },
     {
@@ -450,10 +450,10 @@ export default function GeoPage() {
         </p>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {/* GEO Self-Service */}
+          {/* Pro AI */}
           <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-xl font-semibold">GEO Self-Service</h3>
+              <h3 className="text-xl font-semibold">Pro AI</h3>
             </div>
             <p className="text-slate-400 text-sm mb-4">Tools + roadmap. You execute.</p>
             
@@ -483,7 +483,7 @@ export default function GeoPage() {
               href="/pricing"
               className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors"
             >
-              Get GEO Self-Service
+              Get Pro AI
             </Link>
           </div>
 

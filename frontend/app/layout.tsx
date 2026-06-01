@@ -14,7 +14,7 @@ const SCHEMA_JSON = {
       "@id": "https://www.rivaledge.ai/#website",
       "url": "https://www.rivaledge.ai",
       "name": "RivalEdge",
-      "description": "AI-native market intelligence platform — track competitors, monitor AI visibility, and spot market threats before they impact your business",
+      "description": "Spot market shifts before your competitors do. Monitor competitors, AI visibility, customer sentiment, and pricing from one platform.",
       "publisher": {
         "@id": "https://www.rivaledge.ai/#organization"
       }
@@ -36,7 +36,7 @@ const SCHEMA_JSON = {
         "jobTitle": "Founder"
       },
       "foundingDate": "2025",
-      "description": "AI-native market intelligence platform. Track competitors, monitor AI visibility, and spot market threats before they impact your business. Starting at $49/month.",
+      "description": "Spot market shifts before your competitors do. Monitor competitors, AI visibility, customer sentiment, and pricing from one platform.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Chicago",
@@ -66,7 +66,7 @@ const SCHEMA_JSON = {
         },
         {
           "@type": "Offer",
-          "name": "GEO Self-Service",
+          "name": "Pro AI",
           "price": "299",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
@@ -110,7 +110,7 @@ const SCHEMA_JSON = {
           "name": "How much does RivalEdge cost?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "RivalEdge Solo starts at $49/month for up to 3 competitors with weekly AI digests. Pro is $99/month for up to 10 competitors with daily digests. GEO Self-Service is $299/month and includes AI visibility tools. GEO Managed is $999/month with done-for-you GEO services."
+            "text": "RivalEdge Solo starts at $49/month for individual founders and small teams. Pro is $99/month for growing teams with 5+ competitors. Pro AI is $299/month for teams that need AI search visibility. Enterprise is custom for full-service market intelligence."
           }
         },
         {
@@ -118,7 +118,7 @@ const SCHEMA_JSON = {
           "name": "Does RivalEdge have a free trial?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. GEO Self-Service and Enterprise do not include a trial."
+            "text": "Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. Pro AI and Enterprise do not include a trial."
           }
         },
         {
@@ -142,8 +142,8 @@ const GOOGLE_TAG_IDS = Array.from(new Set([GOOGLE_ADS_ID, GA_ID].filter(Boolean)
 const PRIMARY_GOOGLE_TAG_ID = GOOGLE_TAG_IDS[0] || '';
 
 export const metadata: Metadata = {
-  title: 'RivalEdge — Market Intelligence for the AI Era',
-  description: 'Know who is winning your market before everyone else does. Track competitors, monitor AI visibility, and spot threats and opportunities earlier. Starting at $49/mo.',
+  title: 'RivalEdge — Competitive Intelligence for the AI Era',
+  description: 'Spot market shifts before your competitors do. Monitor competitors, AI visibility, customer sentiment, and pricing from one platform.',
   keywords: ['market intelligence', 'AI market intelligence', 'competitive intelligence', 'AI competitor tracking', 'generative engine optimization', 'GEO', 'AI search optimization', 'AI visibility', 'competitor monitoring', 'market analysis', 'business intelligence', 'Crayon alternative', 'Klue alternative'],
   authors: [{ name: 'RivalEdge' }],
   metadataBase: new URL('https://www.rivaledge.ai'),
@@ -155,17 +155,17 @@ export const metadata: Metadata = {
     apple: '/logo.jpg',
   },
   openGraph: {
-    title: 'RivalEdge — Market Intelligence for the AI Era',
-    description: 'Know who is winning your market before everyone else does. Track competitors, monitor AI visibility, and spot threats and opportunities earlier.',
+    title: 'RivalEdge — Competitive Intelligence for the AI Era',
+    description: 'Spot market shifts before your competitors do. Monitor competitors, AI visibility, customer sentiment, and pricing from one platform.',
     url: 'https://www.rivaledge.ai',
     siteName: 'RivalEdge',
-    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — AI-Native Market Intelligence Platform' }],
+    images: [{ url: '/hero.jpg', width: 1200, height: 630, alt: 'RivalEdge — Competitive Intelligence for the AI Era' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RivalEdge — Market Intelligence for the AI Era',
-    description: 'Know who is winning your market before everyone else does. Starting at $49/mo.',
+    title: 'RivalEdge — Competitive Intelligence for the AI Era',
+    description: 'Spot market shifts before your competitors do. Monitor competitors, AI visibility, customer sentiment, and pricing from one platform.',
     images: ['/hero.jpg'],
     creator: '@RivalEdgeAI',
   },

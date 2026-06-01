@@ -93,7 +93,7 @@ def create_checkout(
 
     price_id = PLAN_TO_PRICE[body.plan]
     
-    # GEO Self-Service does not get a trial — it's a premium tier
+    # Pro AI does not get a trial - it's a premium tier.
     trial_days = 0 if body.plan == "geo_selfservice" else 14
 
     session_kwargs = {}

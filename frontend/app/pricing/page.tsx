@@ -17,7 +17,7 @@ const PRICING_FAQ_SCHEMA = {
       name: 'Does RivalEdge have a free trial?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. GEO Self-Service and Enterprise do not include a trial.',
+        text: 'Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. Pro AI and Enterprise do not include a trial.',
       },
     },
     {
@@ -38,10 +38,10 @@ const PRICING_FAQ_SCHEMA = {
     },
     {
       '@type': 'Question',
-      name: 'What is GEO Self-Service?',
+      name: 'What is Pro AI?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'GEO Self-Service costs $299 per month and includes Pro-level CI plus self-service AI visibility tools: llms.txt generator, robots.txt for 8 AI crawlers, monthly AI visibility scorecard, and competitor GEO comparison.',
+        text: 'Pro AI costs $299 per month and includes Pro-level CI plus AI search visibility tools: llms.txt generator, robots.txt for 8 AI crawlers, monthly AI visibility scorecard, and competitor AI visibility comparison.',
       },
     },
     {
@@ -85,7 +85,7 @@ export default function PricingPage() {
     setError(null);
     posthog.capture('checkout_started', {
       plan,
-      plan_name: plan === 'solo' ? 'Solo' : plan === 'pro' ? 'Pro' : 'GEO Self-Service',
+      plan_name: plan === 'solo' ? 'Solo' : plan === 'pro' ? 'Pro' : 'Pro AI',
       price: plan === 'solo' ? 49 : plan === 'pro' ? 99 : 299,
       source: document.referrer || 'direct',
     });
@@ -268,12 +268,12 @@ export default function PricingPage() {
             </button>
           </div>
 
-          {/* GEO Self-Service */}
+          {/* Pro AI */}
           <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
               AI VISIBILITY
             </div>
-            <h3 className="text-xl font-semibold mb-1">GEO Self-Service</h3>
+            <h3 className="text-xl font-semibold mb-1">Pro AI</h3>
             <p className="text-slate-400 text-sm mb-6">AI visibility tools + Pro-level CI</p>
             <div className="text-4xl font-bold mb-8">
               $299<span className="text-lg text-slate-400 font-normal">/mo</span>
@@ -286,7 +286,7 @@ export default function PricingPage() {
                 ['llms.txt auto-generator', true],
                 ['robots.txt for 8 AI crawlers', true],
                 ['Monthly AI visibility scorecard', true],
-                ['Competitor GEO comparison', true],
+                ['Competitor AI visibility comparison', true],
                 ['API access', true],
               ].map(([feature, included]) => (
                 <div key={String(feature)} className="flex items-center gap-2 text-sm">
@@ -301,7 +301,7 @@ export default function PricingPage() {
               disabled={loading === 'geo_selfservice'}
               className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get GEO Self-Service'}
+              {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get Pro AI'}
             </button>
           </div>
 
@@ -412,7 +412,7 @@ export default function PricingPage() {
                 <th className="text-left px-6 py-4 text-slate-400 font-medium">Feature</th>
                 <th className="text-center px-6 py-4 text-slate-400 font-medium">Solo</th>
                 <th className="text-center px-6 py-4 text-slate-400 font-medium">Pro</th>
-                <th className="text-center px-6 py-4 text-purple-400 font-medium">GEO Self-Service</th>
+                <th className="text-center px-6 py-4 text-purple-400 font-medium">Pro AI</th>
                 <th className="text-center px-6 py-4 text-emerald-400 font-medium">GEO Managed</th>
                 <th className="text-center px-6 py-4 text-amber-400 font-medium">Intelligence Partner</th>
               </tr>
@@ -469,15 +469,15 @@ export default function PricingPage() {
             },
             {
               q: "What's the difference between GEO Managed and Self-Service?",
-              a: 'GEO Self-Service ($299/mo) gives you tools to generate llms.txt, robots.txt, and track AI visibility yourself. GEO Managed ($999/mo) means we create and deploy all GEO assets for you, monitor monthly, and provide strategy calls. You get the same results without doing the work.',
+              a: 'Pro AI ($299/mo) gives you tools to generate llms.txt, robots.txt, and track AI visibility yourself. GEO Managed ($999/mo) means we create and deploy all GEO assets for you, monitor monthly, and provide strategy calls. You get the same results without doing the work.',
             },
             {
               q: "What's the setup fee for?",
               a: 'The one-time setup fee covers: comprehensive AI visibility audit, competitor benchmarking, llms.txt creation, robots.txt optimization, schema markup implementation, and initial content strategy. This is included in GEO Managed and Intelligence Partner tiers.',
             },
             {
-              q: 'Can we start with Self-Service and upgrade to Managed or Intelligence Partner?',
-              a: 'Yes. Self-Service credits apply toward Managed or Intelligence Partner setup.',
+              q: 'Can we start with Pro AI and upgrade to Managed or Intelligence Partner?',
+              a: 'Yes. Pro AI credits apply toward Managed or Intelligence Partner setup.',
             },
           ].map(({ q, a }) => (
             <div key={q}>

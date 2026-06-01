@@ -1,601 +1,383 @@
 import Link from 'next/link';
-import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp, Play } from 'lucide-react';
+import {
+  ArrowRight,
+  Bot,
+  BriefcaseBusiness,
+  Check,
+  CircleDollarSign,
+  Eye,
+  LineChart,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+} from 'lucide-react';
 import LeadCaptureForm from './components/LeadCaptureForm';
-import GeoMetricsScorecard from './components/GeoMetricsScorecard';
+
+const recentSignals = [
+  'Competitor reduced pricing across 43 SKUs',
+  'New competitor entered the category',
+  'Review sentiment declined 12% after product launch',
+  'AI recommendations shifted toward a lower-priced alternative',
+];
+
+const marketSignals = [
+  {
+    signal: 'Competitor Moves',
+    why: 'Detect product launches, positioning shifts, and strategic changes',
+    icon: Target,
+  },
+  {
+    signal: 'AI Visibility',
+    why: 'See which brands AI recommends and why',
+    icon: Sparkles,
+  },
+  {
+    signal: 'Customer Sentiment',
+    why: 'Identify complaints and unmet needs before competitors do',
+    icon: Users,
+  },
+  {
+    signal: 'Pricing Intelligence',
+    why: 'Monitor discounting and pricing strategy changes',
+    icon: CircleDollarSign,
+  },
+  {
+    signal: 'Hiring Activity',
+    why: 'Spot expansion plans and strategic priorities',
+    icon: BriefcaseBusiness,
+  },
+  {
+    signal: 'Emerging Competitors',
+    why: 'Detect new entrants before they become major threats',
+    icon: TrendingUp,
+  },
+];
+
+const aiVisibilityPoints = [
+  'See which brands AI recommends',
+  'Compare your visibility against competitors',
+  'Identify missing topics and citations',
+  'Track visibility changes over time',
+  'Discover why competitors are being recommended',
+];
+
+const audience = [
+  ['Product Marketing', 'Track positioning, messaging, and launch timing'],
+  ['Competitive Intelligence', 'Monitor competitor moves and market shifts'],
+  ['Strategy & Innovation', 'Spot emerging trends and white space'],
+  ['Founders & Executives', 'Get board-ready intelligence without the manual work'],
+  ['Revenue Teams', 'Understand why deals are won or lost'],
+];
+
+const comparisonRows = [
+  ['Competitor monitoring', true, true],
+  ['Customer sentiment tracking', true, false],
+  ['AI visibility tracking', true, false],
+  ['AI recommendation analysis', true, false],
+  ['Real-time market signals', true, false],
+];
+
+const steps = [
+  ['Connect', 'Add your competitors and keywords. We start monitoring in minutes.'],
+  ['Monitor', 'Our AI agents scan the web, news, reviews, job boards, and AI search results 24/7.'],
+  ['Alert', 'Get notified when something important happens, not noise.'],
+  ['Act', 'Spot threats early, find gaps, and move faster than the competition.'],
+];
+
+const plans = [
+  ['Solo', 'Individual founders, small teams', '$49/mo'],
+  ['Pro', 'Growing teams with 5+ competitors', '$99/mo'],
+  ['Pro AI', 'Teams who need AI search visibility', '$299/mo'],
+  ['Enterprise', 'Full-service market intelligence', 'Custom'],
+];
+
+function CheckMark({ active = true }: { active?: boolean }) {
+  return active ? (
+    <Check className="mx-auto h-5 w-5 text-emerald-400" aria-label="Included" />
+  ) : (
+    <span className="block text-center text-slate-600" aria-label="Not included">-</span>
+  );
+}
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Nav */}
       <nav className="border-b border-slate-800 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
+          <Link href="/" className="flex items-center gap-2">
             <img src="/logo.jpg" alt="RivalEdge" className="h-8 w-8 rounded-sm" />
             <span className="text-xl font-bold text-blue-400">RivalEdge</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
-            <Link href="/demo" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/demo" className="hidden text-sm text-slate-400 transition-colors hover:text-white sm:inline">
               Live Demo
             </Link>
-            <Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/pricing" className="text-sm text-slate-400 transition-colors hover:text-white">
               Pricing
             </Link>
-            <Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/blog" className="hidden text-sm text-slate-400 transition-colors hover:text-white sm:inline">
               Blog
             </Link>
-            <Link
-              href="/sign-in"
-              className="text-slate-400 hover:text-white text-sm transition-colors"
-            >
+            <Link href="/sign-in" className="hidden text-sm text-slate-400 transition-colors hover:text-white sm:inline">
               Sign in
             </Link>
-            <Link
-              href="/sign-up"
-              className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors"
-            >
+            <Link href="/sign-up" className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-500">
               Start free trial
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero — Market Intelligence for the AI Era */}
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-12">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Know who is winning your market
-            <br />
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">before everyone else does.</span>
-          </h1>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            RivalEdge continuously monitors competitors, customer sentiment, pricing, product launches, hiring activity, and AI search visibility — so you can spot threats and opportunities earlier.
-          </p>
+      <main>
+        <section className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <div>
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-600/10 px-3 py-1 text-sm text-blue-300">
+                <LineChart className="h-4 w-4" />
+                Competitive intelligence for the AI era
+              </div>
+              <h1 className="mb-5 max-w-4xl text-4xl font-bold leading-tight md:text-6xl">
+                Spot market shifts before your competitors do.
+              </h1>
+              <p className="mb-8 max-w-2xl text-lg leading-relaxed text-slate-300">
+                Monitor competitors, customer sentiment, pricing, product launches, hiring activity, and AI visibility from a single intelligence platform.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500">
+                  Start Free Trial
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="#how-it-works" className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-800">
+                  See How It Works
+                </Link>
+              </div>
+            </div>
 
-          {/* Live Demo CTA */}
-          <Link
-            href="/demo"
-            className="inline-flex items-center gap-2 mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40"
-          >
-            <Play className="w-5 h-5 flex-shrink-0" />
-            See the AI in action — interactive demo
-          </Link>
-        </div>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-blue-950/20">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-400">Market signal feed</p>
+                  <h2 className="text-xl font-semibold">Detected this week</h2>
+                </div>
+                <Bot className="h-6 w-6 text-blue-400" />
+              </div>
+              <div className="space-y-3">
+                {recentSignals.map((signal) => (
+                  <div key={signal} className="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-950/70 p-3">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-400" />
+                    <span className="text-sm text-slate-200">{signal}</span>
+                  </div>
+                ))}
+              </div>
+              <blockquote className="mt-5 border-l-2 border-blue-500 pl-4 text-sm italic leading-relaxed text-slate-300">
+                "We spotted three new competitors entering our space two months before our board asked about them."
+                <span className="mt-2 block text-slate-500">VP Strategy, category leader</span>
+              </blockquote>
+            </div>
+          </div>
+        </section>
 
-        {/* Lead Capture Form */}
-        <div className="max-w-2xl mx-auto mb-16">
+        <section className="mx-auto max-w-3xl px-6 pb-16">
           <LeadCaptureForm
             source="homepage"
             variant="hero"
-            title="See what your competitors are doing"
+            title="See what changed in your market"
             subtitle="Enter any competitor URL and get a free snapshot of their latest moves"
             buttonText="Get my free competitor snapshot"
           />
-        </div>
-
-        {/* Product cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {/* CI Card */}
-          <div className="bg-slate-900 border border-blue-500/20 rounded-2xl p-7 flex flex-col">
-            <div className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-600/20 text-blue-400 text-xs px-3 py-1 rounded-full self-start mb-4">
-              <BarChart3 className="w-3.5 h-3.5" />
-              Competitive Intelligence
-            </div>
-            <h2 className="text-2xl font-bold mb-2">
-              Track competitors.<br />
-              <span className="text-blue-400">Get weekly briefings.</span>
-            </h2>
-            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              Automated monitoring of your rivals&apos; websites, pricing, and product updates.
-              AI-powered weekly digests tell you what changed and what to do about it.
-            </p>
-            <ul className="space-y-2.5 mb-6 flex-1">
-              {[
-                'Track up to 5 competitors',
-                'Weekly AI digest + email alerts',
-                'AI battle card generator',
-                '5-minute setup — just add URLs',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <div className="text-3xl font-bold mb-1">
-              $49<span className="text-base text-slate-400 font-normal">/mo</span>
-            </div>
-            <p className="text-slate-500 text-xs mb-5">14-day free trial. No credit card required.</p>
-            <Link
-              href="/sign-up"
-              className="block text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-semibold transition-colors"
-            >
-              Start free trial →
-            </Link>
-          </div>
-
-          {/* GEO Self-Service Card */}
-          <div className="bg-slate-900 border border-purple-500/30 rounded-2xl p-7 flex flex-col relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] px-3 py-0.5 rounded-bl-lg font-semibold tracking-wide">
-              NEW
-            </div>
-            <div className="inline-flex items-center gap-2 bg-purple-600/10 border border-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full self-start mb-4">
-              <Sparkles className="w-3.5 h-3.5" />
-              AI Visibility (GEO)
-            </div>
-            <h2 className="text-2xl font-bold mb-2">
-              Get found by AI.<br />
-              <span className="text-purple-400">Self-service tools.</span>
-            </h2>
-            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              AI visibility tools — llms.txt generator, robots.txt config, citation monitoring — self-serve.
-            </p>
-            <ul className="space-y-2.5 mb-6 flex-1">
-              {[
-                '10 competitors tracked (Pro CI bundled)',
-                'llms.txt auto-generator',
-                'robots.txt for 8 AI crawlers',
-                'Monthly AI visibility scorecard',
-                'Competitor GEO comparison',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <div className="text-3xl font-bold mb-1">
-              $299<span className="text-base text-slate-400 font-normal">/mo</span>
-            </div>
-            <p className="text-slate-500 text-xs mb-5">No setup fee. Includes Pro-level competitor tracking.</p>
-            <Link
-              href="/pricing"
-              className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition-colors"
-            >
-              Get GEO Self-Service →
-            </Link>
-          </div>
-
-          {/* GEO Managed Card */}
-          <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-7 flex flex-col relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] px-3 py-0.5 rounded-bl-lg font-semibold tracking-wide">
-              DONE-FOR-YOU
-            </div>
-            <div className="inline-flex items-center gap-2 bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full self-start mb-4">
-              <Sparkles className="w-3.5 h-3.5" />
-              AI Visibility (GEO)
-            </div>
-            <h2 className="text-2xl font-bold mb-2">
-              Get recommended by AI.<br />
-              <span className="text-emerald-400">We do the work.</span>
-            </h2>
-            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              We create and deploy llms.txt, robots.txt, schema markup, and monitor monthly.
-            </p>
-            <ul className="space-y-2.5 mb-6 flex-1">
-              {[
-                'Everything in Self-Service',
-                'We create & deploy llms.txt',
-                'We create & deploy robots.txt',
-                'Schema markup implementation',
-                'Monthly GEO audit + score tracking',
-                'Monthly 30-min strategy call',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <div className="text-3xl font-bold mb-1">
-              $999<span className="text-base text-slate-400 font-normal">/mo</span>
-            </div>
-            <p className="text-slate-500 text-xs mb-5">We handle everything. Monthly monitoring included.</p>
-            <Link
-              href="/pricing"
-              className="block text-center bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-semibold transition-colors"
-            >
-              Get GEO Managed →
-            </Link>
-          </div>
-
-          {/* AI Intelligence Partner Card */}
-          <div className="bg-slate-900 border border-amber-500/20 rounded-2xl p-7 flex flex-col relative overflow-hidden">
-            <div className="inline-flex items-center gap-2 bg-amber-600/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full self-start mb-4">
-              <Sparkles className="w-3.5 h-3.5" />
-              AI Intelligence
-            </div>
-            <h2 className="text-2xl font-bold mb-2">
-              Full intelligence.<br />
-              <span className="text-amber-400">Strategic partner.</span>
-            </h2>
-            <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-              Competitive intelligence + GEO + strategy. Custom pricing for serious companies.
-            </p>
-            <ul className="space-y-2.5 mb-6 flex-1">
-              {[
-                'Everything in GEO Managed',
-                'Competitor pricing + launch monitoring',
-                'AI recommendation share tracking',
-                'Monthly "State of Your Market" report',
-                'Category intelligence + trends',
-                'Priority Slack support',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <div className="text-3xl font-bold mb-1">
-              Custom<span className="text-base text-slate-400 font-normal"></span>
-            </div>
-            <p className="text-slate-500 text-xs mb-5">Starting at $2,500/mo. Intelligence + strategy + execution.</p>
-            <Link
-              href="/contact?tier=intelligence"
-              className="block text-center bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-semibold transition-colors"
-            >
-              Contact for Pricing →
-            </Link>
-          </div>
-        </div>
-
         </section>
 
-      {/* GEO Metrics Preview */}
-      <section className="max-w-4xl mx-auto px-6 pb-12">
-        <GeoMetricsScorecard
-          brandName="RivalEdge"
-          competitorName="Competitor X"
-          metrics={[
-            { label: 'AI Visibility', brand: 42, competitor: 67, competitorName: 'Competitor X', change: 5, unit: '%' },
-            { label: 'Citations', brand: 112, competitor: 178, competitorName: 'Competitor X', change: 12, unit: '' },
-            { label: 'Recommendation Rate', brand: 18, competitor: 33, competitorName: 'Competitor X', change: -2, unit: '%' },
-            { label: 'Sentiment', brand: 'Positive', competitor: 'Positive', competitorName: 'Competitor X', unit: '' },
-          ]}
-          lastUpdated="Updated June 2026"
-        />
-      </section>
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-4 text-center text-3xl font-bold">What our AI agents found this week</h2>
+            <p className="mx-auto mb-10 max-w-2xl text-center text-slate-400">
+              Recent intelligence detected across pricing pages, category narratives, customer feedback, and AI search results.
+            </p>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {recentSignals.map((signal) => (
+                <div key={signal} className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+                  <Check className="mb-4 h-5 w-5 text-emerald-400" />
+                  <p className="text-sm leading-relaxed text-slate-200">{signal}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* Product Demo Video */}
-      <section className="max-w-4xl mx-auto px-6 pb-12">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-          <div className="px-6 pt-6 pb-3">
-            <div className="flex items-center gap-2 text-sm text-slate-400 mb-1">
-              <Play className="w-4 h-4 text-blue-400" />
-              <span>90-second product tour</span>
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-10 text-center text-3xl font-bold">Market signals that matter</h2>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {marketSignals.map(({ signal, why, icon: Icon }) => (
+                <div key={signal} className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                  <Icon className="mb-4 h-6 w-6 text-blue-400" />
+                  <h3 className="mb-2 text-lg font-semibold">{signal}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{why}</p>
+                </div>
+              ))}
             </div>
-            <h3 className="text-xl font-semibold">See RivalEdge in action</h3>
           </div>
-          <video
-            className="w-full"
-            controls
-            preload="metadata"
-            poster="/rivaledge-demo-v2-check-homepage.png"
-          >
-            <source src="/rivaledge-demo-v3.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">How RivalEdge works</h2>
-        <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          We collect signals from across your market — competitors, AI systems, customers, and trends — so you see the full picture.
-        </p>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
-              <Zap className="w-5 h-5 text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Competitor monitoring</h3>
-            <p className="text-slate-400 text-sm">
-              Track rivals&apos; pricing, product launches, messaging shifts, and market moves — automatically, in real time.
-            </p>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
-              <Bell className="w-5 h-5 text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Weekly market briefings</h3>
-            <p className="text-slate-400 text-sm">
-              Get a concise digest every week on what changed in your market, what matters, and what to do about it.
-            </p>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
-              <Shield className="w-5 h-5 text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Battle cards</h3>
-            <p className="text-slate-400 text-sm">
-              Generate AI-powered competitive briefings for any rival — perfect for sales calls and strategic positioning.
-            </p>
-          </div>
-          <div className="bg-slate-900 border border-purple-500/20 rounded-xl p-6">
-            <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
-              <Sparkles className="w-5 h-5 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">AI visibility tracking</h3>
-            <p className="text-slate-400 text-sm">
-              See how ChatGPT, Claude, and Perplexity describe and recommend your brand — and your competitors. Monthly AI visibility scorecard.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Why They Work Better Together */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">
-          One platform. Two angles on the same market.
-        </h2>
-        <p className="text-slate-400 text-center mb-12 max-w-3xl mx-auto leading-relaxed">
-          Most companies track competitors. Very few understand how AI systems are
-          reshaping competitive visibility. RivalEdge connects both — so you know
-          what your market is doing <em>and</em> how AI is positioning everyone in it.
-        </p>
-        
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="bg-slate-900 border border-blue-500/15 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <BarChart3 className="w-5 h-5 text-blue-400" />
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+            <div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-600/10 px-3 py-1 text-sm text-purple-300">
+                <Sparkles className="h-4 w-4" />
+                AI search visibility
               </div>
-              <h3 className="text-lg font-semibold text-blue-400">Competitive Intelligence</h3>
+              <h2 className="mb-4 text-3xl font-bold">AI search is becoming a new competitive channel</h2>
+              <p className="mb-6 leading-relaxed text-slate-400">
+                When buyers ask ChatGPT, Claude, Gemini, or Perplexity for recommendations, only a handful of brands appear.
+              </p>
+              <p className="font-semibold text-slate-200">Understand how AI influences buyer decisions:</p>
             </div>
-            <p className="text-slate-300 text-sm mb-4 leading-relaxed">
-              Know what competitors are doing — pricing changes, feature launches,
-              messaging pivots, new market entries — before it impacts your business.
-            </p>
-            <ul className="space-y-2">
+            <div className="rounded-2xl border border-purple-500/20 bg-slate-900 p-6">
+              <div className="space-y-3">
+                {aiVisibilityPoints.map((point) => (
+                  <div key={point} className="flex items-center gap-3">
+                    <Eye className="h-4 w-4 flex-shrink-0 text-purple-400" />
+                    <span className="text-sm text-slate-300">{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-5xl text-center">
+            <ShieldCheck className="mx-auto mb-5 h-8 w-8 text-blue-400" />
+            <h2 className="mb-4 text-3xl font-bold">Why traditional competitive intelligence is no longer enough</h2>
+            <p className="mx-auto mb-8 max-w-2xl text-slate-400">Markets are changing faster than ever.</p>
+            <div className="grid gap-4 text-left md:grid-cols-4">
               {[
-                'Automated website & pricing monitoring',
-                'Weekly AI briefings with actionable insights',
-                'Battle cards for every competitor',
-                'Slack & email alerts on critical changes',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-400">
-                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  {f}
-                </li>
+                'Competitors launch products overnight',
+                'Customers leave signals across reviews and communities',
+                'AI search engines increasingly influence buying decisions',
+                "Manual monitoring can't keep up",
+              ].map((item) => (
+                <div key={item} className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm text-slate-300">
+                  {item}
+                </div>
               ))}
-            </ul>
-          </div>
-
-          <div className="bg-slate-900 border border-purple-500/15 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-purple-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-purple-400">Generative Engine Optimization</h3>
             </div>
-            <p className="text-slate-300 text-sm mb-4 leading-relaxed">
-              Understand how AI systems like ChatGPT, Claude, and Perplexity describe
-              and recommend your brand — and your competitors. Monthly visibility and
-              citation tracking across every major AI platform.
+            <p className="mx-auto mt-8 max-w-3xl text-lg font-semibold text-white">
+              RivalEdge combines competitive intelligence and AI visibility monitoring into one continuous feedback system.
             </p>
-            <ul className="space-y-2">
-              {[
-                'AI crawler infrastructure for 8 platforms',
-                'Monthly citation & visibility reports',
-                'Competitor comparison in AI answers',
-                'Content pipeline optimization for AI discovery',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-400">
-                  <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                  {f}
-                </li>
+          </div>
+        </section>
+
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-10 text-center text-3xl font-bold">Built for teams that need to stay ahead</h2>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+              {audience.map(([role, copy]) => (
+                <div key={role} className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+                  <h3 className="mb-2 font-semibold text-blue-300">{role}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{copy}</p>
+                </div>
               ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Synergy payoff */}
-        <div className="mt-10 max-w-3xl mx-auto text-center bg-gradient-to-r from-blue-600/5 via-purple-600/10 to-blue-600/5 border border-slate-800 rounded-xl p-6">
-          <p className="text-slate-300 text-lg leading-relaxed">
-            <span className="text-blue-400 font-semibold">CI</span> tells you what
-            competitors are doing.{' '}
-            <span className="text-purple-400 font-semibold">AI Visibility</span> tells you
-            how AI interprets and recommends them.{' '}
-            <span className="text-white font-semibold">
-              Together, they give you market movement, narrative positioning, and
-              AI discoverability — one platform, one dashboard.
-            </span>
-          </p>
-        </div>
-      </section>
-
-      {/* The Discovery Layer Has Changed */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">
-          The discovery layer has changed
-        </h2>
-        <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          How buyers find products has shifted. Google isn&apos;t the only front door anymore.
-        </p>
-        
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4">
-              <Search className="w-5 h-5 text-slate-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Traditional Search</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              For years, SERP rankings determined who got discovered. SEO was a one-channel game. 
-              Google was the front door to every market.
-            </p>
-          </div>
-          
-          <div className="bg-slate-900 border border-purple-500/20 rounded-xl p-6">
-            <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center mb-4">
-              <Sparkles className="w-5 h-5 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">AI Discovery</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              ChatGPT, Claude, and Perplexity now shape B2B buyer research. 
-              AI-generated recommendations are replacing organic search results — 40%+ of discovery starts with AI.
-            </p>
-          </div>
-          
-          <div className="bg-slate-900 border border-blue-500/20 rounded-xl p-6">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center mb-4">
-              <TrendingUp className="w-5 h-5 text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Competitive Pressure</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              Competitors who optimize for AI visibility are capturing mindshare before buyers ever visit a website. 
-              If AI doesn&apos;t know you, you don&apos;t exist.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Built For */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">
-          Built for teams that move fast
-        </h2>
-        <p className="text-slate-400 text-center mb-10 max-w-2xl mx-auto">
-          Whether you&apos;re defending market share or fighting to get noticed — RivalEdge gives you the intelligence to act before competitors do.
-        </p>
-        
-        <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-          {[
-            { icon: '🏢', label: 'SaaS & B2B' },
-            { icon: '🛒', label: 'eCommerce & Amazon' },
-            { icon: '🤝', label: 'Agencies & Consultants' },
-            { icon: '🏥', label: 'Healthcare & Professional Services' },
-            { icon: '💰', label: 'Fintech & Financial Services' },
-            { icon: '📦', label: 'DTC & CPG Brands' },
-          ].map((u) => (
-            <div key={u.label} className="bg-slate-900 border border-slate-800 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-slate-600 transition-colors">
-              <span className="text-base">{u.icon}</span>
-              <span className="text-sm text-slate-300 font-medium">{u.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Final CTA — Outcome focused */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            See your market clearly. Act before competitors do.
-          </h2>
-          <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
-            RivalEdge gives you the full picture — competitor moves, AI visibility shifts, pricing changes, and emerging threats. Start with one angle, add the other when you're ready.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/sign-up"
-              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-semibold transition-colors text-lg"
-            >
-              Start free trial →
-            </Link>
-            <Link
-              href="/demo"
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors inline-flex items-center gap-2"
-            >
-              <Play className="w-4 h-4" />
-              See interactive demo
-            </Link>
-          </div>
-          <p className="text-slate-500 text-sm mt-4">14-day free trial. No credit card required.</p>
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 md:p-12">
-            <p className="text-xl md:text-2xl text-slate-300 italic mb-6">
-              &ldquo;Finally, a tool that pays for itself the first time it prevents surprise.&rdquo;
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center">
-                <span className="text-blue-400 font-semibold">S</span>
-              </div>
-              <div className="text-left">
-                <p className="text-slate-200 font-medium">Sal Leone</p>
-                <p className="text-slate-400 text-sm">Founder, RouzeIQ</p>
-              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Pricing */}
-      <section className="max-w-6xl mx-auto px-6 py-16" id="pricing">
-        <h2 className="text-3xl font-bold text-center mb-12">Simple, honest pricing</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl p-8">
-            <h3 className="text-xl font-semibold mb-1">Solo</h3>
-            <p className="text-slate-400 text-sm mb-6">For indie founders and small teams</p>
-            <div className="text-4xl font-bold mb-6">
-              $49<span className="text-lg text-slate-400 font-normal">/mo</span>
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="mb-10 text-center text-3xl font-bold">Why RivalEdge</h2>
+            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800">
+                    <th className="px-5 py-4 text-left font-medium text-slate-400">Capability</th>
+                    <th className="px-5 py-4 text-center font-medium text-blue-300">RivalEdge</th>
+                    <th className="px-5 py-4 text-center font-medium text-slate-400">Traditional CI Tools</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map(([label, rivaledge, traditional]) => (
+                    <tr key={String(label)} className="border-b border-slate-800/60 last:border-0">
+                      <td className="px-5 py-4 text-slate-200">{label}</td>
+                      <td className="px-5 py-4"><CheckMark active={Boolean(rivaledge)} /></td>
+                      <td className="px-5 py-4"><CheckMark active={Boolean(traditional)} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <ul className="space-y-3 mb-8">
-              {['Track up to 5 competitors', 'Weekly AI digest', 'Email alerts', 'Battle card generator'].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  {f}
-                </li>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-10 text-center text-3xl font-bold">How it works</h2>
+            <div className="grid gap-5 md:grid-cols-4">
+              {steps.map(([title, copy], index) => (
+                <div key={title} className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold">
+                    {index + 1}
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{copy}</p>
+                </div>
               ))}
-            </ul>
-            <Link
-              href="/sign-up"
-              className="block text-center bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white py-3 rounded-lg font-semibold transition-colors"
-            >
-              Get started
-            </Link>
-          </div>
-          <div className="bg-blue-600/10 border border-blue-500/50 rounded-xl p-8 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-              MOST POPULAR
             </div>
-            <h3 className="text-xl font-semibold mb-1">Pro</h3>
-            <p className="text-slate-400 text-sm mb-6">For growing teams and agencies</p>
-            <div className="text-4xl font-bold mb-6">
-              $99<span className="text-lg text-slate-400 font-normal">/mo</span>
-            </div>
-            <ul className="space-y-3 mb-8">
-              {[
-                'Track up to 10 competitors',
-                'Daily AI digest',
-                'Slack + email alerts',
-                'Battle card generator',
-                'API access',
-                'Priority support',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/sign-up"
-              className="block text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-semibold transition-colors"
-            >
-              Get started
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 px-6 py-8 mt-16">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-slate-500 text-sm">© 2026 RivalEdge · Aether Holding LLC</span>
-          <div className="flex gap-4 mt-2">
-            <a href="/privacy" className="text-slate-500 text-sm hover:text-slate-300">Privacy Policy</a>
-            <a href="/terms" className="text-slate-500 text-sm hover:text-slate-300">Terms of Service</a>
-            <a href="mailto:support@rivaledge.ai" className="text-slate-500 text-sm hover:text-slate-300">Support</a>
+        <section id="pricing" className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="mb-3 text-center text-3xl font-bold">Start monitoring your market in minutes.</h2>
+            <div className="mt-10 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800">
+                    <th className="px-5 py-4 text-left font-medium text-slate-400">Plan</th>
+                    <th className="px-5 py-4 text-left font-medium text-slate-400">Best For</th>
+                    <th className="px-5 py-4 text-left font-medium text-slate-400">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {plans.map(([plan, bestFor, price]) => (
+                    <tr key={plan} className="border-b border-slate-800/60 last:border-0">
+                      <td className="px-5 py-4 font-semibold text-white">{plan}</td>
+                      <td className="px-5 py-4 text-slate-300">{bestFor}</td>
+                      <td className="px-5 py-4 font-semibold text-blue-300">{price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="flex gap-6 text-slate-500 text-sm">
-            <Link href="/demo" className="hover:text-white transition-colors">Demo</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-            <Link href="/sign-in" className="hover:text-white transition-colors">Sign in</Link>
+        </section>
+
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-3xl text-center">
+            <Zap className="mx-auto mb-5 h-8 w-8 text-blue-400" />
+            <h2 className="mb-8 text-3xl font-bold">Stop guessing. Start knowing.</h2>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500">
+                Start Free Trial
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/contact" className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-800">
+                Talk to Sales
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-slate-800 px-6 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
+          <span className="text-sm text-slate-500">© 2026 RivalEdge · Aether Holding LLC</span>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="text-sm text-slate-500 hover:text-slate-300">Privacy Policy</Link>
+            <Link href="/terms" className="text-sm text-slate-500 hover:text-slate-300">Terms of Service</Link>
+            <Link href="/pricing" className="text-sm text-slate-500 hover:text-slate-300">Pricing</Link>
           </div>
         </div>
       </footer>

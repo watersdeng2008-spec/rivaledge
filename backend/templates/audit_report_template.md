@@ -163,7 +163,7 @@ We tested {queries_tested} queries across {platforms_tested} AI platforms.
 
 1. **Review this audit** with your team
 2. **Choose your tier:**
-   - GEO Self-Service ($299/mo): Tools + roadmap, you execute
+   - Pro AI ($299/mo): AI search visibility tools + roadmap, you execute
    - GEO Managed ($999/mo): We deploy assets + monitor
    - AI Intelligence Partner (Custom): Full strategy + execution
 3. **Schedule kickoff:** Reply to this email or book: {calendly_link}
