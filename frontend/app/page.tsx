@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Check, Zap, Bell, Shield, Sparkles, BarChart3, Search, TrendingUp, Play } from 'lucide-react';
 import LeadCaptureForm from './components/LeadCaptureForm';
+import GeoMetricsScorecard from './components/GeoMetricsScorecard';
 
 export default function HomePage() {
   return (
@@ -239,6 +240,21 @@ export default function HomePage() {
         </div>
 
         </section>
+
+      {/* GEO Metrics Preview */}
+      <section className="max-w-4xl mx-auto px-6 pb-12">
+        <GeoMetricsScorecard
+          brandName="RivalEdge"
+          competitorName="Competitor X"
+          metrics={[
+            { label: 'AI Visibility', brand: 42, competitor: 67, competitorName: 'Competitor X', change: 5, unit: '%' },
+            { label: 'Citations', brand: 112, competitor: 178, competitorName: 'Competitor X', change: 12, unit: '' },
+            { label: 'Recommendation Rate', brand: 18, competitor: 33, competitorName: 'Competitor X', change: -2, unit: '%' },
+            { label: 'Sentiment', brand: 'Positive', competitor: 'Positive', competitorName: 'Competitor X', unit: '' },
+          ]}
+          lastUpdated="Updated June 2026"
+        />
+      </section>
 
       {/* Product Demo Video */}
       <section className="max-w-4xl mx-auto px-6 pb-12">
