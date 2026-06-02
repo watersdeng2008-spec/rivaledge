@@ -291,7 +291,7 @@ function DashboardContent() {
                 <span className="text-xs text-slate-500 uppercase tracking-wider">Plan</span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="font-semibold capitalize">
-                    {billing.plan === 'geo_selfservice' ? 'Pro AI' : billing.plan}
+                    {billing.plan === 'geo_selfservice' ? 'Done-For-You' : billing.plan}
                   </span>
                   {(billing.plan === 'pro' || billing.plan === 'geo_selfservice') && <Crown className="w-4 h-4 text-yellow-400" />}
                   {billing.plan === 'geo_selfservice' && (

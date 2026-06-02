@@ -66,15 +66,15 @@ const SCHEMA_JSON = {
         },
         {
           "@type": "Offer",
-          "name": "Pro AI",
+          "name": "Done-For-You",
           "price": "299",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
         {
           "@type": "Offer",
-          "name": "GEO Managed",
-          "price": "999",
+          "name": "Enterprise",
+          "price": "Custom",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         }
@@ -110,7 +110,7 @@ const SCHEMA_JSON = {
           "name": "How much does RivalEdge cost?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "RivalEdge Solo starts at $49/month for individual founders and small teams. Pro is $99/month for growing teams with 5+ competitors. Pro AI is $299/month for teams that need AI search visibility. Enterprise is custom for full-service market intelligence."
+            "text": "RivalEdge Solo starts at $49/month for individual founders and small teams. Pro is $99/month for growing teams with 5+ competitors. Done-For-You is $299/month for teams that want intelligence delivered. Enterprise is custom for full-service market intelligence."
           }
         },
         {
@@ -118,7 +118,7 @@ const SCHEMA_JSON = {
           "name": "Does RivalEdge have a free trial?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. Pro AI and Enterprise do not include a trial."
+            "text": "Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. Done-For-You includes a free trial path from the pricing page, and Enterprise is custom."
           }
         },
         {

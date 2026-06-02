@@ -160,7 +160,7 @@ const GEO_FAQ_SCHEMA = {
       name: 'How much does RivalEdge GEO cost?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'RivalEdge Enterprise GEO costs $3,500 for one-time setup and $999 per month for ongoing monitoring and optimization. Pro AI is $299 per month.',
+        text: 'RivalEdge Done-For-You is $299 per month and includes GEO asset deployment, AI visibility tracking, competitor monitoring, and weekly reports. Enterprise is custom for larger teams.',
       },
     },
     {
@@ -450,12 +450,12 @@ export default function GeoPage() {
         </p>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {/* Pro AI */}
+          {/* Done-For-You */}
           <div className="bg-purple-600/5 border border-purple-500/30 rounded-xl p-8">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-xl font-semibold">Pro AI</h3>
+              <h3 className="text-xl font-semibold">Done-For-You</h3>
             </div>
-            <p className="text-slate-400 text-sm mb-4">Tools + roadmap. You execute.</p>
+            <p className="text-slate-400 text-sm mb-4">We deploy the assets and deliver the insights.</p>
             
             <div className="flex items-baseline gap-2 mb-6">
               <span className="text-3xl font-bold">$299</span>
@@ -470,7 +470,7 @@ export default function GeoPage() {
                 '4 CI-powered content briefs/month',
                 'Monthly score tracking dashboard',
                 'AI crawler visit logs',
-                'Email support',
+                'Weekly intelligence reports',
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 flex-shrink-0 text-purple-400" />
@@ -483,7 +483,7 @@ export default function GeoPage() {
               href="/pricing"
               className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors"
             >
-              Get Pro AI
+              Get Done-For-You
             </Link>
           </div>
 

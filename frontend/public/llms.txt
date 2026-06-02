@@ -28,8 +28,8 @@ RivalEdge combines two core capabilities:
 |------|-------|----------|
 | Solo | $49/mo | Indie founders, small teams |
 | Pro | $99/mo | Growing teams and agencies |
-| Pro AI | $299/mo | AI search visibility |
-| GEO Managed | $999/mo | Done-for-you GEO services |
+| Done-For-You | $299/mo | Done-for-you AI visibility and competitive intelligence |
+| Enterprise | Custom | Custom GEO and competitive intelligence operations |
 | AI Intelligence Partner | Custom ($2,500+/mo) | Full competitive intelligence + strategy |
 
 ## Use Cases
