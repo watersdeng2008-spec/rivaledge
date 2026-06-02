@@ -363,9 +363,9 @@ export default function HomePage() {
                 Start Free Trial
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-800">
+              <a href="mailto:ben.d@rivaledge.ai?subject=Sales%20Inquiry" className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-800">
                 Talk to Sales
-              </Link>
+              </a>
             </div>
           </div>
         </section>

@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const AI_CRAWLERS: Record<string, { name: string; company: string }> = {
   GPTBot: { name: 'OpenAI GPTBot', company: 'OpenAI' },
@@ -79,13 +81,29 @@ async function logAICrawlerVisit(request: Request) {
   }
 }
 
-export default clerkMiddleware(async (auth, request) => {
-  await logAICrawlerVisit(request)
+const hasClerkKeys = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY
+)
 
-  if (!isPublicRoute(request)) {
-    await auth.protect()
-  }
-})
+const proxy = hasClerkKeys
+  ? clerkMiddleware(async (auth, request) => {
+      await logAICrawlerVisit(request)
+
+      if (!isPublicRoute(request)) {
+        await auth.protect()
+      }
+    })
+  : async (request: NextRequest) => {
+      await logAICrawlerVisit(request)
+
+      if (!isPublicRoute(request)) {
+        return NextResponse.redirect(new URL('/sign-in', request.url))
+      }
+
+      return NextResponse.next()
+    }
+
+export default proxy
 
 export const config = {
   matcher: [

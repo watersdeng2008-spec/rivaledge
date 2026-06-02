@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Info, Sparkles } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import posthog from 'posthog-js';
 import { apiRequest } from '@/lib/api';
@@ -17,7 +17,7 @@ const PRICING_FAQ_SCHEMA = {
       name: 'Does RivalEdge have a free trial?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. RivalEdge Solo and Pro offer a 14-day free trial with no credit card required. Pro AI and Enterprise do not include a trial.',
+        text: 'Yes. RivalEdge offers a free trial with no credit card required.',
       },
     },
     {
@@ -41,15 +41,15 @@ const PRICING_FAQ_SCHEMA = {
       name: 'What is Pro AI?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Pro AI costs $299 per month and includes Pro-level CI plus AI search visibility tools: llms.txt generator, robots.txt for 8 AI crawlers, monthly AI visibility scorecard, and competitor AI visibility comparison.',
+        text: 'Pro AI costs $299 per month and includes Pro-level CI plus AI visibility optimization, AI crawler optimization, monthly AI visibility scorecard, and competitor AI visibility comparison.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What is GEO Managed?',
+      name: 'What is Enterprise?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'GEO Managed is our done-for-you service at $999 per month. We create and deploy llms.txt, robots.txt, schema markup, and sitemap optimization for you. Includes monthly GEO audits, score tracking, content intelligence briefs, and a 30-minute strategy call.',
+        text: 'Enterprise is our full-service market intelligence tier. We handle everything from setup to weekly reports, including AI visibility assets, monthly AI visibility scorecards, weekly competitor intelligence reports, a dedicated account manager, custom integrations, and priority support.',
       },
     },
     {
@@ -57,7 +57,7 @@ const PRICING_FAQ_SCHEMA = {
       name: 'What is the AI Competitive Intelligence Partner tier?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Our AI Competitive Intelligence Partner tier is custom pricing starting at $2,500 per month. It includes everything in GEO Managed plus full competitive intelligence (pricing changes, product launches, messaging shifts), AI recommendation share tracking, monthly strategic reports, category intelligence, and priority Slack support with quarterly business reviews.',
+        text: 'Our AI Competitive Intelligence Partner tier is custom pricing starting at $2,500 per month. It includes everything in Enterprise plus full competitive intelligence (pricing changes, product launches, messaging shifts), AI recommendation share tracking, monthly strategic reports, category intelligence, and priority Slack support with quarterly business reviews.',
       },
     },
     {
@@ -107,37 +107,6 @@ export default function PricingPage() {
     }
   };
 
-  const handleAddonCheckout = async (plan: 'geo' | 'geo_managed') => {
-    if (!isSignedIn) {
-      window.location.href = '/sign-up';
-      return;
-    }
-    setLoading(plan);
-    setError(null);
-    posthog.capture('checkout_started', {
-      plan,
-      plan_name: plan === 'geo' ? 'GEO Add-on' : 'GEO Managed',
-      price: plan === 'geo' ? 299 : 999,
-      source: document.referrer || 'direct',
-    });
-
-    try {
-      const token = await getToken();
-      const data = await apiRequest<{ checkout_url: string }>('/api/billing/addon-checkout', {
-        method: 'POST',
-        body: JSON.stringify({ plan }),
-        token: token || undefined,
-      });
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url;
-      }
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Checkout failed');
-    } finally {
-      setLoading(null);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <script
@@ -154,7 +123,7 @@ export default function PricingPage() {
           <div className="flex items-center gap-4">
             <Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign in</Link>
             <Link href="/sign-up" className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition-colors">
-              Start free trial
+              Start Free Trial
             </Link>
           </div>
         </div>
@@ -163,8 +132,8 @@ export default function PricingPage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-12">
         <h1 className="text-4xl font-bold text-center mb-4">Simple, honest pricing</h1>
-        <p className="text-slate-400 text-center mb-2">No hidden fees. No enterprise quotes. Cancel anytime.</p>
-        <p className="text-blue-400 text-center font-medium mb-16">✨ 14-day free trial on Solo & Pro — no credit card required</p>
+        <p className="text-slate-400 text-center mb-2">No hidden fees. Clear plans. Cancel anytime.</p>
+        <p className="text-blue-400 text-center font-medium mb-16">✨ Start your free trial — no credit card required</p>
 
         {/* Lead Capture — Free Competitor Snapshot */}
         <div className="max-w-xl mx-auto mb-16">
@@ -221,7 +190,7 @@ export default function PricingPage() {
               disabled={loading === 'solo'}
               className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'solo' ? 'Redirecting...' : 'Start 14-day free trial'}
+              {loading === 'solo' ? 'Redirecting...' : 'Start Free Trial'}
             </button>
           </div>
 
@@ -264,7 +233,7 @@ export default function PricingPage() {
               disabled={loading === 'pro'}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'pro' ? 'Redirecting...' : 'Start 14-day free trial'}
+              {loading === 'pro' ? 'Redirecting...' : 'Start Free Trial'}
             </button>
           </div>
 
@@ -283,8 +252,8 @@ export default function PricingPage() {
               {[
                 ['10 competitors tracked', true],
                 ['Daily AI digest + email alerts', true],
-                ['llms.txt auto-generator', true],
-                ['robots.txt for 8 AI crawlers', true],
+                ['AI visibility optimization', true],
+                ['AI crawler optimization', true],
                 ['Monthly AI visibility scorecard', true],
                 ['Competitor AI visibility comparison', true],
                 ['API access', true],
@@ -292,6 +261,14 @@ export default function PricingPage() {
                 <div key={String(feature)} className="flex items-center gap-2 text-sm">
                   <Check className={`w-4 h-4 flex-shrink-0 ${included ? 'text-purple-400' : 'text-slate-700'}`} />
                   <span className={included ? 'text-slate-300' : 'text-slate-600'}>{String(feature)}</span>
+                  {(feature === 'AI visibility optimization' || feature === 'AI crawler optimization') && (
+                    <span
+                      title="We generate llms.txt files and optimize robots.txt to help AI search engines discover and recommend your brand."
+                      className="inline-flex"
+                    >
+                      <Info className="w-3.5 h-3.5 text-slate-500" />
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -301,32 +278,30 @@ export default function PricingPage() {
               disabled={loading === 'geo_selfservice'}
               className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
             >
-              {loading === 'geo_selfservice' ? 'Redirecting...' : 'Get Pro AI'}
+              {loading === 'geo_selfservice' ? 'Redirecting...' : 'Start Free Trial'}
             </button>
           </div>
 
-          {/* GEO Managed */}
+          {/* Enterprise */}
           <div className="bg-emerald-600/5 border border-emerald-500/30 rounded-xl p-8 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
               DONE-FOR-YOU
             </div>
-            <h3 className="text-xl font-semibold mb-1">GEO Managed</h3>
-            <p className="text-slate-400 text-sm mb-6">We deploy GEO assets + monitor monthly</p>
+            <h3 className="text-xl font-semibold mb-1">Enterprise</h3>
+            <p className="text-slate-400 text-sm mb-6">Full-service market intelligence. We handle everything from setup to weekly reports.</p>
             <div className="text-4xl font-bold mb-8">
               $999<span className="text-lg text-slate-400 font-normal">/mo</span>
             </div>
 
             <div className="space-y-3 mb-8">
               {[
-                ['Everything in Self-Service', true],
-                ['We create & deploy llms.txt', true],
-                ['We create & deploy robots.txt', true],
-                ['Schema markup implementation', true],
-                ['Sitemap optimization', true],
-                ['Monthly GEO audit + score tracking', true],
-                ['Monthly 30-min strategy call', true],
-                ['Content intelligence briefs', true],
-                ['5 competitor GEO tracking', true],
+                ['Everything in Pro AI', true],
+                ['We create & deploy AI visibility assets', true],
+                ['Monthly AI visibility scorecard', true],
+                ['Weekly competitor intelligence reports', true],
+                ['Dedicated account manager', true],
+                ['Custom integrations', true],
+                ['Priority support', true],
               ].map(([feature, included]) => (
                 <div key={String(feature)} className="flex items-center gap-2 text-sm">
                   <Check className={`w-4 h-4 flex-shrink-0 ${included ? 'text-emerald-400' : 'text-slate-700'}`} />
@@ -335,13 +310,12 @@ export default function PricingPage() {
               ))}
             </div>
 
-            <button
-              onClick={() => handleAddonCheckout('geo_managed')}
-              disabled={loading === 'geo_managed'}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            <a
+              href="mailto:ben.d@rivaledge.ai?subject=Enterprise%20Inquiry"
+              className="block w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-semibold transition-colors text-center"
             >
-              {loading === 'geo_managed' ? 'Redirecting...' : 'Get GEO Managed'}
-            </button>
+              Contact Sales
+            </a>
           </div>
         </div>
       </section>
@@ -375,7 +349,7 @@ export default function PricingPage() {
 
           <div className="grid md:grid-cols-2 gap-3 mb-8">
             {[
-              'Everything in GEO Managed',
+              'Everything in Enterprise',
               'Full competitive intelligence (CI + GEO)',
               'Competitor pricing + launch monitoring',
               'AI recommendation share tracking',
@@ -393,12 +367,12 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <button
-            onClick={() => window.location.href = '/contact?tier=intelligence'}
-            className="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-lg font-semibold transition-colors"
+          <a
+            href="mailto:ben.d@rivaledge.ai?subject=Sales%20Inquiry"
+            className="block w-full text-center bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-lg font-semibold transition-colors"
           >
             Contact for Custom Pricing
-          </button>
+          </a>
         </div>
       </section>
 
@@ -413,7 +387,7 @@ export default function PricingPage() {
                 <th className="text-center px-6 py-4 text-slate-400 font-medium">Solo</th>
                 <th className="text-center px-6 py-4 text-slate-400 font-medium">Pro</th>
                 <th className="text-center px-6 py-4 text-purple-400 font-medium">Pro AI</th>
-                <th className="text-center px-6 py-4 text-emerald-400 font-medium">GEO Managed</th>
+                <th className="text-center px-6 py-4 text-emerald-400 font-medium">Enterprise</th>
                 <th className="text-center px-6 py-4 text-amber-400 font-medium">Intelligence Partner</th>
               </tr>
             </thead>
@@ -427,7 +401,7 @@ export default function PricingPage() {
                 ['API access', '—', '✓', '✓', '✓', '✓'],
                 ['Priority support', '—', '✓', '✓', '✓', '✓'],
                 ['GEO tools', '—', '—', '✓', '✓', '✓'],
-                ['llms.txt generator', '—', '—', '✓', '✓', '✓'],
+                ['AI visibility optimization', '—', '—', '✓', '✓', '✓'],
                 ['AI citation audit', '—', '—', 'Automated', 'Automated', 'Full-service'],
                 ['GEO asset deployment', '—', '—', '—', '✓', '✓'],
                 ['Monthly strategy call', '—', '—', '—', '30 min', '60 min'],
@@ -468,12 +442,12 @@ export default function PricingPage() {
               a: 'No. Our fixes work on any platform — Next.js, WordPress, Webflow, custom. We provide copy-paste code snippets.',
             },
             {
-              q: "What's the difference between GEO Managed and Self-Service?",
-              a: 'Pro AI ($299/mo) gives you tools to generate llms.txt, robots.txt, and track AI visibility yourself. GEO Managed ($999/mo) means we create and deploy all GEO assets for you, monitor monthly, and provide strategy calls. You get the same results without doing the work.',
+              q: "What's the difference between Enterprise and Pro AI?",
+              a: 'Pro AI ($299/mo) gives you tools to optimize and track AI visibility yourself. Enterprise means we create and deploy AI visibility assets for you, monitor monthly, and provide weekly competitor intelligence reports. You get the same results without doing the work.',
             },
             {
               q: "What's the setup fee for?",
-              a: 'The one-time setup fee covers: comprehensive AI visibility audit, competitor benchmarking, llms.txt creation, robots.txt optimization, schema markup implementation, and initial content strategy. This is included in GEO Managed and Intelligence Partner tiers.',
+              a: 'The one-time setup fee covers: comprehensive AI visibility audit, competitor benchmarking, AI visibility asset creation, AI crawler optimization, schema markup implementation, and initial content strategy. This is included in Enterprise and Intelligence Partner tiers.',
             },
             {
               q: 'Can we start with Pro AI and upgrade to Managed or Intelligence Partner?',

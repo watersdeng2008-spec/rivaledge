@@ -564,12 +564,12 @@ export default function GeoPage() {
               ))}
             </div>
 
-            <Link
-              href="/contact?tier=intelligence"
+            <a
+              href="mailto:ben.d@rivaledge.ai?subject=Sales%20Inquiry"
               className="block w-full text-center bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-lg font-semibold transition-colors"
             >
               Contact for Pricing
-            </Link>
+            </a>
           </div>
         </div>
 
