@@ -56,6 +56,15 @@ const marketSignals = [
   },
 ];
 
+const doneForYouServices = [
+  ['Competitor Monitoring', "Track 10 competitors' pricing, launches, messaging, and hiring"],
+  ['AI Visibility Tracking', 'Monitor how often AI recommends you vs competitors'],
+  ['Weekly Reports', 'Executive summary plus actionable recommendations'],
+  ['GEO Asset Deployment', 'Create and deploy llms.txt and robots.txt for AI discoverability'],
+  ['Alert System', 'Immediate notifications on critical competitor moves'],
+  ['AI Comparison', 'Side-by-side AI recommendation analysis'],
+];
+
 const aiVisibilityPoints = [
   'See which brands AI recommends',
   'Compare your visibility against competitors',
@@ -90,7 +99,7 @@ const steps = [
 const plans = [
   ['Solo', 'Individual founders, small teams', '$49/mo'],
   ['Pro', 'Growing teams with 5+ competitors', '$99/mo'],
-  ['Pro AI', 'Teams who need AI search visibility', '$299/mo'],
+  ['Done-For-You', 'Teams who want intelligence delivered', '$299/mo'],
   ['Enterprise', 'Full-service market intelligence', 'Custom'],
 ];
 
@@ -140,10 +149,10 @@ export default function HomePage() {
                 Competitive intelligence for the AI era
               </div>
               <h1 className="mb-5 max-w-4xl text-4xl font-bold leading-tight md:text-6xl">
-                Spot market shifts before your competitors do.
+                Get competitive intelligence done for you — for less than a part-time intern.
               </h1>
               <p className="mb-8 max-w-2xl text-lg leading-relaxed text-slate-300">
-                Monitor competitors, customer sentiment, pricing, product launches, hiring activity, and AI visibility from a single intelligence platform.
+                We monitor your competitors, track your AI visibility, and deliver weekly intelligence reports. You focus on winning. We do the research.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500">
@@ -188,6 +197,27 @@ export default function HomePage() {
             subtitle="Enter any competitor URL and get a free snapshot of their latest moves"
             buttonText="Get my free competitor snapshot"
           />
+        </section>
+
+        <section className="border-t border-slate-800 px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-4 text-center text-3xl font-bold">What You Get (Done-For-You)</h2>
+            <p className="mx-auto mb-10 max-w-2xl text-center text-slate-400">
+              We do the work. You get the insights.
+            </p>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {doneForYouServices.map(([service, copy]) => (
+                <div key={service} className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                  <Check className="mb-4 h-5 w-5 text-blue-400" />
+                  <h3 className="mb-2 text-lg font-semibold">{service}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{copy}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-slate-500">
+              Delivery: Email every Monday morning · Setup: 24 hours · Cancel anytime
+            </p>
+          </div>
         </section>
 
         <section className="border-t border-slate-800 px-6 py-16">
@@ -350,6 +380,37 @@ export default function HomePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-slate-800 bg-slate-900/30 px-6 py-16">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="mb-10 text-center text-3xl font-bold">Why Done-For-You?</h2>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="rounded-xl border border-red-500/20 bg-red-950/20 p-6">
+                <h3 className="mb-4 font-semibold text-red-300">You could do this yourself...</h3>
+                <ul className="space-y-2 text-sm text-slate-300">
+                  <li>Spend 10+ hours/week researching competitors</li>
+                  <li>Learn AI visibility tools</li>
+                  <li>Build reporting systems</li>
+                  <li>Monitor 10 websites daily</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-6">
+                <h3 className="mb-4 font-semibold text-emerald-300">Or let us do it for you:</h3>
+                <ul className="space-y-2 text-sm text-slate-300">
+                  <li>Get weekly reports in your inbox</li>
+                  <li>Know about competitor moves before your team</li>
+                  <li>Understand your AI visibility vs competitors</li>
+                  <li>Focus on strategy, not research</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-8 rounded-xl border border-blue-500/30 bg-blue-600/10 p-5 text-center">
+              <p className="font-semibold text-white">
+                $299/month = Less than a part-time intern. More intelligence than a full-time analyst.
+              </p>
             </div>
           </div>
         </section>
