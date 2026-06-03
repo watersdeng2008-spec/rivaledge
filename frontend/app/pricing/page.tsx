@@ -6,6 +6,7 @@ import { Check, Info, Sparkles } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import posthog from 'posthog-js';
 import { apiRequest } from '@/lib/api';
+import DemoVideoEmbed from '../components/DemoVideoEmbed';
 import LeadCaptureForm from '../components/LeadCaptureForm';
 
 const PRICING_FAQ_SCHEMA = {
@@ -145,6 +146,11 @@ export default function PricingPage() {
             buttonText="Get free competitor snapshot"
           />
         </div>
+
+        <DemoVideoEmbed
+          heading="Not sure? Watch a 60-second demo first 🎬"
+          className="mb-16 max-w-3xl"
+        />
 
         {error && (
           <div className="max-w-lg mx-auto mb-8 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm text-center">

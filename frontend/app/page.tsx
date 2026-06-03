@@ -14,6 +14,7 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
+import DemoVideoEmbed from './components/DemoVideoEmbed';
 import LeadCaptureForm from './components/LeadCaptureForm';
 
 const recentSignals = [
@@ -187,6 +188,13 @@ export default function HomePage() {
               </blockquote>
             </div>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 pb-16">
+          <DemoVideoEmbed
+            eyebrow="60-second walkthrough"
+            heading="See how it works in 60 seconds 👇"
+          />
         </section>
 
         <section className="mx-auto max-w-3xl px-6 pb-16">
