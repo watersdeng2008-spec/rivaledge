@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, Info, Sparkles } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import posthog from 'posthog-js';
 import { apiRequest } from '@/lib/api';
@@ -42,7 +42,7 @@ const PRICING_FAQ_SCHEMA = {
       name: 'What is Done-For-You?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Done-For-You costs $299 per month and includes Pro-level CI plus weekly intelligence reports, AI visibility tracking and comparison, GEO asset deployment, 10 competitors monitored 24/7, and immediate alerts on critical moves.',
+        text: 'Done-For-You costs $299 per month and includes weekly executive intelligence reports, AI visibility tracking and comparison, monthly AI visibility optimization, 10 competitors monitored 24/7, and immediate alerts on critical moves. No dashboard — just clear insights and recommended actions delivered every Monday.',
       },
     },
     {
@@ -79,7 +79,7 @@ export default function PricingPage() {
 
   const handleCheckout = async (plan: 'solo' | 'pro' | 'geo_selfservice') => {
     if (!isSignedIn) {
-      window.location.href = '/sign-up';
+      window.location.href = `/sign-up?plan=${encodeURIComponent(plan)}`;
       return;
     }
     setLoading(plan);
@@ -260,7 +260,6 @@ export default function PricingPage() {
                 'Everything in Pro, plus:',
                 'Weekly intelligence reports',
                 'AI visibility tracking & comparison',
-                'GEO asset deployment (llms.txt, robots.txt)',
                 '10 competitors monitored 24/7',
                 'Immediate alerts on critical moves',
                 'Email delivery every Monday',
@@ -268,11 +267,6 @@ export default function PricingPage() {
                 <div key={feature} className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 flex-shrink-0 text-blue-400" />
                   <span className="text-slate-300">{feature}</span>
-                  {feature === 'GEO asset deployment (llms.txt, robots.txt)' && (
-                    <span title="We generate llms.txt files and optimize robots.txt to help AI search engines discover and recommend your brand." className="inline-flex">
-                      <Info className="w-3.5 h-3.5 text-slate-500" />
-                    </span>
-                  )}
                 </div>
               ))}
             </div>

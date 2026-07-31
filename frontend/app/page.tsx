@@ -60,10 +60,10 @@ const marketSignals = [
 const doneForYouServices = [
   ['Competitor Monitoring', "Track 10 competitors' pricing, launches, messaging, and hiring"],
   ['AI Visibility Tracking', 'Monitor how often AI recommends you vs competitors'],
-  ['Weekly Reports', 'Executive summary plus actionable recommendations'],
-  ['GEO Asset Deployment', 'Create and deploy llms.txt and robots.txt for AI discoverability'],
+  ['Weekly Intelligence Reports', 'Concise executive summary with competitor moves, AI visibility shifts, and three recommended actions'],
+  ['Monthly AI Visibility Optimization', 'Improve how AI models discover and recommend your brand'],
   ['Alert System', 'Immediate notifications on critical competitor moves'],
-  ['AI Comparison', 'Side-by-side AI recommendation analysis'],
+  ['AI Comparison Analysis', 'Side-by-side view of how models recommend you versus competitors'],
 ];
 
 const aiVisibilityPoints = [
@@ -147,13 +147,13 @@ export default function HomePage() {
             <div>
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-600/10 px-3 py-1 text-sm text-blue-300">
                 <LineChart className="h-4 w-4" />
-                Competitive intelligence for the AI era
+                Weekly competitive intelligence
               </div>
               <h1 className="mb-5 max-w-4xl text-4xl font-bold leading-tight md:text-6xl">
-                Get competitive intelligence done for you — for less than a part-time intern.
+                Every Monday morning, know exactly what changed, why it matters, and what to do next.
               </h1>
               <p className="mb-8 max-w-2xl text-lg leading-relaxed text-slate-300">
-                We monitor your competitors, track your AI visibility, and deliver weekly intelligence reports. You focus on winning. We do the research.
+                No dashboard. No software. Just a concise executive brief with competitor moves, AI visibility shifts, and three recommended actions.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500">
@@ -183,7 +183,7 @@ export default function HomePage() {
                 ))}
               </div>
               <blockquote className="mt-5 border-l-2 border-blue-500 pl-4 text-sm italic leading-relaxed text-slate-300">
-                "We spotted three new competitors entering our space two months before our board asked about them."
+                &ldquo;We spotted three new competitors entering our space two months before our board asked about them.&rdquo;
                 <span className="mt-2 block text-slate-500">VP Strategy, category leader</span>
               </blockquote>
             </div>
